@@ -15,6 +15,7 @@ public:
     FileMananger();
     ~FileMananger();
     void ListAvailableFiles(); //* lista todos os arquivos dentro da pasta ./files
+    string GetFileNameByIndex(int index);
     void Read(string fileName);    
 
 };
