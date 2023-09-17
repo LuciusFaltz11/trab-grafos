@@ -1,3 +1,6 @@
+#include "Grafo.h"
+
+
 #include "FileMananger.h"
 
 FileMananger::FileMananger()
@@ -24,8 +27,8 @@ string FileMananger::GetFileNameByIndex(int index)
 	int i = 0;
 	for (const auto &entry : filesystem::directory_iterator(path))
 	{
-		// cout << "[ " << i << " ] " << entry.path().filename() << endl;
-		if(i == index){
+		if (i == index)
+		{
 			return entry.path().filename().string();
 		}
 		i++;
@@ -33,6 +36,25 @@ string FileMananger::GetFileNameByIndex(int index)
 	return "";
 }
 
+void FileMananger::Read(string fileName, void (*func)(string, Grafo*), Grafo *grafo)
+{
+	fileName = "./files/" + fileName;
+	fstream file;
+	file.open(fileName, ios::in);
+	if (!file)
+	{
+		cout << "Arquivo '" << fileName << "' nao encontrado! " << endl;
+	}
+	else
+	{
+		string line;
+		while (getline(file, line))
+		{
+			func(line, grafo);
+		}
+		file.close();
+	}
+}
 void FileMananger::Read(string fileName)
 {
 	fileName = "./files/" + fileName;
@@ -44,13 +66,11 @@ void FileMananger::Read(string fileName)
 	}
 	else
 	{
-		char ch;
-		while (1)
+		string line;
+		while (getline(file, line))
 		{
-			file >> ch;
-			if (file.eof())
-				break;
-			cout << ch;
+			cout << line << endl;
 		}
+		file.close();
 	}
 }

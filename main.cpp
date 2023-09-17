@@ -1,7 +1,32 @@
 #include <iostream>
+#include <sstream>
 
 using namespace std;
+#include "Grafo.h"
 #include "FileMananger.h"
+
+/*
+converte a linha do arquivo para (int, int) e chama a função de construção no grafo
+se a linha so contiver um inteiro, a mesma representa o numero de nos do grafo (de acordo com a descrição do arquivo readme.txt)
+*/
+void constroiGrafo(string linha, Grafo *grafo)
+{
+    istringstream iss(linha);
+    int num1, num2;
+
+    if (iss >> num1)
+    {
+        if (iss >> num2)
+        {
+            grafo->AddNoAresta(num1, num2);
+        }
+        else
+        {
+            cout << "O grafo possui " << num1 << " nos. " << endl;
+        }
+    }
+    return;
+}
 
 int main(int argc, char const *argv[])
 {
@@ -11,13 +36,15 @@ int main(int argc, char const *argv[])
     fileMananger.ListAvailableFiles();
     int selectedFileIndex = -1;
     cin >> selectedFileIndex;
-
-    if (fileMananger.GetFileNameByIndex(selectedFileIndex).compare("") == 0)
+    string selectedFileName = fileMananger.GetFileNameByIndex(selectedFileIndex);
+    if (selectedFileName.compare("") == 0)
     {
         cout << "índice de arquivo invalido!" << endl;
         return 1;
     }
-    cout << "Arquivo selecionado: " << fileMananger.GetFileNameByIndex(selectedFileIndex) << endl;
-
+    cout << "Arquivo selecionado: " << selectedFileName << endl;
+    Grafo grafo;
+    fileMananger.Read(selectedFileName, &constroiGrafo, &grafo);
+    cout << "Numedo de arestas: " << grafo.duplo << endl;
     return 0;
 }
