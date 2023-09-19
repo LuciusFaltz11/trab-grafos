@@ -2,12 +2,13 @@
 #define GrafoDefined
 
 #include <iostream>
+#include "No.h"
 using namespace std;
 
 class Grafo
 {
 private:
-    /* data */
+    No* raizGrafo;
 public:
     string nome;
     int unico;
@@ -16,6 +17,7 @@ public:
     ~Grafo();
     void AddNoAresta(int no);
     void AddNoAresta(int no1, int no2);
+    No* procuraId(int id);
 };
 
 #endif // GrafoDefined

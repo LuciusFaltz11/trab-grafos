@@ -8,7 +8,7 @@ private:
     float peso;
     Aresta* proxAresta;
 public:
-    Aresta(/* args */);
+    Aresta(int destino); // construtor para primeira aresta, sem peso
     ~Aresta();
 };
 
