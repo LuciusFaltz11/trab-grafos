@@ -2,8 +2,8 @@
 #include <sstream>
 
 using namespace std;
-#include "Grafo.h"
 #include "FileMananger.h"
+#include "Grafo.h"
 
 /*
 converte a linha do arquivo para (int, int) e chama a função de construção no grafo
@@ -22,6 +22,7 @@ void constroiGrafo(string linha, Grafo *grafo)
         }
         else
         {
+            
             cout << "O grafo possui " << num1 << " nos. " << endl;
         }
     }

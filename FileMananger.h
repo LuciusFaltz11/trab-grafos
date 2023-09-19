@@ -1,10 +1,15 @@
+#ifndef FileManagerDefined
+#define FileManagerDefined
+
 #include <string>
 #include <fstream>
 #include <iostream>
 #include <filesystem>
 
-namespace fs = std::filesystem;
+#include "Grafo.h"
+
 using namespace std;
+// namespace fs = experimental::filesystem;
 
 class FileMananger
 {
@@ -31,5 +36,6 @@ func Read:
         chama a função passada a cada linha passando como argumento a linha do arquivo e o grafo para construção
     */
     void Read(string fileName);
-    void Read(string fileName, void (*func)(string, Grafo*), Grafo *grafo);
+    void Read(string fileName, void (*func)(string, Grafo *), Grafo *grafo);
 };
+#endif // FileManagerDefined

@@ -1,3 +1,6 @@
+#ifndef GrafoDefined
+#define GrafoDefined
+
 #include <iostream>
 using namespace std;
 
@@ -6,7 +9,7 @@ class Grafo
 private:
     /* data */
 public:
-string nome;
+    string nome;
     int unico;
     int duplo;
     Grafo();
@@ -14,3 +17,5 @@ string nome;
     void AddNoAresta(int no);
     void AddNoAresta(int no1, int no2);
 };
+
+#endif // GrafoDefined
