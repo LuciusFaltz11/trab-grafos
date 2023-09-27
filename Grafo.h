@@ -10,12 +10,15 @@ class Grafo
 private:
     No* raizGrafo;
     void AddNoArestaAux(int no1, int no2);
+    bool direcionado;
+    bool ponderado;
 public:
     string nome;
     int unico;
     int duplo;
-    Grafo();
+    Grafo(bool direcionado);
     ~Grafo();
+    bool getPonderado(){return ponderado;}
     void AddNoAresta(int no);
     void AddNoAresta(int no1, int no2);
     No* procuraId(int id);

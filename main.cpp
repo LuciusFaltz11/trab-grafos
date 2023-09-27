@@ -16,7 +16,6 @@ void constroiGrafo(string linha, Grafo *grafo)
 {
     istringstream iss(linha);
     int num1, num2;
-
     if (iss >> num1)
     {
         if (iss >> num2)
@@ -34,7 +33,6 @@ void constroiGrafo(string linha, Grafo *grafo)
 
 int main(int argc, char const *argv[])
 {
-
     //! sistema de seleção de arquivo
     FileMananger fileMananger;
     cout << "Selecione o arquivo para leitura: " << endl;
@@ -50,9 +48,17 @@ int main(int argc, char const *argv[])
     cout << "Arquivo selecionado: " << selectedFileName << endl;
     //! fim do sistema de seleção de arquivo
 
+    char ponderado = ' ';
+    do
+    {
+        cout << "O e direcionado? (s/n) ";
+        cin >> ponderado;
+    } while (ponderado != 's' && ponderado != 'n');
+
+
     auto start = chrono::system_clock::now(); //! inicio de codigo para contagem de tempo de execução
 
-    Grafo grafo;
+    Grafo grafo(ponderado == 's');
     fileMananger.Read(selectedFileName, &constroiGrafo, &grafo); //* le o arquivo chamando a função constroiGrafo a cada linha
 
     //! fim de cogio de contagem de tempo de execução

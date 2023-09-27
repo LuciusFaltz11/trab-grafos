@@ -1,10 +1,10 @@
 #include "Grafo.h"
 
-Grafo::Grafo()
+Grafo::Grafo(bool direcionado)
 {
-    unico = 0;
-    duplo = 0;
     raizGrafo = NULL;
+    this->ponderado = false;
+    this->direcionado = direcionado;
 }
 
 Grafo::~Grafo()
@@ -26,8 +26,8 @@ void Grafo::AddNoArestaAux(int no1, int no2)
             listNos = listNos->getProxNo();
         }
         No *novoNo = new No(no1);
-        listNos->setProxNo(novoNo);     //* adiciona o no na lista de nos
-        Aresta* ultimaAresta = novoNo->setPrimeiraAresta(no2); //* cria a primeira aresta apontando para o no 2
+        listNos->setProxNo(novoNo);                            //* adiciona o no na lista de nos
+        Aresta *ultimaAresta = novoNo->setPrimeiraAresta(no2); //* cria a primeira aresta apontando para o no 2
         novoNo->setUltimaAresta(ultimaAresta);
     }
     else
@@ -59,8 +59,11 @@ void Grafo::AddNoAresta(int no1, int no2)
         raizGrafo = new No(no1);
     }
 
-    AddNoArestaAux(no1,no2);
-    AddNoArestaAux(no2,no1);
+    AddNoArestaAux(no1, no2);
+    if (!direcionado)
+    {
+        AddNoArestaAux(no2, no1);
+    }
     //* é preciso repetir pois todos os nos devem estar na lista e todos os nos devem conter uma lista de arestas conectadas no mesmo
 }
 
