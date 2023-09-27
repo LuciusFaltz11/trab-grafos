@@ -14,6 +14,7 @@ private:
     int grauSaida;
     No* proximoNo;
     Aresta* primeiraAresta;
+    Aresta* ultimaAresta;
 
 public:
     No(int id);
@@ -21,9 +22,10 @@ public:
     int getId();
     No* getProxNo();
     void setProxNo(No* prox);
-    void setPrimeiraAresta(int primeira);
+    Aresta* setPrimeiraAresta(int primeira);
     Aresta* getPrimeiraAresta();
     Aresta* getUltimaAresta();
+    void setUltimaAresta(Aresta* ultimaAresta);
 
 
 };

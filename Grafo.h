@@ -9,6 +9,7 @@ class Grafo
 {
 private:
     No* raizGrafo;
+    void AddNoArestaAux(int no1, int no2);
 public:
     string nome;
     int unico;

@@ -22,7 +22,7 @@ void constroiGrafo(string linha, Grafo *grafo)
         }
         else
         {
-            
+
             cout << "O grafo possui " << num1 << " nos. " << endl;
         }
     }
@@ -45,7 +45,45 @@ int main(int argc, char const *argv[])
     }
     cout << "Arquivo selecionado: " << selectedFileName << endl;
     Grafo grafo;
-    fileMananger.Read(selectedFileName, &constroiGrafo, &grafo);
-    cout << "Numedo de arestas: " << grafo.duplo << endl;
+    fileMananger.Read(selectedFileName, &constroiGrafo, &grafo); //* le o arquivo chamando a função constroiGrafo a cada linha
+
+    int input;
+    do
+    {
+        cout << "Digite -1 para sair" << endl;
+        cout << "Digite o id do no que vc deseja informacoes: ";
+        cin >> input;
+        if (input >= 0)
+        {
+            No *noSelecionado = grafo.procuraId(input);
+            if (noSelecionado == NULL)
+            {
+                cout << "O no selecionado não esta no grafo! " << endl;
+            }
+            else
+            {
+
+                cout << "O no selecionado esta no grafo." << endl;
+                if (noSelecionado->getPrimeiraAresta() == NULL)
+                {
+                    cout << "Não possui arestas conectadas!" << endl;
+                    break;
+                }
+                else
+                {
+
+                    Aresta *arestaP = noSelecionado->getPrimeiraAresta();
+                    cout << "O no esta conectado aos nos: ";
+                    while (arestaP != NULL)
+                    {
+                        cout << arestaP->getDestino() << ", ";
+                        arestaP = arestaP->getProxAresta();
+                    }
+                    cout << endl;
+                }
+            }
+        }
+    } while (input != -1);
+
     return 0;
 }
