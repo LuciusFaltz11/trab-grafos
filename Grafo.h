@@ -22,6 +22,7 @@ public:
     void AddNoAresta(int no);
     void AddNoAresta(int no1, int no2);
     No* procuraId(int id);
+    void buscaProfundidade(int id);
 };
 
 #endif // GrafoDefined
