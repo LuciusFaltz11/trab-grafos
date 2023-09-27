@@ -1,6 +1,9 @@
 #include <iostream>
 #include <sstream>
 
+#include <chrono>
+#include <ctime>
+
 using namespace std;
 #include "FileMananger.h"
 #include "Grafo.h"
@@ -31,8 +34,9 @@ void constroiGrafo(string linha, Grafo *grafo)
 
 int main(int argc, char const *argv[])
 {
-    FileMananger fileMananger;
 
+    //! sistema de seleção de arquivo
+    FileMananger fileMananger;
     cout << "Selecione o arquivo para leitura: " << endl;
     fileMananger.ListAvailableFiles();
     int selectedFileIndex = -1;
@@ -44,21 +48,36 @@ int main(int argc, char const *argv[])
         return 1;
     }
     cout << "Arquivo selecionado: " << selectedFileName << endl;
+    //! fim do sistema de seleção de arquivo
+
+    auto start = chrono::system_clock::now(); //! inicio de codigo para contagem de tempo de execução
+
     Grafo grafo;
     fileMananger.Read(selectedFileName, &constroiGrafo, &grafo); //* le o arquivo chamando a função constroiGrafo a cada linha
+
+    //! fim de cogio de contagem de tempo de execução
+    auto end = chrono::system_clock::now();
+    chrono::duration<double> elapsed_seconds = end - start;
+    time_t end_time = chrono::system_clock::to_time_t(end);
+    cout << "grafo criado em: " << elapsed_seconds.count() << " s"
+         << endl;
+    //!=================================================
 
     int input;
     do
     {
-        cout << "Digite -1 para sair" << endl;
+        cout << "\n\n\nDigite -1 para sair" << endl;
         cout << "Digite o id do no que vc deseja informacoes: ";
         cin >> input;
         if (input >= 0)
         {
+            auto start = chrono::system_clock::now(); //! inicio de codigo para contagem de tempo de execução
+
             No *noSelecionado = grafo.procuraId(input);
+
             if (noSelecionado == NULL)
             {
-                cout << "O no selecionado não esta no grafo! " << endl;
+                cout << "O no selecionado nao esta no grafo! " << endl;
             }
             else
             {
@@ -82,6 +101,13 @@ int main(int argc, char const *argv[])
                     cout << endl;
                 }
             }
+            //! fim de cogio de contagem de tempo de execução
+            auto end = chrono::system_clock::now();
+            chrono::duration<double> elapsed_seconds = end - start;
+            time_t end_time = chrono::system_clock::to_time_t(end);
+            cout << "\ntempo de execucao: " << elapsed_seconds.count() << " s"
+                 << endl;
+            //!=================================================
         }
     } while (input != -1);
 
