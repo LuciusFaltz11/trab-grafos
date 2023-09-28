@@ -92,19 +92,21 @@ int main(int argc, char const *argv[])
                 if (noSelecionado->getPrimeiraAresta() == NULL)
                 {
                     cout << "Não possui arestas conectadas!" << endl;
-                    break;
                 }
                 else
                 {
 
                     Aresta *arestaP = noSelecionado->getPrimeiraAresta();
-                    cout << "O no esta conectado aos nos: ";
+                    cout << "O no esta diretamente conectado aos nos: ";
                     while (arestaP != NULL)
                     {
                         cout << arestaP->getDestino() << ", ";
                         arestaP = arestaP->getProxAresta();
                     }
                     cout << endl;
+
+                    cout << "Fecho transitivo direto deste vértice: ";
+                    grafo.buscaProfundidade(input);
                 }
             }
             //! fim de cogio de contagem de tempo de execução

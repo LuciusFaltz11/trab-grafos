@@ -11,8 +11,20 @@ Grafo::~Grafo()
 {
 }
 
-void Grafo::AddNoAresta(int no)
+void Grafo::AddNoArestaAux(int no)
 {
+    No *noAdd = procuraId(no);
+    if (noAdd == NULL)
+    { // no nao existe, logo insere ao fim da lista de nos
+        No *listNos = raizGrafo;
+        //* navega ate o ultimo no da lista
+        while (listNos->getProxNo() != NULL)
+        {
+            listNos = listNos->getProxNo();
+        }
+        No *novoNo = new No(no);
+        listNos->setProxNo(novoNo); //* adiciona o no na lista de nos
+    }
 }
 void Grafo::AddNoArestaAux(int no1, int no2)
 {
@@ -64,6 +76,10 @@ void Grafo::AddNoAresta(int no1, int no2)
     {
         AddNoArestaAux(no2, no1);
     }
+    else
+    {
+        AddNoArestaAux(no2);
+    }
     //* é preciso repetir pois todos os nos devem estar na lista e todos os nos devem conter uma lista de arestas conectadas no mesmo
 }
 
@@ -81,4 +97,37 @@ No *Grafo::procuraId(int id)
         nosGrafo = nosGrafo->getProxNo();
     }
     return NULL;
+}
+
+void Grafo::buscaProfundidade(int id)
+{
+    Pilha pilhaVisitar;
+    pilhaVisitar.Empilha(id);
+
+    Lista visitados;
+
+    // int idNavega = id;
+    while (pilhaVisitar.getNEelementos() > 0)
+    {
+        int idNavega = pilhaVisitar.Desempilha();
+        visitados.AddElemento(idNavega);
+        // cout << idNavega << " ";
+
+        // cout << "visitando o no " << idNavega << endl;
+        No *noNavega = procuraId(idNavega);
+        // if (arestaNavega == NULL)
+        // {
+        // cout << "O no " << idNavega << " não leva a ninguem" << endl;
+        // }
+        Aresta *arestaNavega = noNavega->getPrimeiraAresta();
+        while (arestaNavega != NULL)
+        {
+            if (!visitados.contem(arestaNavega->getDestino()))
+                pilhaVisitar.Empilha(arestaNavega->getDestino());
+            arestaNavega = arestaNavega->getProxAresta();
+        } //* coloca os elementos conectados a raiz na pilha
+        // cout << "Visitado: " << noNavega->getId() << endl;
+        // idNavega = pilhaVisitar.Desempilha();
+    }
+    cout << "Esse no se conecta a " << visitados.getNElementos() << endl;
 }
