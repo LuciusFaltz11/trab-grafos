@@ -16,7 +16,7 @@ class FileMananger
 private:
     fstream file;
     string path = "";
-    char tipoAresta;
+    char tipoGrafo;
 
 public:
     FileMananger();

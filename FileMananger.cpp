@@ -12,7 +12,7 @@ void FileMananger::ListAvailableFiles(char tipo)
 	string path;
 	int i = 0;
 
-	this->tipoAresta = tipo;
+	this->tipoGrafo = tipo;
 
 	if(tipoGrafo == 's'){
 		path = "./files/grafoDirecionado/";
