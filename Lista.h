@@ -5,6 +5,7 @@ class Lista
 {
 private:
     ListaElemento *primeiroElemento;
+    ListaElemento *ultimoElemento;
     void deleteAux(ListaElemento *elemento);
     int nElementos;
 

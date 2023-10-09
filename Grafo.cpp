@@ -129,5 +129,20 @@ void Grafo::buscaProfundidade(int id)
         // cout << "Visitado: " << noNavega->getId() << endl;
         // idNavega = pilhaVisitar.Desempilha();
     }
+
+    No *nosGrafo = raizGrafo;
+
+cout << "Esse no não se conecta a ";
+    while (nosGrafo != NULL)
+    {
+        if(!visitados.contem(nosGrafo->getId())){
+    cout << nosGrafo->getId() << " ";
+
+        }
+
+        nosGrafo = nosGrafo->getProxNo();
+    }
+    cout << endl;
+
     cout << "Esse no se conecta a " << visitados.getNElementos() << endl;
 }

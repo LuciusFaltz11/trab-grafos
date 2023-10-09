@@ -3,21 +3,31 @@
 Lista::Lista()
 {
     primeiroElemento = NULL;
+    ultimoElemento = NULL;
     nElementos = 0;
 }
 
 Lista::~Lista()
 {
-    deleteAux(primeiroElemento);
-}
-void Lista::deleteAux(ListaElemento *elemento)
-{
-    if (elemento->getProxElemento() != NULL)
+    // deleteAux(primeiroElemento);
+    ListaElemento *elementoNav;
+    while (primeiroElemento != NULL)
     {
-        deleteAux(elemento->getProxElemento());
+        elementoNav = primeiroElemento;
+        primeiroElemento = primeiroElemento->getProxElemento();
+        delete elementoNav;
+        nElementos--;
     }
-    delete (elemento->getProxElemento());
+    std::cout << "Deletado elemento da lista: nElementos = " << nElementos << std::endl;
 }
+// void Lista::deleteAux(ListaElemento *elemento)
+// {
+//     if (elemento->getProxElemento() != NULL)
+//     {
+//         deleteAux(elemento->getProxElemento());
+//     }
+//     delete (elemento->getProxElemento());
+// }
 void Lista::AddElemento(int elemento)
 {
     if (contem(elemento))
@@ -28,14 +38,17 @@ void Lista::AddElemento(int elemento)
     if (primeiroElemento == NULL)
     {
         primeiroElemento = new ListaElemento(elemento);
+        ultimoElemento = primeiroElemento;
         return;
     }
-    ListaElemento *elementoNav = primeiroElemento;
-    while (elementoNav->getProxElemento() != NULL)
-    {
-        elementoNav = elementoNav->getProxElemento();
-    }
-    elementoNav->setProxElemento(new ListaElemento(elemento));
+    // ListaElemento *elementoNav = primeiroElemento;
+    // while (elementoNav->getProxElemento() != NULL)
+    // {
+    //     elementoNav = elementoNav->getProxElemento();
+    // }
+    ultimoElemento->setProxElemento(new ListaElemento(elemento));
+    // ultimoElemento->getProxElemento()->setAnteElemento(ultimoElemento);
+    ultimoElemento = ultimoElemento->getProxElemento();
 }
 
 bool Lista::contem(int elemento)
