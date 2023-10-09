@@ -10,7 +10,9 @@ No::No(int id)
     this->ultimaAresta = NULL;
     this->proximoNo = NULL;
 }
-No::No(int id, int peso) {}
+No::No(int id, int peso) {
+    
+}
 
 int No::getId()
 {

@@ -31,12 +31,20 @@ void constroiGrafo(string linha, Grafo *grafo)
     return;
 }
 
+
+
 int main(int argc, char const *argv[])
 {
     //! sistema de seleção de arquivo
     FileMananger fileMananger;
+
+    char grafoPonderado;
+    cout << "O grafo é ponderado? (s/n)" << endl;
+    cin >> grafoPonderado;
+
+
     cout << "Selecione o arquivo para leitura: " << endl;
-    fileMananger.ListAvailableFiles();
+    fileMananger.ListAvailableFiles(grafoPonderado);
     int selectedFileIndex = -1;
     cin >> selectedFileIndex;
     string selectedFileName = fileMananger.GetFileNameByIndex(selectedFileIndex);
@@ -48,17 +56,17 @@ int main(int argc, char const *argv[])
     cout << "Arquivo selecionado: " << selectedFileName << endl;
     //! fim do sistema de seleção de arquivo
 
-    char ponderado = ' ';
+    char direcionado = ' ';
     do
     {
-        cout << "O e direcionado? (s/n) ";
-        cin >> ponderado;
-    } while (ponderado != 's' && ponderado != 'n');
+        cout << "O grafo e direcionado? (s/n) ";
+        cin >> direcionado;
+    } while (direcionado != 's' && direcionado != 'n');
 
 
     auto start = chrono::system_clock::now(); //! inicio de codigo para contagem de tempo de execução
 
-    Grafo grafo(ponderado == 's');
+    Grafo grafo(direcionado == 's');
     fileMananger.Read(selectedFileName, &constroiGrafo, &grafo); //* le o arquivo chamando a função constroiGrafo a cada linha
 
     //! fim de cogio de contagem de tempo de execução

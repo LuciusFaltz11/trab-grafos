@@ -7,35 +7,67 @@ FileMananger::~FileMananger()
 {
 }
 
-void FileMananger::ListAvailableFiles()
+void FileMananger::ListAvailableFiles(char grafoPonderado)
 {
-	string path = "./files";
+	string path;
 	int i = 0;
-	for (const auto &entry : filesystem::directory_iterator(path))
-	{
-		cout << "[ " << i << " ] " << entry.path().filename() << endl;
-		i++;
+
+	this->ponderado = grafoPonderado;
+
+	if(grafoPonderado == 's'){
+		path = "./files/grafosPonderados/";
+		for (const auto &entry : filesystem::directory_iterator(path))
+		{
+			cout << "[ " << i << " ] " << entry.path().filename() << endl;
+			i++;
+		}
+	} else {
+		path = "./files/grafosNaoPonderados/";
+		for (const auto &entry : filesystem::directory_iterator(path))
+		{
+			cout << "[ " << i << " ] " << entry.path().filename() << endl;
+			i++;
+		}
 	}
 }
 
 string FileMananger::GetFileNameByIndex(int index)
 {
-	string path = "./files";
+	string path;
 	int i = 0;
-	for (const auto &entry : filesystem::directory_iterator(path))
-	{
-		if (i == index)
+
+	if(ponderado == 's'){
+		path = "./files/grafosPonderados/";
+		for (const auto &entry : filesystem::directory_iterator(path))
 		{
-			return entry.path().filename().string();
+			if (i == index)
+			{
+				return entry.path().filename().string();
+			}
+			i++;
 		}
-		i++;
+	} else{
+		path = "./files/grafosNaoPonderados/";
+		for (const auto &entry : filesystem::directory_iterator(path))
+		{
+			if (i == index)
+			{
+				return entry.path().filename().string();
+			}
+			i++;
+		}
 	}
 	return "";
 }
 
 void FileMananger::Read(string fileName, void (*func)(string, Grafo*), Grafo *grafo)
 {
-	fileName = "./files/" + fileName;
+	if(ponderado == 's'){
+		fileName = "./files/grafosPonderados/" + fileName;	
+	}else{
+		fileName = "./files/grafosNaoPonderados/" + fileName;
+	}
+
 	fstream file;
 	file.open(fileName, ios::in);
 	if (!file)
@@ -52,9 +84,15 @@ void FileMananger::Read(string fileName, void (*func)(string, Grafo*), Grafo *gr
 		file.close();
 	}
 }
+
 void FileMananger::Read(string fileName)
 {
-	fileName = "./files/" + fileName;
+	if(ponderado == 's'){
+		fileName = "./files/grafosPonderados/" + fileName;	
+	}else{
+		fileName = "./files/grafosNaoPonderados/" + fileName;
+	}
+
 	fstream file;
 	file.open(fileName, ios::in);
 	if (!file)
