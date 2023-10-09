@@ -11,6 +11,12 @@ Grafo::~Grafo()
 {
 }
 
+Grafo::Grafo(bool direcionado, char ponderado){
+    raizGrafo = NULL;
+    this->ponderado = true;
+    this->direcionado = direcionado;
+}
+
 void Grafo::AddNoArestaAux(int no)
 {
     No *noAdd = procuraId(no);
@@ -130,4 +136,8 @@ void Grafo::buscaProfundidade(int id)
         // idNavega = pilhaVisitar.Desempilha();
     }
     cout << "Esse no se conecta a " << visitados.getNElementos() << endl;
+}
+
+void Grafo::fechoTransitivoIndireto(int id){
+
 }

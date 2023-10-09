@@ -35,11 +35,16 @@ int main(int argc, char const *argv[])
 {
     //! sistema de seleção de arquivo
     FileMananger fileMananger;
-    char tipoGrafo;
+    char tipoAresta;
     cout << "O grafo é ponderado? (s/n)" << endl;
-    cin >> tipoGrafo;
+    cin >> tipoAresta;
     cout << "Selecione o arquivo para leitura: " << endl;
     fileMananger.ListAvailableFiles(tipoGrafo);
+
+
+    char direcionado;
+    cout << "O grafo é direcionado? (s/n)" << endl;
+    cin >> direcionado;
 
     int selectedFileIndex = -1;
     cin >> selectedFileIndex;
@@ -54,7 +59,10 @@ int main(int argc, char const *argv[])
 
     auto start = chrono::system_clock::now(); //! inicio de codigo para contagem de tempo de execução
 
-    Grafo grafo(true);
+    if(tipoGrafo == 's'){
+        Grafo grafo(direcionado, tipoAresta);
+    } else Grafo grafo(true);
+
     fileMananger.Read(selectedFileName, &constroiGrafo, &grafo); //* le o arquivo chamando a função constroiGrafo a cada linha
 
     //! fim de cogio de contagem de tempo de execução
