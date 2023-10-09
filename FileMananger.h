@@ -16,11 +16,12 @@ class FileMananger
 private:
     fstream file;
     string path = "";
+    char tipoGrafo;
 
 public:
     FileMananger();
     ~FileMananger();
-    void ListAvailableFiles(); //* lista todos os arquivos dentro da pasta ./files
+    void ListAvailableFiles(char tipo); //* lista todos os arquivos dentro da pasta ./files
     string GetFileNameByIndex(int index);
 
     /*
