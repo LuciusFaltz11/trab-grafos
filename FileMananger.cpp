@@ -7,69 +7,35 @@ FileMananger::~FileMananger()
 {
 }
 
-void FileMananger::ListAvailableFiles(char tipo)
+void FileMananger::ListAvailableFiles()
 {
-	string path;
+	string path = "./files";
 	int i = 0;
-
-	this->tipoGrafo = tipo;
-
-	if(tipoGrafo == 's'){
-		path = "./files/grafoDirecionado/";
-		for (const auto &entry : filesystem::directory_iterator(path))
-		{
-			cout << "[ " << i << " ] " << entry.path().filename() << endl;
-			i++;
-		}
-	} else if(tipoGrafo == 'n'){
-		path = "./files/grafoNaoDirecionado/";
-		for (const auto &entry : filesystem::directory_iterator(path))
-		{
-			cout << "[ " << i << " ] " << entry.path().filename() << endl;
-			i++;
-		}
+	for (const auto &entry : filesystem::directory_iterator(path))
+	{
+		cout << "[ " << i << " ] " << entry.path().filename() << endl;
+		i++;
 	}
-	
 }
-
 
 string FileMananger::GetFileNameByIndex(int index)
 {
-	string path;
+	string path = "./files";
 	int i = 0;
-
-	if(tipoGrafo == 's'){
-		path = "./files/grafoDirecionado/";
-		for (const auto &entry : filesystem::directory_iterator(path))
+	for (const auto &entry : filesystem::directory_iterator(path))
+	{
+		if (i == index)
 		{
-			if (i == index)
-			{
-				return entry.path().filename().string();
-			}
-			i++;
+			return entry.path().filename().string();
 		}
-	} else if(tipoGrafo == 'n'){
-		path = "./files/grafoNaoDirecionado/";
-		for (const auto &entry : filesystem::directory_iterator(path))
-		{
-			if (i == index)
-			{
-				return entry.path().filename().string();
-			}
-			i++;
-		}
+		i++;
 	}
-	return "";	
+	return "";
 }
 
 void FileMananger::Read(string fileName, void (*func)(string, Grafo*), Grafo *grafo)
 {
-	if(tipoGrafo == 's'){
-		fileName = "./files/grafoDirecionado/" + fileName;	
-	}else{
-		fileName = "./files/grafoNaoDirecionado/" + fileName;
-	}
-
+	fileName = "./files/" + fileName;
 	fstream file;
 	file.open(fileName, ios::in);
 	if (!file)
@@ -88,12 +54,7 @@ void FileMananger::Read(string fileName, void (*func)(string, Grafo*), Grafo *gr
 }
 void FileMananger::Read(string fileName)
 {
-	if(tipoGrafo == 's'){
-		fileName = "./files/grafoDirecionado/" + fileName;	
-	}else{
-		fileName = "./files/grafoNaoDirecionado/" + fileName;
-	}
-
+	fileName = "./files/" + fileName;
 	fstream file;
 	file.open(fileName, ios::in);
 	if (!file)
