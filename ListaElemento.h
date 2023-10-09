@@ -5,7 +5,8 @@ class ListaElemento
 {
 private:
     int value;
-    ListaElemento *proxElemento;
+    ListaElemento *proxElemento = NULL;
+    ListaElemento *anteElemento = NULL;
 
 public:
     ListaElemento(int value)
@@ -22,6 +23,14 @@ public:
     ListaElemento *getProxElemento()
     {
         return proxElemento;
+    }
+    void setAnteElemento(ListaElemento *anteElemento)
+    {
+        this->anteElemento = anteElemento;
+    }
+    ListaElemento *getAnteElemento()
+    {
+        return anteElemento;
     }
 };
 

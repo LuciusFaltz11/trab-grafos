@@ -1,3 +1,6 @@
+#define RESET "\033[0m"
+#define BOLDGREEN "\033[1m\033[32m"
+
 #include <iostream>
 #include <sstream>
 
@@ -63,7 +66,6 @@ int main(int argc, char const *argv[])
         cin >> direcionado;
     } while (direcionado != 's' && direcionado != 'n');
 
-
     auto start = chrono::system_clock::now(); //! inicio de codigo para contagem de tempo de execução
 
     Grafo grafo(direcionado == 's');
@@ -73,7 +75,7 @@ int main(int argc, char const *argv[])
     auto end = chrono::system_clock::now();
     chrono::duration<double> elapsed_seconds = end - start;
     time_t end_time = chrono::system_clock::to_time_t(end);
-    cout << "grafo criado em: " << elapsed_seconds.count() << " s"
+    cout << "grafo criado em: " << BOLDGREEN << elapsed_seconds.count() << " s" << RESET
          << endl;
     //!=================================================
 
@@ -121,7 +123,7 @@ int main(int argc, char const *argv[])
             auto end = chrono::system_clock::now();
             chrono::duration<double> elapsed_seconds = end - start;
             time_t end_time = chrono::system_clock::to_time_t(end);
-            cout << "\ntempo de execucao: " << elapsed_seconds.count() << " s"
+            cout << "\ntempo de execucao: " << BOLDGREEN << elapsed_seconds.count() << " s" << RESET
                  << endl;
             //!=================================================
         }
