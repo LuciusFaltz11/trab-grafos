@@ -68,3 +68,12 @@ int Lista::getNElementos()
 {
     return nElementos;
 }
+
+void Lista::iterate(void (*func)(int)){
+    ListaElemento *elementoNav = primeiroElemento;
+    while (elementoNav != NULL)
+    {
+        func(elementoNav->getValue());
+        elementoNav = elementoNav->getProxElemento();
+    }
+}

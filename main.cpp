@@ -7,6 +7,9 @@
 #include <chrono>
 #include <ctime>
 
+#include <fstream>
+#include <cstdlib>
+
 using namespace std;
 #include "FileMananger.h"
 #include "Grafo.h"
@@ -105,8 +108,8 @@ int main(int argc, char const *argv[])
     //!=================================================
 
     cout << "O grafo é: " << endl;
-    cout << "Ponderado nas arestas "<< grafo.getPonderadoAresta() << endl; 
-    cout << "Ponderado nos vertices "<< grafo.getPonderadoVertice() << endl; 
+    cout << "Ponderado nas arestas " << grafo.getPonderadoAresta() << endl;
+    cout << "Ponderado nos vertices " << grafo.getPonderadoVertice() << endl;
     int input;
     do
     {
@@ -135,17 +138,17 @@ int main(int argc, char const *argv[])
             continue;
         }
 
-        Aresta *arestaP = noSelecionado->getPrimeiraAresta();
-        cout << "O no esta diretamente conectado aos nos: ";
-        while (arestaP != NULL)
-        {
-            cout << arestaP->getDestino() << " peso: " << arestaP->getPeso() << ", ";
-            arestaP = arestaP->getProxAresta();
-        }
+        cout << "O no esta diretamente conectado aos nos:";
+        Lista *conectado = grafo.getArestasNo(input);
+        conectado->iterate([](int id)
+                           { cout << id << " "; }); //* essa coisa esquisita é uma lambda function. É meio que um jeito de declarar uma função dentro de outra função em cpp.
         cout << endl;
 
         cout << "Fecho transitivo direto deste vértice: ";
-        grafo.buscaProfundidade(input);
+        Lista *fechoTransitivoDireto = grafo.buscaProfundidade(input);
+        fechoTransitivoDireto->iterate([](int id)
+                                       { cout << id << ", "; });
+        cout << endl;
 
         //! fim de cogio de contagem de tempo de execução
         auto end = chrono::system_clock::now();
@@ -154,6 +157,8 @@ int main(int argc, char const *argv[])
         cout << "\ntempo de execucao: " << BOLDGREEN << elapsed_seconds.count() << " s" << RESET
              << endl;
         //!=================================================
+
+        grafo.generateDreampufFile("saida.dat");
 
     } while (input != -1);
 

@@ -17,7 +17,7 @@ private:
     Aresta* ultimaAresta;
 
 public:
-    No(int id);
+    // No(int id);
     No(int id, int peso);
     int getId();
     No* getProxNo();
