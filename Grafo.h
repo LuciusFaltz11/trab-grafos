@@ -11,18 +11,22 @@ class Grafo
 {
 private:
     No* raizGrafo;
+    void AddNoArestaAux(int no1, int no2, int peso);
     void AddNoArestaAux(int no1, int no2);
     void AddNoArestaAux(int no);
     bool direcionado;
-    bool ponderado;
+    bool ponderadoAresta;
+    bool ponderadoVertice;
 public:
     string nome;
     int unico;
     int duplo;
-    Grafo(bool direcionado);
+    Grafo(bool direcionado, int ponderadoId);
     ~Grafo();
-    bool getPonderado(){return ponderado;}
+    bool getPonderadoAresta(){return ponderadoAresta;}
+    bool getPonderadoVertice(){return ponderadoVertice;}
     void AddNoAresta(int no1, int no2);
+    void AddNoAresta(int no1, int no2, int peso);
     No* procuraId(int id);
     void buscaProfundidade(int id);
 };

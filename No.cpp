@@ -11,7 +11,13 @@ No::No(int id)
     this->proximoNo = NULL;
 }
 No::No(int id, int peso) {
-    
+    this->grauEntrada = 0;
+    this->grauSaida = 0;
+    this->idNo = id;
+    this->pesoNo = peso; 
+    this->primeiraAresta = NULL;
+    this->ultimaAresta = NULL;
+    this->proximoNo = NULL;
 }
 
 int No::getId()
@@ -34,9 +40,9 @@ Aresta *No::getPrimeiraAresta()
     return this->primeiraAresta;
 }
 
-Aresta* No::setPrimeiraAresta(int primeira)
+Aresta* No::setPrimeiraAresta(int primeira, int peso)
 {
-    Aresta *primeiraAresta = new Aresta(primeira);
+    Aresta *primeiraAresta = new Aresta(primeira, peso);
     this->primeiraAresta = primeiraAresta;
     return primeiraAresta;
 }
