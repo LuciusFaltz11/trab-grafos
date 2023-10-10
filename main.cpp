@@ -60,7 +60,7 @@ int main(int argc, char const *argv[])
         {
             cout << "Qual o tipo de ponderacao?" << endl;
             cout << "1: ponderado na aresta" << endl;
-            cout << "2: ponderado no vértice" << endl;
+            cout << "2: ponderado no vertice" << endl;
             cout << "3: ponderado nos dois" << endl;
             cin >> ponderadoId;
         } while (ponderadoId < 0 || ponderadoId > 3);
@@ -110,48 +110,48 @@ int main(int argc, char const *argv[])
         cout << "\n\n\nDigite -1 para sair" << endl;
         cout << "Digite o id do no que vc deseja informacoes: ";
         cin >> input;
-        if (input >= 0)
+        if (input < 0)
         {
-            auto start = chrono::system_clock::now(); //! inicio de codigo para contagem de tempo de execução
-
-            No *noSelecionado = grafo.procuraId(input);
-
-            if (noSelecionado == NULL)
-            {
-                cout << "O no selecionado nao esta no grafo! " << endl;
-            }
-            else
-            {
-
-                cout << "O no selecionado esta no grafo." << endl;
-                if (noSelecionado->getPrimeiraAresta() == NULL)
-                {
-                    cout << "Não possui arestas conectadas!" << endl;
-                }
-                else
-                {
-
-                    Aresta *arestaP = noSelecionado->getPrimeiraAresta();
-                    cout << "O no esta diretamente conectado aos nos: ";
-                    while (arestaP != NULL)
-                    {
-                        cout << arestaP->getDestino() << ", ";
-                        arestaP = arestaP->getProxAresta();
-                    }
-                    cout << endl;
-
-                    cout << "Fecho transitivo direto deste vértice: ";
-                    grafo.buscaProfundidade(input);
-                }
-            }
-            //! fim de cogio de contagem de tempo de execução
-            auto end = chrono::system_clock::now();
-            chrono::duration<double> elapsed_seconds = end - start;
-            time_t end_time = chrono::system_clock::to_time_t(end);
-            cout << "\ntempo de execucao: " << BOLDGREEN << elapsed_seconds.count() << " s" << RESET
-                 << endl;
-            //!=================================================
+            continue;
         }
+
+        auto start = chrono::system_clock::now(); //! inicio de codigo para contagem de tempo de execução
+
+        No *noSelecionado = grafo.procuraId(input);
+
+        if (noSelecionado == NULL)
+        {
+            cout << "O no selecionado nao esta no grafo! " << endl;
+            continue;
+        }
+        cout << "O no selecionado esta no grafo." << endl;
+
+        if (noSelecionado->getPrimeiraAresta() == NULL)
+        {
+            cout << "Não possui arestas conectadas!" << endl;
+            continue;
+        }
+
+        Aresta *arestaP = noSelecionado->getPrimeiraAresta();
+        cout << "O no esta diretamente conectado aos nos: ";
+        while (arestaP != NULL)
+        {
+            cout << arestaP->getDestino() << ", ";
+            arestaP = arestaP->getProxAresta();
+        }
+        cout << endl;
+
+        cout << "Fecho transitivo direto deste vértice: ";
+        grafo.buscaProfundidade(input);
+
+        //! fim de cogio de contagem de tempo de execução
+        auto end = chrono::system_clock::now();
+        chrono::duration<double> elapsed_seconds = end - start;
+        time_t end_time = chrono::system_clock::to_time_t(end);
+        cout << "\ntempo de execucao: " << BOLDGREEN << elapsed_seconds.count() << " s" << RESET
+             << endl;
+        //!=================================================
+
     } while (input != -1);
 
     return 0;
