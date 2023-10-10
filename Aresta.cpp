@@ -1,8 +1,8 @@
 #include "Aresta.h"
 
-Aresta::Aresta(int destino, int peso)
+Aresta::Aresta(int destino, int setPeso)
 {
-    peso = 0;
+    peso = setPeso;
     proxAresta = NULL;
     this->destino = destino;
 }

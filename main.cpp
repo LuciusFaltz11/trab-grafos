@@ -104,6 +104,9 @@ int main(int argc, char const *argv[])
          << endl;
     //!=================================================
 
+    cout << "O grafo é: " << endl;
+    cout << "Ponderado nas arestas "<< grafo.getPonderadoAresta() << endl; 
+    cout << "Ponderado nos vertices "<< grafo.getPonderadoVertice() << endl; 
     int input;
     do
     {
@@ -136,7 +139,7 @@ int main(int argc, char const *argv[])
         cout << "O no esta diretamente conectado aos nos: ";
         while (arestaP != NULL)
         {
-            cout << arestaP->getDestino() << ", ";
+            cout << arestaP->getDestino() << " peso: " << arestaP->getPeso() << ", ";
             arestaP = arestaP->getProxAresta();
         }
         cout << endl;

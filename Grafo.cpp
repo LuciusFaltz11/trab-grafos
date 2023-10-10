@@ -145,7 +145,11 @@ void Grafo::AddNoAresta(int no1, int no2, int peso)
     if (raizGrafo == NULL)
     {
         //* o grafo não possui arestas
-        raizGrafo = new No(no1);
+        if(ponderadoVertice){
+            raizGrafo = new No(no1, peso);
+        }else{
+            raizGrafo = new No(no1);
+        }
     }
 
     AddNoArestaAux(no1, no2, peso);
