@@ -5,6 +5,7 @@ class Lista
 {
 private:
     ListaElemento *primeiroElemento;
+    ListaElemento *ultimoElemento;
     void deleteAux(ListaElemento *elemento);
     int nElementos;
 
@@ -14,6 +15,7 @@ public:
     void AddElemento(int elemento);
     bool contem(int elemento);
     int getNElementos();
+    void iterate(void (*func)(int));
 };
 
 #endif // ListaDefined

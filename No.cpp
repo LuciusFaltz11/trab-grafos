@@ -1,16 +1,24 @@
 #include "No.h"
 
-No::No(int id)
-{
+// No::No(int id)
+// {
+//     this->grauEntrada = 0;
+//     this->grauSaida = 0;
+//     this->idNo = id;
+//     this->pesoNo = 0; 
+//     this->primeiraAresta = NULL;
+//     this->ultimaAresta = NULL;
+//     this->proximoNo = NULL;
+// }
+No::No(int id, int peso) {
     this->grauEntrada = 0;
     this->grauSaida = 0;
     this->idNo = id;
-    this->pesoNo = 0; 
+    this->pesoNo = peso; 
     this->primeiraAresta = NULL;
     this->ultimaAresta = NULL;
     this->proximoNo = NULL;
 }
-No::No(int id, int peso) {}
 
 int No::getId()
 {
@@ -32,9 +40,9 @@ Aresta *No::getPrimeiraAresta()
     return this->primeiraAresta;
 }
 
-Aresta* No::setPrimeiraAresta(int primeira)
+Aresta* No::setPrimeiraAresta(int primeira, int peso)
 {
-    Aresta *primeiraAresta = new Aresta(primeira);
+    Aresta *primeiraAresta = new Aresta(primeira, peso);
     this->primeiraAresta = primeiraAresta;
     return primeiraAresta;
 }
@@ -46,10 +54,4 @@ void No::setUltimaAresta(Aresta *ultimaAresta)
 Aresta *No::getUltimaAresta()
 {
     return ultimaAresta;
-    // Aresta *listArestas = primeiraAresta;
-    // while (listArestas != NULL)
-    // {
-    //     listArestas = listArestas->getProxAresta();
-    // }
-    // return listArestas;
 }

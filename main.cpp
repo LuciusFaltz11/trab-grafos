@@ -1,8 +1,14 @@
+#define RESET "\033[0m"
+#define BOLDGREEN "\033[1m\033[32m"
+
 #include <iostream>
 #include <sstream>
 
 #include <chrono>
 #include <ctime>
+
+#include <fstream>
+#include <cstdlib>
 
 using namespace std;
 #include "FileMananger.h"
@@ -15,12 +21,20 @@ se a linha so contiver um inteiro, a mesma representa o numero de nos do grafo (
 void constroiGrafo(string linha, Grafo *grafo)
 {
     istringstream iss(linha);
-    int num1, num2;
+    int num1, num2, peso;
     if (iss >> num1)
     {
         if (iss >> num2)
         {
-            grafo->AddNoAresta(num1, num2);
+            if (grafo->getPonderadoAresta() || grafo->getPonderadoVertice())
+            {
+                iss >> peso;
+                grafo->AddNoAresta(num1, num2, peso);
+            }
+            else
+            {
+                grafo->AddNoAresta(num1, num2);
+            }
         }
         else
         {
@@ -35,8 +49,33 @@ int main(int argc, char const *argv[])
 {
     //! sistema de seleção de arquivo
     FileMananger fileMananger;
+
+    char grafoPonderado = ' ';
+    do
+    {
+        cout << "O grafo e ponderado? (s/n)" << endl;
+        cin >> grafoPonderado;
+    } while (grafoPonderado != 's' && grafoPonderado != 'n');
+    int ponderadoId = 0;
+    if (grafoPonderado == 's')
+    {
+        do
+        {
+            cout << "Qual o tipo de ponderacao?" << endl;
+            cout << "1: ponderado na aresta" << endl;
+            cout << "2: ponderado no vertice" << endl;
+            cout << "3: ponderado nos dois" << endl;
+            cin >> ponderadoId;
+        } while (ponderadoId < 0 || ponderadoId > 3);
+    }
+    if (ponderadoId == 3)
+    {
+        cout << "Grafos ponderados nos vértices e arestas ainda não são suportados!" << endl;
+        return 1;
+    }
+
     cout << "Selecione o arquivo para leitura: " << endl;
-    fileMananger.ListAvailableFiles();
+    fileMananger.ListAvailableFiles(grafoPonderado);
     int selectedFileIndex = -1;
     cin >> selectedFileIndex;
     string selectedFileName = fileMananger.GetFileNameByIndex(selectedFileIndex);
@@ -48,75 +87,79 @@ int main(int argc, char const *argv[])
     cout << "Arquivo selecionado: " << selectedFileName << endl;
     //! fim do sistema de seleção de arquivo
 
-    char ponderado = ' ';
+    char direcionado = ' ';
     do
     {
-        cout << "O e direcionado? (s/n) ";
-        cin >> ponderado;
-    } while (ponderado != 's' && ponderado != 'n');
-
+        cout << "O grafo e direcionado? (s/n) ";
+        cin >> direcionado;
+    } while (direcionado != 's' && direcionado != 'n');
 
     auto start = chrono::system_clock::now(); //! inicio de codigo para contagem de tempo de execução
 
-    Grafo grafo(ponderado == 's');
+    Grafo grafo(direcionado == 's', ponderadoId);
     fileMananger.Read(selectedFileName, &constroiGrafo, &grafo); //* le o arquivo chamando a função constroiGrafo a cada linha
 
     //! fim de codigo de contagem de tempo de execução
     auto end = chrono::system_clock::now();
     chrono::duration<double> elapsed_seconds = end - start;
     time_t end_time = chrono::system_clock::to_time_t(end);
-    cout << "grafo criado em: " << elapsed_seconds.count() << " s"
+    cout << "grafo criado em: " << BOLDGREEN << elapsed_seconds.count() << " s" << RESET
          << endl;
     //!=================================================
 
+    cout << "O grafo é: " << endl;
+    cout << "Ponderado nas arestas " << grafo.getPonderadoAresta() << endl;
+    cout << "Ponderado nos vertices " << grafo.getPonderadoVertice() << endl;
     int input;
     do
     {
         cout << "\n\n\nDigite -1 para sair" << endl;
         cout << "Digite o id do no que vc deseja informacoes: ";
         cin >> input;
-        if (input >= 0)
+        if (input < 0)
         {
-            auto start = chrono::system_clock::now(); //! inicio de codigo para contagem de tempo de execução
-
-            No *noSelecionado = grafo.procuraId(input);
-
-            if (noSelecionado == NULL)
-            {
-                cout << "O no selecionado nao esta no grafo! " << endl;
-            }
-            else
-            {
-
-                cout << "O no selecionado esta no grafo." << endl;
-                if (noSelecionado->getPrimeiraAresta() == NULL)
-                {
-                    cout << "Não possui arestas conectadas!" << endl;
-                }
-                else
-                {
-
-                    Aresta *arestaP = noSelecionado->getPrimeiraAresta();
-                    cout << "O no esta diretamente conectado aos nos: ";
-                    while (arestaP != NULL)
-                    {
-                        cout << arestaP->getDestino() << ", ";
-                        arestaP = arestaP->getProxAresta();
-                    }
-                    cout << endl;
-
-                    cout << "Fecho transitivo direto deste vértice: ";
-                    grafo.buscaProfundidade(input);
-                }
-            }
-            //! fim de cogio de contagem de tempo de execução
-            auto end = chrono::system_clock::now();
-            chrono::duration<double> elapsed_seconds = end - start;
-            time_t end_time = chrono::system_clock::to_time_t(end);
-            cout << "\ntempo de execucao: " << elapsed_seconds.count() << " s"
-                 << endl;
-            //!=================================================
+            continue;
         }
+
+        auto start = chrono::system_clock::now(); //! inicio de codigo para contagem de tempo de execução
+
+        No *noSelecionado = grafo.procuraId(input);
+
+        if (noSelecionado == NULL)
+        {
+            cout << "O no selecionado nao esta no grafo! " << endl;
+            continue;
+        }
+        cout << "O no selecionado esta no grafo." << endl;
+
+        if (noSelecionado->getPrimeiraAresta() == NULL)
+        {
+            cout << "Não possui arestas conectadas!" << endl;
+            continue;
+        }
+
+        cout << "O no esta diretamente conectado aos nos:";
+        Lista *conectado = grafo.getArestasNo(input);
+        conectado->iterate([](int id)
+                           { cout << id << " "; }); //* essa coisa esquisita é uma lambda function. É meio que um jeito de declarar uma função dentro de outra função em cpp.
+        cout << endl;
+
+        cout << "Fecho transitivo direto deste vértice: ";
+        Lista *fechoTransitivoDireto = grafo.buscaProfundidade(input);
+        fechoTransitivoDireto->iterate([](int id)
+                                       { cout << id << ", "; });
+        cout << endl;
+
+        //! fim de cogio de contagem de tempo de execução
+        auto end = chrono::system_clock::now();
+        chrono::duration<double> elapsed_seconds = end - start;
+        time_t end_time = chrono::system_clock::to_time_t(end);
+        cout << "\ntempo de execucao: " << BOLDGREEN << elapsed_seconds.count() << " s" << RESET
+             << endl;
+        //!=================================================
+
+        grafo.generateDreampufFile("saida.dat");
+
     } while (input != -1);
 
     return 0;
