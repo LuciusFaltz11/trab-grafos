@@ -17,12 +17,12 @@ private:
     Aresta* ultimaAresta;
 
 public:
-    No(int id);
+    // No(int id);
     No(int id, int peso);
     int getId();
     No* getProxNo();
     void setProxNo(No* prox);
-    Aresta* setPrimeiraAresta(int primeira);
+    Aresta* setPrimeiraAresta(int primeira, int peso);
     Aresta* getPrimeiraAresta();
     Aresta* getUltimaAresta();
     void setUltimaAresta(Aresta* ultimaAresta);

@@ -2,6 +2,8 @@
 #define GrafoDefined
 
 #include <iostream>
+#include <stdarg.h>
+#include <fstream>
 #include "No.h"
 #include "Pilha.h"
 #include "Lista.h"
@@ -10,21 +12,29 @@ using namespace std;
 class Grafo
 {
 private:
-    No* raizGrafo;
-    void AddNoArestaAux(int no1, int no2);
+    No *raizGrafo;
+    void AddNoArestaAux(int no1, int no2, int peso);
+    // void AddNoArestaAux(int no1, int no2);
     void AddNoArestaAux(int no);
     bool direcionado;
-    bool ponderado;
+    bool ponderadoAresta;
+    bool ponderadoVertice;
+
 public:
     string nome;
     int unico;
     int duplo;
-    Grafo(bool direcionado);
+    Grafo(bool direcionado, int ponderadoId);
     ~Grafo();
-    bool getPonderado(){return ponderado;}
+    bool getPonderadoAresta() { return ponderadoAresta; }
+    bool getPonderadoVertice() { return ponderadoVertice; }
     void AddNoAresta(int no1, int no2);
-    No* procuraId(int id);
-    void buscaProfundidade(int id);
+    void AddNoAresta(int no1, int no2, int peso);
+    No *procuraId(int id);
+    Lista *buscaProfundidade(int id);
+    Lista *getArestasNo(int id);
+    bool iterate(bool (*func)(int, int));
+    void generateDreampufFile(string filename);
 };
 
 #endif // GrafoDefined

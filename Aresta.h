@@ -11,14 +11,15 @@ private:
     int destino;
 
 public:
-    Aresta(int destino); // construtor para primeira aresta, sem peso
+    Aresta(int destino, int peso); // construtor para primeira aresta, sem peso
     ~Aresta();
     Aresta *getProxAresta()
     {
         return proxAresta;
     }
-    Aresta *setProxAresta(int idNo); //* cria uma aresta no fim da lista de aresta e retorna o ponteiro para a mesma
+    Aresta *setProxAresta(int idNo, int peso); //* cria uma aresta no fim da lista de aresta e retorna o ponteiro para a mesma
     int getDestino() { return destino; };
+    int getPeso() { return peso; };
 };
 
 #endif // ArestaDefined

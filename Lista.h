@@ -15,6 +15,7 @@ public:
     void AddElemento(int elemento);
     bool contem(int elemento);
     int getNElementos();
+    void iterate(void (*func)(int));
 };
 
 #endif // ListaDefined

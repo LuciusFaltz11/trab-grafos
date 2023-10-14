@@ -1,8 +1,8 @@
 #include "Aresta.h"
 
-Aresta::Aresta(int destino)
+Aresta::Aresta(int destino, int setPeso)
 {
-    peso = 0;
+    peso = setPeso;
     proxAresta = NULL;
     this->destino = destino;
 }
@@ -10,10 +10,10 @@ Aresta::Aresta(int destino)
 Aresta::~Aresta()
 {
 }
-Aresta* Aresta::setProxAresta(int idNo)
+Aresta* Aresta::setProxAresta(int idNo, int peso)
 {
     // cout << "Criou aresta apontando para o no " << idNo << endl;
-    Aresta* novaAresta = new Aresta(idNo);
+    Aresta* novaAresta = new Aresta(idNo, peso);
     proxAresta = novaAresta;
     return novaAresta;
 }
