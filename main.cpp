@@ -61,7 +61,7 @@ int main(int argc, char const *argv[])
     Grafo grafo(ponderado == 's');
     fileMananger.Read(selectedFileName, &constroiGrafo, &grafo); //* le o arquivo chamando a função constroiGrafo a cada linha
 
-    //! fim de cogio de contagem de tempo de execução
+    //! fim de codigo de contagem de tempo de execução
     auto end = chrono::system_clock::now();
     chrono::duration<double> elapsed_seconds = end - start;
     time_t end_time = chrono::system_clock::to_time_t(end);
