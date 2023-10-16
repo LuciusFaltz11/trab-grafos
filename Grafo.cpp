@@ -38,6 +38,7 @@ void Grafo::AddNoArestaAux(int no)
 }
 void Grafo::AddNoArestaAux(int no1, int no2, int peso)
 {
+    AddNoArestaAux(no2); //* adiciona o segundo no para que o primeiro aponte para ele
     No *noAddAresta = procuraId(no1);
     if (noAddAresta == NULL)
     { // no nao existe, logo insere ao fim da lista de nos
@@ -188,7 +189,6 @@ Lista *Grafo::buscaProfundidade(int id)
         } //* coloca os elementos conectados a raiz na pilha
     }
 
-    // cout << "Esse no se conecta a " << visitados->getNElementos() << endl;
     return visitados;
 }
 
@@ -251,7 +251,8 @@ void Grafo::generateDreampufFile(string filename)
         Aresta *arestaNav = nosNav->getPrimeiraAresta();
         while (arestaNav != NULL)
         {
-            if(nosNav->getId() == arestaNav->getDestino()){
+            if (nosNav->getId() == arestaNav->getDestino())
+            {
                 cout << "tem self loop no no " << nosNav->getId() << endl;
             }
             if (direcionado)

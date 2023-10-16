@@ -26,6 +26,11 @@ void constroiGrafo(string linha, Grafo *grafo)
     {
         if (iss >> num2)
         {
+            if (num1 == num2)
+            //! verifica se tem self loop
+            {
+                return;
+            }
             if (grafo->getPonderadoAresta() || grafo->getPonderadoVertice())
             {
                 iss >> peso;
