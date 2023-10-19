@@ -19,6 +19,7 @@ private:
     bool direcionado;
     bool ponderadoAresta;
     bool ponderadoVertice;
+    int ponderadoId;
 
 public:
     string nome;
@@ -35,6 +36,7 @@ public:
     Lista *getArestasNo(int id);
     bool iterate(bool (*func)(int, int));
     void generateDreampufFile(string filename);
+    Grafo* inverteArestasDirecionadas();
 };
 
 #endif // GrafoDefined

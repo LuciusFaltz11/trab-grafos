@@ -15,6 +15,7 @@ Grafo::Grafo(bool direcionado, int ponderadoId)
     this->ponderadoAresta = ponderadoId == 1 || ponderadoId == 3;
     this->ponderadoVertice = ponderadoId == 2 || ponderadoId == 3;
     this->direcionado = direcionado;
+    this->ponderadoId = ponderadoId;
 }
 
 Grafo::~Grafo()
@@ -269,4 +270,39 @@ void Grafo::generateDreampufFile(string filename)
     }
     outdata << "}" << endl;
     outdata.close();
+}
+
+Grafo *Grafo::inverteArestasDirecionadas()
+{
+    if (!direcionado)
+    {
+        return NULL;
+    }
+    Grafo *newGrafo = new Grafo(direcionado, ponderadoId);
+
+    No *nosNav = raizGrafo;
+
+    while (nosNav != NULL)
+    {
+        Aresta *arestaNav = nosNav->getPrimeiraAresta();
+        while (arestaNav != NULL)
+        {
+            if (ponderadoAresta)
+            {
+                newGrafo->AddNoAresta(arestaNav->getDestino(), nosNav->getId(), arestaNav->getPeso());
+            }
+            else if (ponderadoVertice)
+            {
+                cout << "não suportado atualmente!" << endl;
+                exit(1);
+            }
+            else
+            {
+                newGrafo->AddNoAresta(arestaNav->getDestino(), nosNav->getId());
+            }
+            arestaNav = arestaNav->getProxAresta();
+        }
+        nosNav = nosNav->getProxNo();
+    }
+    return newGrafo;
 }
