@@ -12,6 +12,7 @@ Grafo::Grafo(bool direcionado, int ponderadoId)
         3: ponderado nos dois
     */
     raizGrafo = NULL;
+    ultimoNo = NULL;
     this->ponderadoAresta = ponderadoId == 1 || ponderadoId == 3;
     this->ponderadoVertice = ponderadoId == 2 || ponderadoId == 3;
     this->direcionado = direcionado;
@@ -20,35 +21,39 @@ Grafo::Grafo(bool direcionado, int ponderadoId)
 
 Grafo::~Grafo()
 {
+    No *noNav = raizGrafo;
+    No *prevNo;
+    Aresta *prevAresta;
+    while (noNav != NULL)
+    {
+        prevNo = noNav;
+        noNav = noNav->getProxNo();
+        while (prevNo->getPrimeiraAresta() != NULL)
+        {
+            prevAresta = prevNo->getPrimeiraAresta();
+            prevNo->setPrimeiraAresta(prevAresta->getProxAresta());
+            delete prevAresta;
+        }
+        delete prevNo;
+    }
 }
 
-void Grafo::AddNoArestaAux(int no)
+void Grafo::AddNo(int no)
 {
     No *noAdd = procuraId(no);
     if (noAdd == NULL)
-    { // no nao existe, logo insere ao fim da lista de nos
-        No *listNos = raizGrafo;
-        //* navega ate o ultimo no da lista
-        while (listNos->getProxNo() != NULL)
-        {
-            listNos = listNos->getProxNo();
-        }
+    {
         No *novoNo = new No(no, PESO_NAO_PONDERADO);
-        listNos->setProxNo(novoNo); //* adiciona o no na lista de nos
+        ultimoNo->setProxNo(novoNo); //* adiciona o no na lista de nos
+        ultimoNo = novoNo;
     }
 }
 void Grafo::AddNoArestaAux(int no1, int no2, int peso)
 {
-    AddNoArestaAux(no2); //* adiciona o segundo no para que o primeiro aponte para ele
+    AddNo(no2); //* adiciona o segundo no para que o primeiro aponte para ele
     No *noAddAresta = procuraId(no1);
     if (noAddAresta == NULL)
     { // no nao existe, logo insere ao fim da lista de nos
-        No *listNos = raizGrafo;
-        //* navega ate o ultimo no da lista
-        while (listNos->getProxNo() != NULL)
-        {
-            listNos = listNos->getProxNo();
-        }
 
         No *novoNo = NULL;
         if (ponderadoVertice)
@@ -59,7 +64,8 @@ void Grafo::AddNoArestaAux(int no1, int no2, int peso)
         {
             novoNo = new No(no1, PESO_NAO_PONDERADO);
         }
-        listNos->setProxNo(novoNo); //* adiciona o no na lista de nos
+        ultimoNo->setProxNo(novoNo); //* adiciona o no na lista de nos
+        ultimoNo = novoNo;
         Aresta *ultimaAresta = NULL;
         if (ponderadoAresta)
         {
@@ -97,6 +103,7 @@ void Grafo::AddNoAresta(int no1, int no2)
     {
         //* o grafo não possui arestas
         raizGrafo = new No(no1, PESO_NAO_PONDERADO);
+        ultimoNo = raizGrafo;
     }
 
     AddNoArestaAux(no1, no2, PESO_NAO_PONDERADO);
@@ -124,6 +131,7 @@ void Grafo::AddNoAresta(int no1, int no2, int peso)
         {
             raizGrafo = new No(no1, PESO_NAO_PONDERADO);
         }
+        ultimoNo = raizGrafo;
     }
 
     if (ponderadoAresta)

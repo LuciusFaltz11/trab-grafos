@@ -55,6 +55,7 @@ void menuOpcoes(){
     cout << "[ 0 ] cancelar " << endl;
     cout << "[ 1 ] nos diretamente conectados " << endl;
     cout << "[ 2 ] fecho transitivo direto " << endl;
+    cout << "[ 3 ] fecho transitivo indireto " << endl;
 }
 
 int main(int argc, char const *argv[])

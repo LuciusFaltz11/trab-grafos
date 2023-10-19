@@ -13,9 +13,10 @@ class Grafo
 {
 private:
     No *raizGrafo;
+    No *ultimoNo;
     void AddNoArestaAux(int no1, int no2, int peso);
     // void AddNoArestaAux(int no1, int no2);
-    void AddNoArestaAux(int no);
+    void AddNo(int no);
     bool direcionado;
     bool ponderadoAresta;
     bool ponderadoVertice;
