@@ -50,7 +50,8 @@ void constroiGrafo(string linha, Grafo *grafo)
     return;
 }
 
-void menuOpcoes(){
+void menuOpcoes()
+{
     cout << "Escolha uma opcao: " << endl;
     cout << "[ 0 ] cancelar " << endl;
     cout << "[ 1 ] nos diretamente conectados " << endl;
@@ -113,6 +114,7 @@ int main(int argc, char const *argv[])
 
     Grafo grafo(direcionado == 's', ponderadoId);
     fileMananger.Read(selectedFileName, &constroiGrafo, &grafo); //* le o arquivo chamando a função constroiGrafo a cada linha
+    grafo.generateDreampufFile("grafo.dat");
 
     //! fim de cogio de contagem de tempo de execução
     auto end = chrono::system_clock::now();
@@ -158,48 +160,62 @@ int main(int argc, char const *argv[])
         cin >> opcao;
         switch (opcao)
         {
-        case 1:{
+        case 1:
+        {
             cout << "O no esta diretamente conectado aos nos:";
             Lista *conectado = grafo.getArestasNo(input);
             conectado->iterate([](int id)
-                            { cout << id << " "; }); //* essa coisa esquisita é uma lambda function. É meio que um jeito de declarar uma função dentro de outra função em cpp.
+                               { cout << id << " "; }); //* essa coisa esquisita é uma lambda function. É meio que um jeito de declarar uma função dentro de outra função em cpp.
             cout << endl;
         }
-            break;
-        case 2:{
+        break;
+        case 2:
+        {
             cout << "Fecho transitivo direto deste vértice: ";
             Lista *fechoTransitivoDireto = grafo.buscaProfundidade(input);
             fechoTransitivoDireto->iterate([](int id)
                                            { cout << id << ", "; });
             cout << endl;
-            grafo.generateDreampufFile("grafo.dat");
         }
-        case 3:{
+        break;
+        case 3:
+        {
             cout << "Fecho transitivo indireto deste vértice: ";
-            Grafo *grafoInvertido = grafo.inverteArestasDirecionadas();
-            Lista *fechoTransitivoIndireto = grafoInvertido->buscaProfundidade(input);
-            fechoTransitivoIndireto->iterate([](int id)
-                                           { cout << id << ", "; });
-            cout << endl;
-            grafoInvertido->generateDreampufFile("grafoInvertido.dat");
-            delete grafoInvertido;
+            if (direcionado == 's')
+            {
+
+                Grafo *grafoInvertido = grafo.inverteArestasDirecionadas();
+                Lista *fechoTransitivoIndireto = grafoInvertido->buscaProfundidade(input);
+                fechoTransitivoIndireto->iterate([](int id)
+                                                 { cout << id << ", "; });
+                cout << endl;
+                grafoInvertido->generateDreampufFile("grafoInvertido.dat");
+                delete grafoInvertido;
+            }else{
+                cout << "operacao invalida por ser grafo não ordenado! " << endl;
+            }
         }
-        case 4:{
+        break;
+
+        case 4:
+        {
             cout << "Arvore dada pela ordem de caminhamento em profundidade: " << endl;
-            grafo.arvoreProfundidade(input);            
+            grafo.arvoreProfundidade(input);
             cout << endl;
         }
-        case 5:{
+        break;
+
+        case 5:
+        {
             cout << "Arvore dada pela ordem de caminhamento em profundidade com DreampufFile: " << endl;
-            grafo.arvoreProfundidade(input, true);            
+            grafo.arvoreProfundidade(input, true);
             cout << endl;
         }
+        break;
 
         default:
             break;
         }
-
-
 
         //! fim de cogio de contagem de tempo de execução
         auto end = chrono::system_clock::now();
@@ -209,10 +225,7 @@ int main(int argc, char const *argv[])
              << endl;
         //!=================================================
 
-        
-
     } while (input != -1);
 
     return 0;
 }
-

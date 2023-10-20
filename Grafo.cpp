@@ -177,6 +177,7 @@ Lista *Grafo::buscaProfundidade(int id)
         visitados->AddElemento(idNavega);
 
         No *noNavega = procuraId(idNavega);
+        // cout << "idNavega: " << idNavega << " noNavega: " << (noNavega == NULL?"null":"ok") << endl;
         Aresta *arestaNavega = noNavega->getPrimeiraAresta();
         while (arestaNavega != NULL)
         {
