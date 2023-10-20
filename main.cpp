@@ -56,6 +56,8 @@ void menuOpcoes(){
     cout << "[ 1 ] nos diretamente conectados " << endl;
     cout << "[ 2 ] fecho transitivo direto " << endl;
     cout << "[ 3 ] fecho transitivo indireto " << endl;
+    cout << "[ 4 ] arvore dada pela ordem de caminhamento em profundidade " << endl;
+    cout << "[ 5 ] arvore dada pela ordem de caminhamento em profundidade com DreampufFile " << endl;
 }
 
 int main(int argc, char const *argv[])
@@ -181,6 +183,16 @@ int main(int argc, char const *argv[])
             cout << endl;
             grafoInvertido->generateDreampufFile("grafoInvertido.dat");
             delete grafoInvertido;
+        }
+        case 4:{
+            cout << "Arvore dada pela ordem de caminhamento em profundidade: " << endl;
+            grafo.arvoreProfundidade(input);            
+            cout << endl;
+        }
+        case 5:{
+            cout << "Arvore dada pela ordem de caminhamento em profundidade com DreampufFile: " << endl;
+            grafo.arvoreProfundidade(input, true);            
+            cout << endl;
         }
 
         default:

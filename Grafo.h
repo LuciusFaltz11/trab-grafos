@@ -6,6 +6,8 @@
 #include <fstream>
 #include "No.h"
 #include "Pilha.h"
+#include "PilhaArestas.h"
+#include "PilhaArestasElemento.h"
 #include "Lista.h"
 using namespace std;
 
@@ -38,6 +40,8 @@ public:
     bool iterate(bool (*func)(int, int));
     void generateDreampufFile(string filename);
     Grafo* inverteArestasDirecionadas();
+    void arvoreProfundidade(int id);
+    void arvoreProfundidade(int id, bool generateDreampufFile);
 };
 
 #endif // GrafoDefined

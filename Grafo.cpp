@@ -98,7 +98,6 @@ void Grafo::AddNoArestaAux(int no1, int no2, int peso)
 }
 void Grafo::AddNoAresta(int no1, int no2)
 {
-    // cout << "adicionando " << no1 << " - " << no2 << endl;
     if (raizGrafo == NULL)
     {
         //* o grafo não possui arestas
@@ -111,15 +110,9 @@ void Grafo::AddNoAresta(int no1, int no2)
     {
         AddNoArestaAux(no2, no1, PESO_NAO_PONDERADO);
     }
-    // else
-    // {
-    // AddNoArestaAux(no2, PESO_NAO_PONDERADO); //* adiciona o no sem conexões (se rodou tem alguma coisa errada)
-    // }
-    //* é preciso repetir pois todos os nos devem estar na lista e todos os nos devem conter uma lista de arestas conectadas no mesmo
 }
 void Grafo::AddNoAresta(int no1, int no2, int peso)
 {
-    // cout << "adicionando " << no1 << " - " << no2 << endl;
     if (raizGrafo == NULL)
     {
         //* o grafo não possui arestas
@@ -152,12 +145,7 @@ void Grafo::AddNoAresta(int no1, int no2, int peso)
         {
             AddNoArestaAux(no2, no1, PESO_NAO_PONDERADO);
         }
-        // AddNoArestaAux(no2, no1, peso);
     }
-    // else
-    // {
-    //     AddNoArestaAux(no2); //* adiciona o no sem conexões (se rodou tem alguma coisa errada)
-    // }
 }
 
 No *Grafo::procuraId(int id)
@@ -239,7 +227,7 @@ void Grafo::generateDreampufFile(string filename)
 
     ofstream outdata; // outdata is like cin
 
-    outdata.open(filename); // opens the file
+    outdata.open("out/" + filename); // opens the file
 
     if (!outdata)
     { // file couldn't be opened
@@ -278,6 +266,7 @@ void Grafo::generateDreampufFile(string filename)
     }
     outdata << "}" << endl;
     outdata.close();
+    cout << "Dreampuf File " << filename << " criado no local out/" << filename << "." << endl;
 }
 
 Grafo *Grafo::inverteArestasDirecionadas()
@@ -313,4 +302,116 @@ Grafo *Grafo::inverteArestasDirecionadas()
         nosNav = nosNav->getProxNo();
     }
     return newGrafo;
+}
+
+void Grafo::arvoreProfundidade(int id, bool generateDreampufFile)
+{
+    if (!generateDreampufFile)
+    {
+        arvoreProfundidade(id);
+        return;
+    }
+    ofstream outdata;
+    outdata.open("out/arvoreProfundidade.dat");
+
+    if (!outdata)
+    {
+        cerr << "Error: file could not be opened" << endl;
+        return;
+    }
+    outdata << "digraph G {" << endl;
+
+    //* faz uma busca em profundidade e adiciona arestas com destinos nao visitados ao novo grafo
+
+    PilhaArestas pilhaVisitarArestas;
+    pilhaVisitarArestas.Empilha(new PilhaArestasElemento(id, id, NULL));
+    Lista adicionados;
+    adicionados.AddElemento(id);
+
+    Grafo arvoreProfundidade(true, 0);
+
+    bool retorno = true;
+
+    while (pilhaVisitarArestas.getNElementos() > 0)
+    {
+        PilhaArestasElemento *arestaElemento = pilhaVisitarArestas.Desempilha();
+        int idNavega = arestaElemento->getDestino();
+
+        No *noNavega = procuraId(idNavega);
+        Aresta *arestaNavega = noNavega->getPrimeiraAresta();
+
+        retorno = true;
+        while (arestaNavega != NULL)
+        {
+            if (!adicionados.contem(arestaNavega->getDestino()))
+            {
+                retorno = false;
+                arvoreProfundidade.AddNoAresta(idNavega, arestaNavega->getDestino());
+                outdata << idNavega << " -> " << arestaNavega->getDestino() << ";" << endl;
+                adicionados.AddElemento(arestaNavega->getDestino());
+                pilhaVisitarArestas.Empilha(new PilhaArestasElemento(
+                    idNavega,
+                    arestaNavega->getDestino(), NULL));
+            }
+            arestaNavega = arestaNavega->getProxAresta();
+        } //* coloca os elementos conectados a raiz na pilha
+
+        if (retorno && pilhaVisitarArestas.getNElementos() > 0)
+        {
+            PilhaArestasElemento *origem = pilhaVisitarArestas.Desempilha();
+            pilhaVisitarArestas.Empilha(origem);
+            cout << "RETORNO : " << idNavega << "->" << origem->getOrigem() << endl;
+            arvoreProfundidade.AddNoAresta(idNavega, origem->getOrigem());
+            outdata << idNavega << " -> " << origem->getOrigem() << " [color=green,constraint=false];" << endl;
+        }
+        delete arestaElemento;
+    }
+    outdata << "}" << endl;
+    outdata.close();
+    cout << "Dreampuf File arvoreProfundidade.dat criado no local out/arvoreProfundidade.dat." << endl;
+}
+void Grafo::arvoreProfundidade(int id)
+{
+    //* faz uma busca em profundidade e adiciona arestas com destinos nao visitados ao novo grafo
+
+    PilhaArestas pilhaVisitarArestas;
+    pilhaVisitarArestas.Empilha(new PilhaArestasElemento(id, id, NULL));
+    Lista adicionados;
+    adicionados.AddElemento(id);
+
+    Grafo arvoreProfundidade(true, 0);
+
+    bool retorno = true;
+
+    while (pilhaVisitarArestas.getNElementos() > 0)
+    {
+        PilhaArestasElemento *arestaElemento = pilhaVisitarArestas.Desempilha();
+        int idNavega = arestaElemento->getDestino();
+
+        No *noNavega = procuraId(idNavega);
+        Aresta *arestaNavega = noNavega->getPrimeiraAresta();
+
+        retorno = true;
+        while (arestaNavega != NULL)
+        {
+            if (!adicionados.contem(arestaNavega->getDestino()))
+            {
+                retorno = false;
+                arvoreProfundidade.AddNoAresta(idNavega, arestaNavega->getDestino());
+                adicionados.AddElemento(arestaNavega->getDestino());
+                pilhaVisitarArestas.Empilha(new PilhaArestasElemento(
+                    idNavega,
+                    arestaNavega->getDestino(), NULL));
+            }
+            arestaNavega = arestaNavega->getProxAresta();
+        } //* coloca os elementos conectados a raiz na pilha
+
+        if (retorno && pilhaVisitarArestas.getNElementos() > 0)
+        {
+            PilhaArestasElemento *origem = pilhaVisitarArestas.Desempilha();
+            pilhaVisitarArestas.Empilha(origem);
+            cout << "RETORNO : " << idNavega << "->" << origem->getOrigem() << endl;
+        }
+        delete arestaElemento;
+    }
 }
