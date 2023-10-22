@@ -42,6 +42,7 @@ public:
     Grafo* inverteArestasDirecionadas();
     void arvoreProfundidade(int id);
     void arvoreProfundidade(int id, bool generateDreampufFile);
+    void getCaminhoMaisCurtoDjkstra(int idNo1, int idNo2);
 };
 
 #endif // GrafoDefined

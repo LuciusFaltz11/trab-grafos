@@ -416,3 +416,10 @@ void Grafo::arvoreProfundidade(int id)
         delete arestaElemento;
     }
 }
+
+void Grafo::getCaminhoMaisCurtoDjkstra(int idNo1, int idNo2){
+    No *no1 = procuraId(idNo1);
+    No *no2 = procuraId(idNo2);
+    int custo = 0;
+    
+}
