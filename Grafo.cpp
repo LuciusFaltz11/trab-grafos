@@ -416,3 +416,46 @@ void Grafo::arvoreProfundidade(int id)
         delete arestaElemento;
     }
 }
+
+void Grafo::arvoreMinimaKruskal()
+{
+    ListaOrdenaAresta *listaAresta = new ListaOrdenaAresta();
+    criaListaOrdenadaAresta(listaAresta, direcionado);
+    listaAresta->imprimeListaOrdenada();
+}
+
+void Grafo::criaListaOrdenadaAresta(ListaOrdenaAresta *lista, bool direcionado)
+{
+    cout << "Criando lista de arestas" << endl;
+    Aresta *arestaGrafo;
+    No *noGrafo = raizGrafo;
+    if (direcionado)
+    {
+        while (noGrafo != NULL)
+        {
+            arestaGrafo = noGrafo->getPrimeiraAresta();
+            while (arestaGrafo != NULL)
+            {
+                lista->addAresta(noGrafo->getId(), arestaGrafo->getDestino(), arestaGrafo->getPeso());
+                arestaGrafo = arestaGrafo->getProxAresta();
+            }
+            noGrafo = noGrafo->getProxNo();
+        }
+    }
+    else
+    {
+        while (noGrafo != NULL)
+        {
+            arestaGrafo = noGrafo->getPrimeiraAresta();
+            while (arestaGrafo != NULL)
+            {
+                if (!(lista->existeAresta(noGrafo->getId(), arestaGrafo->getDestino()) || lista->existeAresta(arestaGrafo->getDestino(), noGrafo->getId())))
+                {
+                    lista->addAresta(noGrafo->getId(), arestaGrafo->getDestino(), arestaGrafo->getPeso());
+                }
+                arestaGrafo = arestaGrafo->getProxAresta();
+            }
+            noGrafo = noGrafo->getProxNo();
+        }
+    }
+}

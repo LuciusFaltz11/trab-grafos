@@ -127,6 +127,15 @@ int main(int argc, char const *argv[])
     cout << "O grafo é: " << endl;
     cout << "Ponderado nas arestas " << grafo.getPonderadoAresta() << endl;
     cout << "Ponderado nos vertices " << grafo.getPonderadoVertice() << endl;
+    
+    //teste arvore minima kruskal
+    cout << "Deseja arvore minima? (s/n)" << endl;
+    char arvoreMinima;
+    cin >> arvoreMinima;
+    if(arvoreMinima == 's'){
+        grafo.arvoreMinimaKruskal();
+    }
+
     int input;
     do
     {
