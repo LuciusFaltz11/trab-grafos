@@ -6,6 +6,8 @@
 #include <fstream>
 #include "No.h"
 #include "Pilha.h"
+#include "PilhaArestas.h"
+#include "PilhaArestasElemento.h"
 #include "Lista.h"
 using namespace std;
 
@@ -13,12 +15,14 @@ class Grafo
 {
 private:
     No *raizGrafo;
+    No *ultimoNo;
     void AddNoArestaAux(int no1, int no2, int peso);
     // void AddNoArestaAux(int no1, int no2);
-    void AddNoArestaAux(int no);
+    void AddNo(int no);
     bool direcionado;
     bool ponderadoAresta;
     bool ponderadoVertice;
+    int ponderadoId;
 
 public:
     string nome;
@@ -35,6 +39,9 @@ public:
     Lista *getArestasNo(int id);
     bool iterate(bool (*func)(int, int));
     void generateDreampufFile(string filename);
+    Grafo* inverteArestasDirecionadas();
+    void arvoreProfundidade(int id);
+    void arvoreProfundidade(int id, bool generateDreampufFile);
 };
 
 #endif // GrafoDefined

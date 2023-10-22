@@ -23,6 +23,7 @@ public:
     No* getProxNo();
     void setProxNo(No* prox);
     Aresta* setPrimeiraAresta(int primeira, int peso);
+    Aresta* setPrimeiraAresta(Aresta* aresta);
     Aresta* getPrimeiraAresta();
     Aresta* getUltimaAresta();
     void setUltimaAresta(Aresta* ultimaAresta);

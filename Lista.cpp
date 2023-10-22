@@ -18,16 +18,8 @@ Lista::~Lista()
         delete elementoNav;
         nElementos--;
     }
-    std::cout << "Deletado elemento da lista: nElementos = " << nElementos << std::endl;
+    // std::cout << "Deletado elemento da lista: nElementos = " << nElementos << std::endl;
 }
-// void Lista::deleteAux(ListaElemento *elemento)
-// {
-//     if (elemento->getProxElemento() != NULL)
-//     {
-//         deleteAux(elemento->getProxElemento());
-//     }
-//     delete (elemento->getProxElemento());
-// }
 void Lista::AddElemento(int elemento)
 {
     if (contem(elemento))

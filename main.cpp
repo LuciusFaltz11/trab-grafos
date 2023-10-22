@@ -26,6 +26,11 @@ void constroiGrafo(string linha, Grafo *grafo)
     {
         if (iss >> num2)
         {
+            if (num1 == num2)
+            //! verifica se tem self loop
+            {
+                return;
+            }
             if (grafo->getPonderadoAresta() || grafo->getPonderadoVertice())
             {
                 iss >> peso;
@@ -43,6 +48,17 @@ void constroiGrafo(string linha, Grafo *grafo)
         }
     }
     return;
+}
+
+void menuOpcoes()
+{
+    cout << "Escolha uma opcao: " << endl;
+    cout << "[ 0 ] cancelar " << endl;
+    cout << "[ 1 ] nos diretamente conectados " << endl;
+    cout << "[ 2 ] fecho transitivo direto " << endl;
+    cout << "[ 3 ] fecho transitivo indireto " << endl;
+    cout << "[ 4 ] arvore dada pela ordem de caminhamento em profundidade " << endl;
+    cout << "[ 5 ] arvore dada pela ordem de caminhamento em profundidade com DreampufFile " << endl;
 }
 
 int main(int argc, char const *argv[])
@@ -98,6 +114,7 @@ int main(int argc, char const *argv[])
 
     Grafo grafo(direcionado == 's', ponderadoId);
     fileMananger.Read(selectedFileName, &constroiGrafo, &grafo); //* le o arquivo chamando a função constroiGrafo a cada linha
+    grafo.generateDreampufFile("grafo.dat");
 
     //! fim de codigo de contagem de tempo de execução
     auto end = chrono::system_clock::now();
@@ -138,17 +155,67 @@ int main(int argc, char const *argv[])
             continue;
         }
 
-        cout << "O no esta diretamente conectado aos nos:";
-        Lista *conectado = grafo.getArestasNo(input);
-        conectado->iterate([](int id)
-                           { cout << id << " "; }); //* essa coisa esquisita é uma lambda function. É meio que um jeito de declarar uma função dentro de outra função em cpp.
-        cout << endl;
+        int opcao = 0;
+        menuOpcoes();
+        cin >> opcao;
+        switch (opcao)
+        {
+        case 1:
+        {
+            cout << "O no esta diretamente conectado aos nos:";
+            Lista *conectado = grafo.getArestasNo(input);
+            conectado->iterate([](int id)
+                               { cout << id << " "; }); //* essa coisa esquisita é uma lambda function. É meio que um jeito de declarar uma função dentro de outra função em cpp.
+            cout << endl;
+        }
+        break;
+        case 2:
+        {
+            cout << "Fecho transitivo direto deste vértice: ";
+            Lista *fechoTransitivoDireto = grafo.buscaProfundidade(input);
+            fechoTransitivoDireto->iterate([](int id)
+                                           { cout << id << ", "; });
+            cout << endl;
+        }
+        break;
+        case 3:
+        {
+            cout << "Fecho transitivo indireto deste vértice: ";
+            if (direcionado == 's')
+            {
 
-        cout << "Fecho transitivo direto deste vértice: ";
-        Lista *fechoTransitivoDireto = grafo.buscaProfundidade(input);
-        fechoTransitivoDireto->iterate([](int id)
-                                       { cout << id << ", "; });
-        cout << endl;
+                Grafo *grafoInvertido = grafo.inverteArestasDirecionadas();
+                Lista *fechoTransitivoIndireto = grafoInvertido->buscaProfundidade(input);
+                fechoTransitivoIndireto->iterate([](int id)
+                                                 { cout << id << ", "; });
+                cout << endl;
+                grafoInvertido->generateDreampufFile("grafoInvertido.dat");
+                delete grafoInvertido;
+            }else{
+                cout << "operacao invalida por ser grafo não ordenado! " << endl;
+            }
+        }
+        break;
+
+        case 4:
+        {
+            cout << "Arvore dada pela ordem de caminhamento em profundidade: " << endl;
+            grafo.arvoreProfundidade(input);
+            cout << endl;
+        }
+        break;
+
+        case 5:
+        {
+            cout << "Arvore dada pela ordem de caminhamento em profundidade com DreampufFile: " << endl;
+            grafo.arvoreProfundidade(input, true);
+            cout << endl;
+        }
+        break;
+
+        default:
+            break;
+        }
 
         //! fim de cogio de contagem de tempo de execução
         auto end = chrono::system_clock::now();
@@ -157,8 +224,6 @@ int main(int argc, char const *argv[])
         cout << "\ntempo de execucao: " << BOLDGREEN << elapsed_seconds.count() << " s" << RESET
              << endl;
         //!=================================================
-
-        grafo.generateDreampufFile("saida.dat");
 
     } while (input != -1);
 

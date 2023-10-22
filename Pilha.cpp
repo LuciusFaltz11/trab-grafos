@@ -8,6 +8,10 @@ Pilha::Pilha()
 
 Pilha::~Pilha()
 {
+    while (nElementos > 0)
+    {
+        Desempilha();
+    }
 }
 void Pilha::Empilha(int noId)
 {

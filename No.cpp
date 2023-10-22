@@ -46,6 +46,11 @@ Aresta* No::setPrimeiraAresta(int primeira, int peso)
     this->primeiraAresta = primeiraAresta;
     return primeiraAresta;
 }
+Aresta* No::setPrimeiraAresta(Aresta* aresta)
+{
+    this->primeiraAresta = aresta;
+    return primeiraAresta;
+}
 void No::setUltimaAresta(Aresta *ultimaAresta)
 {
     this->ultimaAresta = ultimaAresta;

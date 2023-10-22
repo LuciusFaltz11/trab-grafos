@@ -12,41 +12,48 @@ Grafo::Grafo(bool direcionado, int ponderadoId)
         3: ponderado nos dois
     */
     raizGrafo = NULL;
+    ultimoNo = NULL;
     this->ponderadoAresta = ponderadoId == 1 || ponderadoId == 3;
     this->ponderadoVertice = ponderadoId == 2 || ponderadoId == 3;
     this->direcionado = direcionado;
+    this->ponderadoId = ponderadoId;
 }
 
 Grafo::~Grafo()
 {
+    No *noNav = raizGrafo;
+    No *prevNo;
+    Aresta *prevAresta;
+    while (noNav != NULL)
+    {
+        prevNo = noNav;
+        noNav = noNav->getProxNo();
+        while (prevNo->getPrimeiraAresta() != NULL)
+        {
+            prevAresta = prevNo->getPrimeiraAresta();
+            prevNo->setPrimeiraAresta(prevAresta->getProxAresta());
+            delete prevAresta;
+        }
+        delete prevNo;
+    }
 }
 
-void Grafo::AddNoArestaAux(int no)
+void Grafo::AddNo(int no)
 {
     No *noAdd = procuraId(no);
     if (noAdd == NULL)
-    { // no nao existe, logo insere ao fim da lista de nos
-        No *listNos = raizGrafo;
-        //* navega ate o ultimo no da lista
-        while (listNos->getProxNo() != NULL)
-        {
-            listNos = listNos->getProxNo();
-        }
+    {
         No *novoNo = new No(no, PESO_NAO_PONDERADO);
-        listNos->setProxNo(novoNo); //* adiciona o no na lista de nos
+        ultimoNo->setProxNo(novoNo); //* adiciona o no na lista de nos
+        ultimoNo = novoNo;
     }
 }
 void Grafo::AddNoArestaAux(int no1, int no2, int peso)
 {
+    AddNo(no2); //* adiciona o segundo no para que o primeiro aponte para ele
     No *noAddAresta = procuraId(no1);
     if (noAddAresta == NULL)
     { // no nao existe, logo insere ao fim da lista de nos
-        No *listNos = raizGrafo;
-        //* navega ate o ultimo no da lista
-        while (listNos->getProxNo() != NULL)
-        {
-            listNos = listNos->getProxNo();
-        }
 
         No *novoNo = NULL;
         if (ponderadoVertice)
@@ -57,7 +64,8 @@ void Grafo::AddNoArestaAux(int no1, int no2, int peso)
         {
             novoNo = new No(no1, PESO_NAO_PONDERADO);
         }
-        listNos->setProxNo(novoNo); //* adiciona o no na lista de nos
+        ultimoNo->setProxNo(novoNo); //* adiciona o no na lista de nos
+        ultimoNo = novoNo;
         Aresta *ultimaAresta = NULL;
         if (ponderadoAresta)
         {
@@ -90,11 +98,11 @@ void Grafo::AddNoArestaAux(int no1, int no2, int peso)
 }
 void Grafo::AddNoAresta(int no1, int no2)
 {
-    // cout << "adicionando " << no1 << " - " << no2 << endl;
     if (raizGrafo == NULL)
     {
         //* o grafo não possui arestas
         raizGrafo = new No(no1, PESO_NAO_PONDERADO);
+        ultimoNo = raizGrafo;
     }
 
     AddNoArestaAux(no1, no2, PESO_NAO_PONDERADO);
@@ -102,15 +110,9 @@ void Grafo::AddNoAresta(int no1, int no2)
     {
         AddNoArestaAux(no2, no1, PESO_NAO_PONDERADO);
     }
-    // else
-    // {
-    // AddNoArestaAux(no2, PESO_NAO_PONDERADO); //* adiciona o no sem conexões (se rodou tem alguma coisa errada)
-    // }
-    //* é preciso repetir pois todos os nos devem estar na lista e todos os nos devem conter uma lista de arestas conectadas no mesmo
 }
 void Grafo::AddNoAresta(int no1, int no2, int peso)
 {
-    // cout << "adicionando " << no1 << " - " << no2 << endl;
     if (raizGrafo == NULL)
     {
         //* o grafo não possui arestas
@@ -122,6 +124,7 @@ void Grafo::AddNoAresta(int no1, int no2, int peso)
         {
             raizGrafo = new No(no1, PESO_NAO_PONDERADO);
         }
+        ultimoNo = raizGrafo;
     }
 
     if (ponderadoAresta)
@@ -142,12 +145,7 @@ void Grafo::AddNoAresta(int no1, int no2, int peso)
         {
             AddNoArestaAux(no2, no1, PESO_NAO_PONDERADO);
         }
-        // AddNoArestaAux(no2, no1, peso);
     }
-    // else
-    // {
-    //     AddNoArestaAux(no2); //* adiciona o no sem conexões (se rodou tem alguma coisa errada)
-    // }
 }
 
 No *Grafo::procuraId(int id)
@@ -179,6 +177,7 @@ Lista *Grafo::buscaProfundidade(int id)
         visitados->AddElemento(idNavega);
 
         No *noNavega = procuraId(idNavega);
+        // cout << "idNavega: " << idNavega << " noNavega: " << (noNavega == NULL?"null":"ok") << endl;
         Aresta *arestaNavega = noNavega->getPrimeiraAresta();
         while (arestaNavega != NULL)
         {
@@ -188,7 +187,6 @@ Lista *Grafo::buscaProfundidade(int id)
         } //* coloca os elementos conectados a raiz na pilha
     }
 
-    // cout << "Esse no se conecta a " << visitados->getNElementos() << endl;
     return visitados;
 }
 
@@ -230,7 +228,7 @@ void Grafo::generateDreampufFile(string filename)
 
     ofstream outdata; // outdata is like cin
 
-    outdata.open(filename); // opens the file
+    outdata.open("out/" + filename); // opens the file
 
     if (!outdata)
     { // file couldn't be opened
@@ -251,7 +249,8 @@ void Grafo::generateDreampufFile(string filename)
         Aresta *arestaNav = nosNav->getPrimeiraAresta();
         while (arestaNav != NULL)
         {
-            if(nosNav->getId() == arestaNav->getDestino()){
+            if (nosNav->getId() == arestaNav->getDestino())
+            {
                 cout << "tem self loop no no " << nosNav->getId() << endl;
             }
             if (direcionado)
@@ -268,4 +267,152 @@ void Grafo::generateDreampufFile(string filename)
     }
     outdata << "}" << endl;
     outdata.close();
+    cout << "Dreampuf File " << filename << " criado no local out/" << filename << "." << endl;
+}
+
+Grafo *Grafo::inverteArestasDirecionadas()
+{
+    if (!direcionado)
+    {
+        return NULL;
+    }
+    Grafo *newGrafo = new Grafo(direcionado, ponderadoId);
+
+    No *nosNav = raizGrafo;
+
+    while (nosNav != NULL)
+    {
+        Aresta *arestaNav = nosNav->getPrimeiraAresta();
+        while (arestaNav != NULL)
+        {
+            if (ponderadoAresta)
+            {
+                newGrafo->AddNoAresta(arestaNav->getDestino(), nosNav->getId(), arestaNav->getPeso());
+            }
+            else if (ponderadoVertice)
+            {
+                cout << "não suportado atualmente!" << endl;
+                exit(1);
+            }
+            else
+            {
+                newGrafo->AddNoAresta(arestaNav->getDestino(), nosNav->getId());
+            }
+            arestaNav = arestaNav->getProxAresta();
+        }
+        nosNav = nosNav->getProxNo();
+    }
+    return newGrafo;
+}
+
+void Grafo::arvoreProfundidade(int id, bool generateDreampufFile)
+{
+    if (!generateDreampufFile)
+    {
+        arvoreProfundidade(id);
+        return;
+    }
+    ofstream outdata;
+    outdata.open("out/arvoreProfundidade.dat");
+
+    if (!outdata)
+    {
+        cerr << "Error: file could not be opened" << endl;
+        return;
+    }
+    outdata << "digraph G {" << endl;
+
+    //* faz uma busca em profundidade e adiciona arestas com destinos nao visitados ao novo grafo
+
+    PilhaArestas pilhaVisitarArestas;
+    pilhaVisitarArestas.Empilha(new PilhaArestasElemento(id, id, NULL));
+    Lista adicionados;
+    adicionados.AddElemento(id);
+
+    Grafo arvoreProfundidade(true, 0);
+
+    bool retorno = true;
+
+    while (pilhaVisitarArestas.getNElementos() > 0)
+    {
+        PilhaArestasElemento *arestaElemento = pilhaVisitarArestas.Desempilha();
+        int idNavega = arestaElemento->getDestino();
+
+        No *noNavega = procuraId(idNavega);
+        Aresta *arestaNavega = noNavega->getPrimeiraAresta();
+
+        retorno = true;
+        while (arestaNavega != NULL)
+        {
+            if (!adicionados.contem(arestaNavega->getDestino()))
+            {
+                retorno = false;
+                arvoreProfundidade.AddNoAresta(idNavega, arestaNavega->getDestino());
+                outdata << idNavega << " -> " << arestaNavega->getDestino() << ";" << endl;
+                adicionados.AddElemento(arestaNavega->getDestino());
+                pilhaVisitarArestas.Empilha(new PilhaArestasElemento(
+                    idNavega,
+                    arestaNavega->getDestino(), NULL));
+            }
+            arestaNavega = arestaNavega->getProxAresta();
+        } //* coloca os elementos conectados a raiz na pilha
+
+        if (retorno && pilhaVisitarArestas.getNElementos() > 0)
+        {
+            PilhaArestasElemento *origem = pilhaVisitarArestas.Desempilha();
+            pilhaVisitarArestas.Empilha(origem);
+            cout << "RETORNO : " << idNavega << "->" << origem->getOrigem() << endl;
+            arvoreProfundidade.AddNoAresta(idNavega, origem->getOrigem());
+            outdata << idNavega << " -> " << origem->getOrigem() << " [color=green,constraint=false];" << endl;
+        }
+        delete arestaElemento;
+    }
+    outdata << "}" << endl;
+    outdata.close();
+    cout << "Dreampuf File arvoreProfundidade.dat criado no local out/arvoreProfundidade.dat." << endl;
+}
+void Grafo::arvoreProfundidade(int id)
+{
+    //* faz uma busca em profundidade e adiciona arestas com destinos nao visitados ao novo grafo
+
+    PilhaArestas pilhaVisitarArestas;
+    pilhaVisitarArestas.Empilha(new PilhaArestasElemento(id, id, NULL));
+    Lista adicionados;
+    adicionados.AddElemento(id);
+
+    Grafo arvoreProfundidade(true, 0);
+
+    bool retorno = true;
+
+    while (pilhaVisitarArestas.getNElementos() > 0)
+    {
+        PilhaArestasElemento *arestaElemento = pilhaVisitarArestas.Desempilha();
+        int idNavega = arestaElemento->getDestino();
+
+        No *noNavega = procuraId(idNavega);
+        Aresta *arestaNavega = noNavega->getPrimeiraAresta();
+
+        retorno = true;
+        while (arestaNavega != NULL)
+        {
+            if (!adicionados.contem(arestaNavega->getDestino()))
+            {
+                retorno = false;
+                arvoreProfundidade.AddNoAresta(idNavega, arestaNavega->getDestino());
+                adicionados.AddElemento(arestaNavega->getDestino());
+                pilhaVisitarArestas.Empilha(new PilhaArestasElemento(
+                    idNavega,
+                    arestaNavega->getDestino(), NULL));
+            }
+            arestaNavega = arestaNavega->getProxAresta();
+        } //* coloca os elementos conectados a raiz na pilha
+
+        if (retorno && pilhaVisitarArestas.getNElementos() > 0)
+        {
+            PilhaArestasElemento *origem = pilhaVisitarArestas.Desempilha();
+            pilhaVisitarArestas.Empilha(origem);
+            cout << "RETORNO : " << idNavega << "->" << origem->getOrigem() << endl;
+        }
+        delete arestaElemento;
+    }
 }
