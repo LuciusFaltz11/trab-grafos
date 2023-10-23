@@ -421,7 +421,12 @@ void Grafo::arvoreMinimaKruskal()
 {
     ListaOrdenaAresta *listaAresta = new ListaOrdenaAresta();
     criaListaOrdenadaAresta(listaAresta, direcionado);
-    listaAresta->ordenaLista();
+    listaAresta->imprimeListaOrdenada();
+    cout << "remove aresta: " << endl;
+    int origem, destino;
+    cin >> origem;
+    cin >> destino;
+    listaAresta->removeAresta(origem, destino);
     listaAresta->imprimeListaOrdenada();
 }
 
@@ -459,4 +464,5 @@ void Grafo::criaListaOrdenadaAresta(ListaOrdenaAresta *lista, bool direcionado)
             noGrafo = noGrafo->getProxNo();
         }
     }
+    lista->ordenaLista();
 }

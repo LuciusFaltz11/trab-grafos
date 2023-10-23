@@ -43,7 +43,7 @@ void constroiGrafo(string linha, Grafo *grafo)
         }
         else
         {
-
+            grafo->setTotalNos(num1);
             cout << "O grafo possui " << num1 << " nos. " << endl;
         }
     }
@@ -127,12 +127,13 @@ int main(int argc, char const *argv[])
     cout << "O grafo é: " << endl;
     cout << "Ponderado nas arestas " << grafo.getPonderadoAresta() << endl;
     cout << "Ponderado nos vertices " << grafo.getPonderadoVertice() << endl;
-    
-    //teste arvore minima kruskal
+
+    // teste arvore minima kruskal
     cout << "Deseja arvore minima? (s/n)" << endl;
     char arvoreMinima;
     cin >> arvoreMinima;
-    if(arvoreMinima == 's'){
+    if (arvoreMinima == 's')
+    {
         grafo.arvoreMinimaKruskal();
     }
 
@@ -200,7 +201,9 @@ int main(int argc, char const *argv[])
                 cout << endl;
                 grafoInvertido->generateDreampufFile("grafoInvertido.dat");
                 delete grafoInvertido;
-            }else{
+            }
+            else
+            {
                 cout << "operacao invalida por ser grafo não ordenado! " << endl;
             }
         }

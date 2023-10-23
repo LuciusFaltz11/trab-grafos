@@ -17,6 +17,7 @@ class Grafo
 private:
     No *raizGrafo;
     No *ultimoNo;
+    int totalNos = 0;
     void AddNoArestaAux(int no1, int no2, int peso);
     // void AddNoArestaAux(int no1, int no2);
     void AddNo(int no);
@@ -24,7 +25,7 @@ private:
     bool ponderadoAresta;
     bool ponderadoVertice;
     int ponderadoId;
-    void criaListaOrdenadaAresta(ListaOrdenaAresta* lista, bool direcionado);
+    void criaListaOrdenadaAresta(ListaOrdenaAresta *lista, bool direcionado);
 
 public:
     string nome;
@@ -41,10 +42,11 @@ public:
     Lista *getArestasNo(int id);
     bool iterate(bool (*func)(int, int));
     void generateDreampufFile(string filename);
-    Grafo* inverteArestasDirecionadas();
+    Grafo *inverteArestasDirecionadas();
     void arvoreProfundidade(int id);
     void arvoreProfundidade(int id, bool generateDreampufFile);
     void arvoreMinimaKruskal();
+    void setTotalNos(int qtd) { this->totalNos = qtd; };
 };
 
 #endif // GrafoDefined

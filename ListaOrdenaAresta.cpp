@@ -177,3 +177,17 @@ void ListaOrdenaAresta::ordenaLista()
 {
     mergeSort(primeira);
 }
+
+void ListaOrdenaAresta::removeAresta(int origemRemove, int destinoRemove)
+{
+    ArestaLista *anterior = primeira;
+    ArestaLista *aux = primeira;
+    while (aux->getOrigem() != origemRemove && aux->getDestino() != destinoRemove)
+    {
+        anterior = aux;
+        aux = aux->getProxima();
+    }
+
+    anterior->setProxima(aux->getProxima());
+    delete aux;
+}
