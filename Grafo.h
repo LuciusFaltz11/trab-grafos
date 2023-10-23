@@ -25,6 +25,7 @@ private:
     bool ponderadoVertice;
     int ponderadoId;
     void criaListaOrdenadaAresta(ListaOrdenaAresta* lista, bool direcionado);
+    int selecionaVerticeDeMenorDistancia(int numVertices, int distancia[], bool visitados[]);
 
 public:
     string nome;
