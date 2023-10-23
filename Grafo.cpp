@@ -421,6 +421,7 @@ void Grafo::arvoreMinimaKruskal()
 {
     ListaOrdenaAresta *listaAresta = new ListaOrdenaAresta();
     criaListaOrdenadaAresta(listaAresta, direcionado);
+    listaAresta->ordenaLista();
     listaAresta->imprimeListaOrdenada();
 }
 
