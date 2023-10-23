@@ -461,39 +461,18 @@ void Grafo::criaListaOrdenadaAresta(ListaOrdenaAresta *lista, bool direcionado)
     }
 }
 
-int Grafo::contabilizaArestas(bool direcionado){
-    int numArestas = 0;
-    No *noGrafo = raizGrafo;
-
-    if(direcionado){
-
-        return numArestas;
-    }
-
-    if(!direcionado){
-        while (noGrafo != NULL){
-        Aresta *arestaGrafo = noGrafo->getPrimeiraAresta();
-        while (arestaGrafo != NULL){
-            numArestas++;
-            arestaGrafo = arestaGrafo->getProxAresta();
-        }
-        noGrafo = noGrafo->getProxNo();
-        }
-        return numArestas;
-    }
-}
-
 const int INFINITO = 1e9;
 void Grafo::getCaminhoMaisCurtoDjkstra(int idNo1, int idNo2){
     ListaOrdenaAresta *listaDeArestas = new ListaOrdenaAresta();
     criaListaOrdenadaAresta(listaDeArestas, this->direcionado);
-    // int distancia[];
-    // bool visitados[];
+    int numArestas = listaDeArestas->getTotalArestas();
+    int distancia[numArestas];
+    bool visitados[numArestas];
     //inicializacaoDosVetores
-    // for(int i = 0; i < ; i++){
-    //     distancia[i] = INFINITO;
-    //     visitados[i] = false;
-    // }
+    for(int i = 0; i < numArestas ; i++){
+        distancia[i] = INFINITO;
+        visitados[i] = false;
+    }
 
-    // distancia[idNo1] = 0;
+    distancia[idNo1] = 0;
 }

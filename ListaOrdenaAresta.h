@@ -18,4 +18,5 @@ public:
     void addAresta(int origem, int destino, int peso);
     void ordenaLista();
     void imprimeListaOrdenada();
+    int getTotalArestas();
 };

@@ -177,3 +177,7 @@ void ListaOrdenaAresta::ordenaLista()
 {
     mergeSort(primeira);
 }
+
+int ListaOrdenaAresta::getTotalArestas(){
+    return this->totalArestas;
+}
