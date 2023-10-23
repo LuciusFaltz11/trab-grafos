@@ -1,14 +1,17 @@
 #define LISTAORDENAARESTA_H
 #include "ArestaLista.h"
 
-
-class ListaOrdenaAresta{
-    private:
-    ArestaLista* primeira;
-    ArestaLista* ultima;
+class ListaOrdenaAresta
+{
+private:
+    ArestaLista *primeira;
+    ArestaLista *ultima;
     int totalArestas = 0;
+    void merge(ArestaLista *&cabeca, ArestaLista *esquerda, ArestaLista *direita);
+    void mergeSort(ArestaLista *&cabeca);
+    void split(ArestaLista *origem, ArestaLista *&frente, ArestaLista *&tras);
 
-    public:
+public:
     bool existeAresta(int origemNovo, int destinoNovo);
     ListaOrdenaAresta();
     ~ListaOrdenaAresta();
