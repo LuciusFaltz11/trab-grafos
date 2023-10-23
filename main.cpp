@@ -59,6 +59,7 @@ void menuOpcoes()
     cout << "[ 3 ] fecho transitivo indireto " << endl;
     cout << "[ 4 ] arvore dada pela ordem de caminhamento em profundidade " << endl;
     cout << "[ 5 ] arvore dada pela ordem de caminhamento em profundidade com DreampufFile " << endl;
+    cout << "[ 6 ] caminho minimo entre 2 nos com o Algoritmo de Dijkstra" << endl;
 }
 
 int main(int argc, char const *argv[])
@@ -127,6 +128,29 @@ int main(int argc, char const *argv[])
     cout << "O grafo é: " << endl;
     cout << "Ponderado nas arestas " << grafo.getPonderadoAresta() << endl;
     cout << "Ponderado nos vertices " << grafo.getPonderadoVertice() << endl;
+    
+    //teste arvore minima kruskal
+    cout << "Deseja arvore minima? (s/n)" << endl;
+    char arvoreMinima;
+    cin >> arvoreMinima;
+    if(arvoreMinima == 's'){
+        grafo.arvoreMinimaKruskal();
+    }
+
+    //teste Dijkstra
+    cout << "Deseja calcular o caminho minimo entre 2 nos? (s/n)" << endl;
+    char testeDijkstra;
+    cin >> testeDijkstra;
+    if(testeDijkstra == 's'){
+        int idNo1, idNo2;
+        cout << "Digite o id do primeiro no: ";
+        cin >> idNo1;
+        cout << "Digite o id do segundo no: ";
+        cin >> idNo2;
+        grafo.getCaminhoMaisCurtoDjkstra(idNo1, idNo2);
+    }
+
+
     int input;
     do
     {
@@ -217,7 +241,7 @@ int main(int argc, char const *argv[])
             break;
         }
 
-        //! fim de cogio de contagem de tempo de execução
+        //! fim de código de contagem de tempo de execução
         auto end = chrono::system_clock::now();
         chrono::duration<double> elapsed_seconds = end - start;
         time_t end_time = chrono::system_clock::to_time_t(end);

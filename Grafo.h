@@ -9,6 +9,7 @@
 #include "PilhaArestas.h"
 #include "PilhaArestasElemento.h"
 #include "Lista.h"
+#include "ListaOrdenaAresta.h"
 using namespace std;
 
 class Grafo
@@ -23,6 +24,7 @@ private:
     bool ponderadoAresta;
     bool ponderadoVertice;
     int ponderadoId;
+    void criaListaOrdenadaAresta(ListaOrdenaAresta* lista, bool direcionado);
 
 public:
     string nome;
@@ -42,7 +44,9 @@ public:
     Grafo* inverteArestasDirecionadas();
     void arvoreProfundidade(int id);
     void arvoreProfundidade(int id, bool generateDreampufFile);
+    int contabilizaArestas(bool direcionado);
     void getCaminhoMaisCurtoDjkstra(int idNo1, int idNo2);
+    void arvoreMinimaKruskal();
 };
 
 #endif // GrafoDefined

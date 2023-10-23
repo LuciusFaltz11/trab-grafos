@@ -417,9 +417,82 @@ void Grafo::arvoreProfundidade(int id)
     }
 }
 
+void Grafo::arvoreMinimaKruskal()
+{
+    ListaOrdenaAresta *listaAresta = new ListaOrdenaAresta();
+    criaListaOrdenadaAresta(listaAresta, direcionado);
+    listaAresta->imprimeListaOrdenada();
+}
+
+void Grafo::criaListaOrdenadaAresta(ListaOrdenaAresta *lista, bool direcionado)
+{
+    cout << "Criando lista de arestas" << endl;
+    Aresta *arestaGrafo;
+    No *noGrafo = raizGrafo;
+    if (direcionado)
+    {
+        while (noGrafo != NULL)
+        {
+            arestaGrafo = noGrafo->getPrimeiraAresta();
+            while (arestaGrafo != NULL)
+            {
+                lista->addAresta(noGrafo->getId(), arestaGrafo->getDestino(), arestaGrafo->getPeso());
+                arestaGrafo = arestaGrafo->getProxAresta();
+            }
+            noGrafo = noGrafo->getProxNo();
+        }
+    }
+    else
+    {
+        while (noGrafo != NULL)
+        {
+            arestaGrafo = noGrafo->getPrimeiraAresta();
+            while (arestaGrafo != NULL)
+            {
+                if (!(lista->existeAresta(noGrafo->getId(), arestaGrafo->getDestino()) || lista->existeAresta(arestaGrafo->getDestino(), noGrafo->getId())))
+                {
+                    lista->addAresta(noGrafo->getId(), arestaGrafo->getDestino(), arestaGrafo->getPeso());
+                }
+                arestaGrafo = arestaGrafo->getProxAresta();
+            }
+            noGrafo = noGrafo->getProxNo();
+        }
+    }
+}
+
+int Grafo::contabilizaArestas(bool direcionado){
+    int numArestas = 0;
+    No *noGrafo = raizGrafo;
+
+    if(direcionado){
+
+        return numArestas;
+    }
+
+    if(!direcionado){
+        while (noGrafo != NULL){
+        Aresta *arestaGrafo = noGrafo->getPrimeiraAresta();
+        while (arestaGrafo != NULL){
+            numArestas++;
+            arestaGrafo = arestaGrafo->getProxAresta();
+        }
+        noGrafo = noGrafo->getProxNo();
+        }
+        return numArestas;
+    }
+}
+
+const int INFINITO = 1e9;
 void Grafo::getCaminhoMaisCurtoDjkstra(int idNo1, int idNo2){
-    No *no1 = procuraId(idNo1);
-    No *no2 = procuraId(idNo2);
-    int custo = 0;
-    
+    ListaOrdenaAresta *listaDeArestas = new ListaOrdenaAresta();
+    criaListaOrdenadaAresta(listaDeArestas, this->direcionado);
+    // int distancia[];
+    // bool visitados[];
+    //inicializacaoDosVetores
+    // for(int i = 0; i < ; i++){
+    //     distancia[i] = INFINITO;
+    //     visitados[i] = false;
+    // }
+
+    // distancia[idNo1] = 0;
 }
