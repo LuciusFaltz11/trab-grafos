@@ -26,6 +26,10 @@ private:
     bool ponderadoVertice;
     int ponderadoId;
     void criaListaOrdenadaAresta(ListaOrdenaAresta *lista, bool direcionado);
+    int encontrarSubarvore(Lista *vetorNos[], int id);
+    void criaSubarvoreNos(Lista *subarvoreNos[]);
+    bool avaliaSubarvores(int no1, int no2, Lista *subarvoreNos[]);
+    void unirSubarvores(int no1, int no2, Lista *subarvoreNos[]);
 
 public:
     string nome;
