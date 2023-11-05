@@ -137,7 +137,7 @@ int main(int argc, char const *argv[])
         grafo.arvoreMinimaKruskal();
     }
 
-    //teste Dijkstra
+    //teste Djkstra
     cout << "Deseja calcular o caminho minimo entre 2 nos? (s/n)" << endl;
     char testeDijkstra;
     cin >> testeDijkstra;
