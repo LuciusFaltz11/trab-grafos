@@ -424,7 +424,9 @@ void Grafo::arvoreMinimaKruskal()
     // teste: aresta ordenada
     listaAresta->imprimeListaOrdenada();
 
-    Lista *vetorSubarvores = new Lista[totalNos];
+    Lista **vetorSubarvores = new Lista *[totalNos];
+    criaSubarvoreNos(vetorSubarvores);
+
     Lista *arvoreMinima = new Lista();
     int cont = 0;
 
@@ -434,17 +436,29 @@ void Grafo::arvoreMinimaKruskal()
         int v = listaAresta->getPrimeiraAresta()->getDestino();
         listaAresta->removeArestaInicio();
 
-        if (avaliaSubarvores(u, v, &vetorSubarvores))
+        int raizU = encontrarSubarvore(vetorSubarvores, u);
+        int raizV = encontrarSubarvore(vetorSubarvores, v);
+
+        if (raizU != raizV && raizU != -1 && raizV != -1)
         {
             arvoreMinima->AddElemento(u);
             arvoreMinima->AddElemento(v);
-            unirSubarvores(u, v, &vetorSubarvores);
+            vetorSubarvores[raizU]->unirListas(*vetorSubarvores[raizV]);
             cont++;
         }
     }
 
     cout << "Imprime arvore minima" << endl;
     arvoreMinima->imprime();
+
+    // desalocar
+    delete listaAresta;
+    for (int i = 0; i < totalNos; i++)
+    {
+        delete vetorSubarvores[i];
+    }
+    delete[] vetorSubarvores;
+    delete arvoreMinima;
 }
 
 int Grafo::encontrarSubarvore(Lista *vetorNos[], int id)
@@ -457,18 +471,6 @@ int Grafo::encontrarSubarvore(Lista *vetorNos[], int id)
         }
     }
     return -1; // Retorna -1 se o id não for encontrado
-}
-
-void Grafo::unirSubarvores(int no1, int no2, Lista *vetorSubarvores[])
-{
-    int raizU = encontrarSubarvore(vetorSubarvores, no1);
-    int raizV = encontrarSubarvore(vetorSubarvores, no2);
-
-    if (raizU != raizV && raizU != -1 && raizV != -1)
-    {
-        // Unir as subárvores de u e v
-        vetorSubarvores[raizU]->unirListas(*vetorSubarvores[raizV]);
-    }
 }
 
 void Grafo::criaListaOrdenadaAresta(ListaOrdenaAresta *lista, bool direcionado)

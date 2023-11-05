@@ -99,14 +99,6 @@ void Lista::unirListas(Lista &novaLista)
         nElementos += novaLista.getNElementos();
     }
 
-    // limpar a segunda lista
-    ListaElemento *nosExcluir = novaLista.getPrimeiroElemento();
-    for (int i = 0; i < novaLista.getNElementos(); i++)
-    {
-        ListaElemento *eliminar = nosExcluir;
-        nosExcluir = nosExcluir->getProxElemento();
-        delete eliminar;
-    }
     novaLista.nElementos = 0;
 }
 
