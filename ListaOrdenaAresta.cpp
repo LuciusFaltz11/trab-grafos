@@ -178,6 +178,26 @@ void ListaOrdenaAresta::ordenaLista()
     mergeSort(primeira);
 }
 
+void ListaOrdenaAresta::removeArestaInicio()
+{
+    ArestaLista *remove = primeira;
+    primeira = primeira->getProxima();
+    delete remove;
+
+    /*
+    ArestaLista *anterior = primeira;
+    ArestaLista *aux = primeira;
+    while (aux->getOrigem() != origemRemove && aux->getDestino() != destinoRemove)
+    {
+        anterior = aux;
+        aux = aux->getProxima();
+    }
+
+    anterior->setProxima(aux->getProxima());
+    delete aux;
+    */
+}
+
 int ListaOrdenaAresta::getTotalArestas(){
     return this->totalArestas;
 }

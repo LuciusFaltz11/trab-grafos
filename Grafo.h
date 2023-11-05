@@ -17,6 +17,7 @@ class Grafo
 private:
     No *raizGrafo;
     No *ultimoNo;
+    int totalNos = 0;
     void AddNoArestaAux(int no1, int no2, int peso);
     // void AddNoArestaAux(int no1, int no2);
     void AddNo(int no);
@@ -24,7 +25,11 @@ private:
     bool ponderadoAresta;
     bool ponderadoVertice;
     int ponderadoId;
-    void criaListaOrdenadaAresta(ListaOrdenaAresta* lista, bool direcionado);
+    void criaListaOrdenadaAresta(ListaOrdenaAresta *lista, bool direcionado);
+    int encontrarSubarvore(Lista *vetorNos[], int id);
+    void criaSubarvoreNos(Lista *subarvoreNos[]);
+    bool avaliaSubarvores(int no1, int no2, Lista *subarvoreNos[]);
+    void unirSubarvores(int no1, int no2, Lista *subarvoreNos[]);
     int selecionaVerticeDeMenorDistancia(int numVertices, int distancia[], bool visitados[]);
 
 public:
@@ -42,12 +47,13 @@ public:
     Lista *getArestasNo(int id);
     bool iterate(bool (*func)(int, int));
     void generateDreampufFile(string filename);
-    Grafo* inverteArestasDirecionadas();
+    Grafo *inverteArestasDirecionadas();
     void arvoreProfundidade(int id);
     void arvoreProfundidade(int id, bool generateDreampufFile);
     int contabilizaArestas(bool direcionado);
     void getCaminhoMaisCurtoDjkstra(int idNo1, int idNo2);
     void arvoreMinimaKruskal();
+    void setTotalNos(int qtd) { this->totalNos = qtd; };
 };
 
 #endif // GrafoDefined

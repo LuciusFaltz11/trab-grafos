@@ -421,8 +421,56 @@ void Grafo::arvoreMinimaKruskal()
 {
     ListaOrdenaAresta *listaAresta = new ListaOrdenaAresta();
     criaListaOrdenadaAresta(listaAresta, direcionado);
-    listaAresta->ordenaLista();
+    // teste: aresta ordenada
     listaAresta->imprimeListaOrdenada();
+
+    Lista **vetorSubarvores = new Lista *[totalNos];
+    criaSubarvoreNos(vetorSubarvores);
+
+    Lista *arvoreMinima = new Lista();
+    int cont = 0;
+
+    while (cont < totalNos - 1 && listaAresta != nullptr)
+    {
+        int u = listaAresta->getPrimeiraAresta()->getOrigem();
+        int v = listaAresta->getPrimeiraAresta()->getDestino();
+        listaAresta->removeArestaInicio();
+
+        int raizU = encontrarSubarvore(vetorSubarvores, u);
+        int raizV = encontrarSubarvore(vetorSubarvores, v);
+
+        if (raizU != raizV && raizU != -1 && raizV != -1)
+        {
+            arvoreMinima->AddElemento(u);
+            arvoreMinima->AddElemento(v);
+            vetorSubarvores[raizU]->unirListas(*vetorSubarvores[raizV]);
+            cont++;
+        }
+    }
+
+    cout << "Imprime arvore minima" << endl;
+    arvoreMinima->imprime();
+
+    // desalocar
+    delete listaAresta;
+    for (int i = 0; i < totalNos; i++)
+    {
+        delete vetorSubarvores[i];
+    }
+    delete[] vetorSubarvores;
+    delete arvoreMinima;
+}
+
+int Grafo::encontrarSubarvore(Lista *vetorNos[], int id)
+{
+    for (int i = 0; i < totalNos; i++)
+    {
+        if (vetorNos[i]->getPrimeiroElemento()->getValue() == id)
+        {
+            return i;
+        }
+    }
+    return -1; // Retorna -1 se o id não for encontrado
 }
 
 void Grafo::criaListaOrdenadaAresta(ListaOrdenaAresta *lista, bool direcionado)
@@ -459,7 +507,42 @@ void Grafo::criaListaOrdenadaAresta(ListaOrdenaAresta *lista, bool direcionado)
             noGrafo = noGrafo->getProxNo();
         }
     }
+    lista->ordenaLista();
 }
+
+void Grafo::criaSubarvoreNos(Lista *subarvoreNos[])
+{
+    No *listaNos = raizGrafo;
+    for (int i = 0; i < totalNos; i++)
+    {
+        subarvoreNos[i] = new Lista();
+        subarvoreNos[i]->AddElemento(listaNos->getId());
+        listaNos = listaNos->getProxNo();
+    }
+}
+
+bool Grafo::avaliaSubarvores(int no1, int no2, Lista *subarvoreNos[])
+{
+    for (int i = 0; i < totalNos; i++)
+    {
+        if (subarvoreNos[i]->getPrimeiroElemento()->getValue() == no1)
+        {
+            if (subarvoreNos[i]->contem(no2))
+            {
+                return false;
+            }
+            if (subarvoreNos[i]->getPrimeiroElemento()->getValue() == no2)
+            {
+                if (subarvoreNos[i]->contem(no1))
+                {
+                    return false;
+                }
+            }
+        }
+    }
+    return true;
+}
+
 
 int Grafo::selecionaVerticeDeMenorDistancia(int numArestas, int distancia[], bool visitados[]){
     const int INFINITO = 1e9;

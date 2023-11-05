@@ -1,4 +1,7 @@
 #include "Lista.h"
+#include <iostream>
+
+using namespace std;
 
 Lista::Lista()
 {
@@ -61,11 +64,51 @@ int Lista::getNElementos()
     return nElementos;
 }
 
-void Lista::iterate(void (*func)(int)){
+void Lista::iterate(void (*func)(int))
+{
     ListaElemento *elementoNav = primeiroElemento;
     while (elementoNav != NULL)
     {
         func(elementoNav->getValue());
         elementoNav = elementoNav->getProxElemento();
+    }
+}
+
+ListaElemento *Lista::getPrimeiroElemento()
+{
+    return primeiroElemento;
+}
+
+void Lista::unirListas(Lista &novaLista)
+{
+    if (novaLista.getPrimeiroElemento() == NULL)
+    {
+        return;
+    }
+
+    if (primeiroElemento == NULL)
+    {
+        primeiroElemento = novaLista.getPrimeiroElemento();
+        ultimoElemento = novaLista.getPrimeiroElemento();
+        nElementos = novaLista.getNElementos();
+    }
+    else
+    { // adicionar as duas listas
+        ultimoElemento->setProxElemento(novaLista.getPrimeiroElemento());
+        ultimoElemento = novaLista.ultimoElemento;
+        nElementos += novaLista.getNElementos();
+    }
+
+    novaLista.nElementos = 0;
+}
+
+void Lista::imprime()
+{
+    ListaElemento *nos = primeiroElemento;
+
+    while (nos != NULL)
+    {
+        cout << nos->getValue() << endl;
+        nos = nos->getProxElemento();
     }
 }

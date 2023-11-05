@@ -18,5 +18,19 @@ public:
     void addAresta(int origem, int destino, int peso);
     void ordenaLista();
     void imprimeListaOrdenada();
+    void removeArestaInicio();
+    bool listaVazia()
+    {
+        if (this->primeira == nullptr)
+        {
+            return true;
+        }
+        else
+            return false;
+    };
+    ArestaLista *getPrimeiraAresta()
+    {
+        return primeira;
+    };
     int getTotalArestas();
 };
