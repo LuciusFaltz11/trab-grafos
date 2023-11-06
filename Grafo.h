@@ -12,6 +12,12 @@
 #include "ListaOrdenaAresta.h"
 using namespace std;
 
+struct Subarvore
+{
+    int *nos; // nos da subarvore
+    int tam;  // tamanho atual do vetor
+    int max;  // capacidade máxima
+};
 class Grafo
 {
 private:
@@ -26,10 +32,17 @@ private:
     bool ponderadoVertice;
     int ponderadoId;
     void criaListaOrdenadaAresta(ListaOrdenaAresta *lista, bool direcionado);
-    int encontrarSubarvore(Lista *vetorNos[], int id);
-    void criaSubarvoreNos(Lista *subarvoreNos[]);
-    bool avaliaSubarvores(int no1, int no2, Lista *subarvoreNos[]);
-    void unirSubarvores(int no1, int no2, Lista *subarvoreNos[]);
+    // int encontrarSubarvore(Lista *vetorNos[], int id);
+    // int encontrarSubarvore(int id, int parent[]);
+    // void criaSubarvoreNos(Lista *subarvoreNos[]);
+    // bool avaliaSubarvores(int no1, int no2, Lista *subarvoreNos[]);
+    // bool unirSubarvores(int u, int v, int parent[]);
+    // void unirSubarvores(int no1, int no2, Lista *subarvoreNos[]);
+    void criarSubarvores(Subarvore subarvore[]);
+    void adicionarNo(Subarvore &subarvore, int no);
+    void liberarSubarvore(Subarvore &subarvore);
+    int encontraSubarvore(int id, Subarvore *vetorSub);
+    void unirSubarvores(int idxArvU, int idxArvV, Subarvore *vetorSub);
 
 public:
     string nome;
@@ -51,6 +64,7 @@ public:
     void arvoreProfundidade(int id, bool generateDreampufFile);
     void arvoreMinimaKruskal();
     void setTotalNos(int qtd) { this->totalNos = qtd; };
+    void arvoreMinimaPrim();
 };
 
 #endif // GrafoDefined

@@ -74,6 +74,7 @@ void Lista::iterate(void (*func)(int))
     }
 }
 
+/*
 ListaElemento *Lista::getPrimeiroElemento()
 {
     return primeiroElemento;
@@ -112,3 +113,4 @@ void Lista::imprime()
         nos = nos->getProxElemento();
     }
 }
+*/
