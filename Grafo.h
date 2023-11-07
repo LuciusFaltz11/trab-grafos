@@ -43,6 +43,7 @@ private:
     void liberarSubarvore(Subarvore &subarvore);
     int encontraSubarvore(int id, Subarvore *vetorSub);
     void unirSubarvores(int idxArvU, int idxArvV, Subarvore *vetorSub);
+    void imprimirSubarvores(Subarvore vetorNos[]);
 
 public:
     string nome;

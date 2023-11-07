@@ -441,6 +441,8 @@ void Grafo::arvoreMinimaKruskal()
         int u = listaAresta->getPrimeiraAresta()->getOrigem();
         int v = listaAresta->getPrimeiraAresta()->getDestino();
         listaAresta->removeArestaInicio();
+
+        // teste
         cout << "imprimir nova lista" << endl;
         listaAresta->imprimeListaOrdenada();
 
@@ -459,8 +461,14 @@ void Grafo::arvoreMinimaKruskal()
             contArvMin++;
             unirSubarvores(raizU, raizV, vetorSubavores);
             cont++;
+
+            // teste
             cout << "Adicionado: " << u << " - " << v << endl;
         }
+        // teste
+        cout << endl;
+        imprimirSubarvores(vetorSubavores);
+        cout << endl;
     }
 
     // imprimir arvore minima
@@ -698,7 +706,16 @@ void Grafo::criarSubarvores(Subarvore subarvore[])
         subarvore[i].max = totalNos; // capacidade max
         // criar nó
         subarvore[i].nos[0] = nosGrafo->getId();
+        subarvore[i].tam = 1;
+
+        // teste
         cout << "cria subarvore" << subarvore[i].nos[0] << endl;
+        for (int j = 0; j < totalNos; j++)
+        {
+            subarvore[i].nos[j] = -1;
+        }
+        // fimTeste
+
         nosGrafo = nosGrafo->getProxNo();
     }
 }
@@ -747,4 +764,19 @@ void Grafo::unirSubarvores(int idxArvU, int idxArvV, Subarvore *vetorSub)
 
 void Grafo::arvoreMinimaPrim()
 {
+}
+
+// funcao teste
+void Grafo::imprimirSubarvores(Subarvore vetorNos[])
+{
+    for (int i = 0; i < totalNos; i++)
+    {
+        int j = 0;
+        cout << "subarvore " << i << endl;
+        while (vetorNos[i].nos[j] != -1)
+        {
+            cout << vetorNos[i].nos[j] << endl;
+            j++;
+        }
+    }
 }
