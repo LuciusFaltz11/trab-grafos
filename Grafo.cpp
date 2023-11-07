@@ -2,6 +2,18 @@
 
 #include "Grafo.h"
 
+bool arvoreMinimaContem(int no, vector<int> arvoreMinima, int arvoreMinimaTam)
+{
+    for (int i = 0; i < arvoreMinimaTam; i++)
+    {
+        if (arvoreMinima[i] == no)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 Grafo::Grafo(bool direcionado, int ponderadoId)
 {
     /*
@@ -429,12 +441,17 @@ void Grafo::arvoreMinimaKruskal()
     int cont = 0;
 
     // vetor dos nós da arvore minima
-    int arvoreMinima[totalNos];
+    // int arvoreMinima[totalNos];
+    vector<int> arvoreMinima(totalNos);
+    vector<ArestaLista> arvoreMinimaArestas(totalNos);
+    // vector<Subarvore> arvoreMinima(totalNos);
     int contArvMin = 0;
-    for (int i = 0; i < totalNos; i++)
-    {
-        arvoreMinima[i] = -1; // Inicialize com um valor inválido
-    }
+    // for (int i = 0; i < totalNos; i++)
+    // {
+    //     arvoreMinima[i] = -1; // Inicialize com um valor inválido
+    // }
+
+    Grafo subarvoreTemp(false,0);
 
     while (cont < totalNos - 1 && !listaAresta->listaVazia())
     {
@@ -443,33 +460,74 @@ void Grafo::arvoreMinimaKruskal()
         listaAresta->removeArestaInicio();
 
         // teste
-        cout << "imprimir nova lista" << endl;
-        listaAresta->imprimeListaOrdenada();
+        // cout << "imprimir nova lista" << endl;
+        // listaAresta->imprimeListaOrdenada();
 
         cout << "\nu: " << u << "v: " << v << endl;
         // verificar se estão na mesma subarvore
         int raizU = encontraSubarvore(u, vetorSubavores);
         int raizV = encontraSubarvore(v, vetorSubavores);
 
-        cout << "\nraiz v:" << raizV << "raiz u: " << raizU << endl;
+        // cout << "\nraiz v:" << raizV << "raiz u: " << raizU << endl;
 
-        if (raizU != raizV && raizU != -1 && raizV != -1)
+        // if (raizU != raizV && raizU != -1 && raizV != -1)
+        // if (raizU != raizV)
+
+        if (!estaoNaMesmaArvore(u, v, vetorSubavores, totalNos) && raizU != raizV)
         {
-            arvoreMinima[contArvMin] = u;
-            contArvMin++;
-            arvoreMinima[contArvMin] = v;
-            contArvMin++;
-            unirSubarvores(raizU, raizV, vetorSubavores);
+            cout << "arvore u" << endl;
+            for (int i = 0; i < vetorSubavores[raizU].tam; i++)
+            {
+                cout << vetorSubavores[raizU].nos[i] << " ";
+            }
+            cout << endl;
+            cout << "arvore v " << endl;
+            for (int i = 0; i < vetorSubavores[raizV].tam; i++)
+            {
+                cout << vetorSubavores[raizV].nos[i] << " ";
+            }
+            cout << endl;
+
+            cout << "Adicionado: " << u << " - " << v << endl;
+            // if (!arvoreMinimaContem(u, arvoreMinima, contArvMin))
+            // {
+            //     arvoreMinima[contArvMin] = u;
+            //     contArvMin++;
+            // }
+            // if (!arvoreMinimaContem(v, arvoreMinima, contArvMin))
+            // {
+            //     arvoreMinima[contArvMin] = v;
+            //     contArvMin++;
+            // }
+
+            subarvoreTemp.AddNoAresta(u,v);
+
+            cout << "unindo: " << raizU << " -> " << raizV << endl;
+            // unirSubarvores(raizU, raizV, vetorSubavores);
+            unirSubarvores(raizV, raizU, vetorSubavores);
+            
+            imprimirSubarvores(vetorSubavores);
+
+            arvoreMinimaArestas[cont] = ArestaLista(u,v,1);
             cont++;
 
             // teste
-            cout << "Adicionado: " << u << " - " << v << endl;
+
+            cout << "Imprimir arvore minima" << endl;
+            for (int i = 0; i < totalNos; i++)
+            {
+                if (arvoreMinima[i] != -1)
+                {
+                    cout << arvoreMinima[i] << endl;
+                }
+            }
         }
         // teste
-        cout << endl;
-        imprimirSubarvores(vetorSubavores);
-        cout << endl;
+        // cout << endl;
+        // imprimirSubarvores(vetorSubavores);
+        // cout << endl;
     }
+    subarvoreTemp.generateDreampufFile("algoritomoDoido.dat");
 
     // imprimir arvore minima
     cout << "Imprimir arvore minima" << endl;
@@ -481,6 +539,7 @@ void Grafo::arvoreMinimaKruskal()
         }
     }
 
+
     delete listaAresta;
     for (int i = 0; i < totalNos; i++)
     {
@@ -490,6 +549,43 @@ void Grafo::arvoreMinimaKruskal()
         }
     }
     delete[] vetorSubavores;
+}
+
+
+bool Grafo::estaoNaMesmaArvore(int raizU, int raizV, Subarvore *vetorSub, int tamVetorSub)
+{
+
+    for (int arvoreIndex = 0; arvoreIndex < tamVetorSub; arvoreIndex++)
+    {
+        bool no1 = false;
+        bool no2 = false;
+        for (int noUIndex = 0; noUIndex < vetorSub[arvoreIndex].tam; noUIndex++)
+        {
+            if (vetorSub[arvoreIndex].nos[noUIndex] == raizU)
+            {
+                no1 = true;
+            }
+            if (vetorSub[arvoreIndex].nos[noUIndex] == raizV)
+            {
+                no1 = true;
+            }
+            if (no1 == true && no2 == true)
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+    // for (int i = 0; i < totalNos; i++)
+    // {
+    //     for (int j = 0; j < vetorSub[i].tam; j++)
+    //     {
+    //         if (vetorSub[i].nos[j] == id)
+    //         {
+    //             return i; // indice da arvore com o nó
+    //         }
+    //     }
+    // }
 }
 
 /*
@@ -709,8 +805,8 @@ void Grafo::criarSubarvores(Subarvore subarvore[])
         subarvore[i].tam = 1;
 
         // teste
-        cout << "cria subarvore" << subarvore[i].nos[0] << endl;
-        for (int j = 0; j < totalNos; j++)
+        // cout << "cria subarvore " << subarvore[i].nos[0] << endl;
+        for (int j = 1; j < totalNos; j++)
         {
             subarvore[i].nos[j] = -1;
         }
@@ -720,19 +816,19 @@ void Grafo::criarSubarvores(Subarvore subarvore[])
     }
 }
 
-void Grafo::adicionarNo(Subarvore &subarvore, int no)
+void Grafo::adicionarNo(Subarvore *subarvore, int no)
 {
-    if (subarvore.tam < subarvore.max)
+    if (subarvore->tam < subarvore->max)
     {
-        subarvore.nos[subarvore.tam] = no;
-        subarvore.tam++;
+        subarvore->nos[subarvore->tam] = no;
+        subarvore->tam = subarvore->tam + 1;
     }
 }
 
 void Grafo::liberarSubarvore(Subarvore &subarvore)
 {
     delete[] subarvore.nos;
-    subarvore.nos = nullptr;
+    subarvore.nos = NULL;
     subarvore.tam = 0;
     subarvore.max = 0;
 }
@@ -754,12 +850,19 @@ int Grafo::encontraSubarvore(int id, Subarvore *vetorSub)
 
 void Grafo::unirSubarvores(int idxArvU, int idxArvV, Subarvore *vetorSub)
 {
+    // cout << "tamanho antigo da arvore " << idxArvV << ": " << vetorSub[idxArvV].tam << endl;
     for (int i = 0; i < vetorSub[idxArvU].tam; i++)
     {
-        adicionarNo(vetorSub[idxArvV], vetorSub[idxArvU].nos[i]);
+        adicionarNo(&vetorSub[idxArvV], vetorSub[idxArvU].nos[i]);
+        // if (vetorSub[idxArvV].tam < vetorSub[idxArvV].max)
+        // {
+        //     vetorSub[idxArvV].nos[vetorSub[idxArvV].tam] = vetorSub[idxArvU].nos[i];
+        //     vetorSub[idxArvV].tam++;
+        // }
     }
-
-    liberarSubarvore(vetorSub[idxArvV]);
+    // cout << "novo tamanho da arvore " << idxArvV << ": " << vetorSub[idxArvV].tam << endl;
+    // vetorSub[idxArvU].tam = 0;
+    liberarSubarvore(vetorSub[idxArvU]);
 }
 
 void Grafo::arvoreMinimaPrim()
@@ -772,11 +875,13 @@ void Grafo::imprimirSubarvores(Subarvore vetorNos[])
     for (int i = 0; i < totalNos; i++)
     {
         int j = 0;
-        cout << "subarvore " << i << endl;
-        while (vetorNos[i].nos[j] != -1)
+        cout << "subarvore " << i << ": ";
+        for(int j = 0; j < vetorNos[i].tam; j++)
+        // while (vetorNos[i].nos[j] != -1)
         {
-            cout << vetorNos[i].nos[j] << endl;
-            j++;
+            cout << vetorNos[i].nos[j] << " ";
+            // j++;
         }
+        cout << endl;
     }
 }

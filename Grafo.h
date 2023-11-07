@@ -4,6 +4,7 @@
 #include <iostream>
 #include <stdarg.h>
 #include <fstream>
+#include <vector>
 #include "No.h"
 #include "Pilha.h"
 #include "PilhaArestas.h"
@@ -39,9 +40,11 @@ private:
     // bool unirSubarvores(int u, int v, int parent[]);
     // void unirSubarvores(int no1, int no2, Lista *subarvoreNos[]);
     void criarSubarvores(Subarvore subarvore[]);
-    void adicionarNo(Subarvore &subarvore, int no);
+    // void adicionarNo(Subarvore &subarvore, int no);
+    void adicionarNo(Subarvore *subarvore, int no);
     void liberarSubarvore(Subarvore &subarvore);
     int encontraSubarvore(int id, Subarvore *vetorSub);
+    bool estaoNaMesmaArvore(int raizU, int raizV, Subarvore *vetorSub, int tamVetorSub);
     void unirSubarvores(int idxArvU, int idxArvV, Subarvore *vetorSub);
     void imprimirSubarvores(Subarvore vetorNos[]);
 
