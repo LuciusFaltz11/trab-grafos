@@ -544,11 +544,11 @@ bool Grafo::avaliaSubarvores(int no1, int no2, Lista *subarvoreNos[])
 }
 
 
-int Grafo::selecionaVerticeDeMenorDistancia(int numArestas, int distancia[], bool visitados[]){
+int Grafo::selecionaVerticeDeMenorDistancia(int numNos, int distancia[], bool visitados[]){
     const int INFINITO = 1e9;
     int menorDistancia = INFINITO;
     int idMenorDistancia = -1;
-    for(int i = 0; i < numArestas; i++){
+    for(int i = 0; i < numNos; i++){
         if(distancia[i] < menorDistancia && !visitados[i]){
             menorDistancia = distancia[i];
             idMenorDistancia = i;
@@ -560,22 +560,35 @@ int Grafo::selecionaVerticeDeMenorDistancia(int numArestas, int distancia[], boo
 
 void Grafo::getCaminhoMaisCurtoDjkstra(int idNo1, int idNo2){
     const int INFINITO = 1e9;
-    ListaOrdenaAresta *listaDeArestas = new ListaOrdenaAresta();
-    criaListaOrdenadaAresta(listaDeArestas, this->direcionado);
-    int numArestas = listaDeArestas->getTotalArestas();
-    int distancia[numArestas];
-    int predecessores[numArestas];
-    bool visitados[numArestas];
+    int numNos = this->totalNos;
+    int distancia[numNos];
+    int predecessores[numNos];
+    bool visitados[numNos];
     //inicializacaoDosVetores
-    for(int i = 0; i < numArestas ; i++){
+    for(int i = 0; i < numNos ; i++){
         distancia[i] = (i == idNo1) ? 0 : INFINITO;
         predecessores[i] = -1;
         visitados[i] = false;
     }
 
-    int idMenorDistancia = selecionaVerticeDeMenorDistancia(numArestas, distancia, visitados);
+    for (int i = 0; i < numNos - 1; i++) {
+        int idMenorDistancia = selecionaVerticeDeMenorDistancia(numNos, distancia, visitados);
+        visitados[idMenorDistancia] = true;
 
-    No *verticeOrigem = this->procuraId(idNo1);
-    listaDeArestas->imprimeListaOrdenada();
+        // Atualizar as distâncias
+        No *verticeAtual = this->procuraId(idMenorDistancia);
+        Aresta *arestaAtual = verticeAtual->getPrimeiraAresta();
+
+        while (arestaAtual != nullptr) {
+            int idAdjacente = arestaAtual->getDestino();
+            if (!visitados[idAdjacente] && (distancia[idMenorDistancia] + arestaAtual->getPeso() < distancia[idAdjacente])) {
+                distancia[idAdjacente] = distancia[idMenorDistancia] + arestaAtual->getPeso();
+                predecessores[idAdjacente] = idMenorDistancia;
+            }
+            arestaAtual = arestaAtual->getProxAresta();
+        }
+    }
+    
+
 
 }
