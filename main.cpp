@@ -134,7 +134,18 @@ int main(int argc, char const *argv[])
     cin >> arvoreMinima;
     if (arvoreMinima == 's')
     {
-        grafo.arvoreMinimaKruskal();
+        int vertice;
+        Lista *vertices = new Lista();
+        cout << "Selecione os vertices que deseja na arvore minima: " << endl;
+        do
+        {
+            cout << "Digite o id do vertice: ";
+            cin >> vertice;
+            vertices->AddElemento(vertice);
+            cout << "Deseja adicionar mais um vertice? (s/n)" << endl;
+            cin >> arvoreMinima;
+        } while (arvoreMinima == 's');
+        grafo.arvoreMinimaKruskal(vertices);
     }
 
     int input;

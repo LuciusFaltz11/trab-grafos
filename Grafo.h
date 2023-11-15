@@ -25,25 +25,21 @@ private:
     No *ultimoNo;
     int totalNos = 0;
     void AddNoArestaAux(int no1, int no2, int peso);
-    // void AddNoArestaAux(int no1, int no2);
     void AddNo(int no);
     bool direcionado;
     bool ponderadoAresta;
     bool ponderadoVertice;
     int ponderadoId;
-    void criaListaOrdenadaAresta(ListaOrdenaAresta *lista, bool direcionado);
-    // int encontrarSubarvore(Lista *vetorNos[], int id);
-    // int encontrarSubarvore(int id, int parent[]);
-    // void criaSubarvoreNos(Lista *subarvoreNos[]);
-    // bool avaliaSubarvores(int no1, int no2, Lista *subarvoreNos[]);
-    // bool unirSubarvores(int u, int v, int parent[]);
-    // void unirSubarvores(int no1, int no2, Lista *subarvoreNos[]);
+    void criaListaOrdenadaAresta(ListaOrdenaAresta *lista, bool direcionado, Grafo *subGrafo);
     void criarSubarvores(Subarvore subarvore[]);
     void adicionarNo(Subarvore &subarvore, int no);
     void liberarSubarvore(Subarvore &subarvore);
     int encontraSubarvore(int id, Subarvore *vetorSub);
     void unirSubarvores(int idxArvU, int idxArvV, Subarvore *vetorSub);
     void imprimirSubarvores(Subarvore vetorNos[]);
+    bool nosPertencemSubarvore(int raizU, int raizV, Subarvore *vetorSub, int tamVetorSub);
+    bool temAresta(int no1, int no2);
+    void gerarSubgrafoInduzido(Lista *vertices, Grafo *&subgrafo);
 
 public:
     string nome;
@@ -63,7 +59,7 @@ public:
     Grafo *inverteArestasDirecionadas();
     void arvoreProfundidade(int id);
     void arvoreProfundidade(int id, bool generateDreampufFile);
-    void arvoreMinimaKruskal();
+    void arvoreMinimaKruskal(Lista *vertices);
     void setTotalNos(int qtd) { this->totalNos = qtd; };
     void arvoreMinimaPrim();
 };

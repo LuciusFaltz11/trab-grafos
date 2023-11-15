@@ -74,12 +74,12 @@ void Lista::iterate(void (*func)(int))
     }
 }
 
-/*
 ListaElemento *Lista::getPrimeiroElemento()
 {
     return primeiroElemento;
 }
 
+/*
 void Lista::unirListas(Lista &novaLista)
 {
     if (novaLista.getPrimeiroElemento() == NULL)

@@ -1,6 +1,7 @@
 #define PESO_NAO_PONDERADO 0
 
 #include "Grafo.h"
+#include <iostream>
 
 Grafo::Grafo(bool direcionado, int ponderadoId)
 {
@@ -417,24 +418,27 @@ void Grafo::arvoreProfundidade(int id)
     }
 }
 
-void Grafo::arvoreMinimaKruskal()
+void Grafo::arvoreMinimaKruskal(Lista *vertices)
 {
+    // criar subgrafo vertice-induzido
+    Grafo *subgrafo;
+    gerarSubgrafoInduzido(vertices, subgrafo);
+
+    // lista ordenada do subgrafo
     ListaOrdenaAresta *listaAresta = new ListaOrdenaAresta();
-    criaListaOrdenadaAresta(listaAresta, direcionado);
+    criaListaOrdenadaAresta(listaAresta, direcionado, subgrafo);
     listaAresta->imprimeListaOrdenada();
 
+    // vetor de subarvores
     Subarvore *vetorSubavores = new Subarvore[totalNos];
     cout << "total nós:" << totalNos << endl;
     criarSubarvores(vetorSubavores);
     int cont = 0;
 
     // vetor dos nós da arvore minima
-    int arvoreMinima[totalNos];
-    int contArvMin = 0;
-    for (int i = 0; i < totalNos; i++)
-    {
-        arvoreMinima[i] = -1; // Inicialize com um valor inválido
-    }
+    ListaOrdenaAresta *arvoreMinima = new ListaOrdenaAresta();
+    // gerar arquivo com a arvore minimakruskal
+    Grafo arvoreMinimaGrafo(false, 0);
 
     while (cont < totalNos - 1 && !listaAresta->listaVazia())
     {
@@ -442,46 +446,26 @@ void Grafo::arvoreMinimaKruskal()
         int v = listaAresta->getPrimeiraAresta()->getDestino();
         listaAresta->removeArestaInicio();
 
-        // teste
-        cout << "imprimir nova lista" << endl;
-        listaAresta->imprimeListaOrdenada();
-
-        cout << "\nu: " << u << "v: " << v << endl;
         // verificar se estão na mesma subarvore
         int raizU = encontraSubarvore(u, vetorSubavores);
         int raizV = encontraSubarvore(v, vetorSubavores);
 
-        cout << "\nraiz v:" << raizV << "raiz u: " << raizU << endl;
-
-        if (raizU != raizV && raizU != -1 && raizV != -1)
+        if (!nosPertencemSubarvore(u, v, vetorSubavores, totalNos) && raizU != raizV)
         {
-            arvoreMinima[contArvMin] = u;
-            contArvMin++;
-            arvoreMinima[contArvMin] = v;
-            contArvMin++;
-            unirSubarvores(raizU, raizV, vetorSubavores);
+            arvoreMinima->addAresta(u, v, 0);
+            arvoreMinimaGrafo.AddNoAresta(u, v);
+            unirSubarvores(raizV, raizU, vetorSubavores);
             cont++;
-
-            // teste
-            cout << "Adicionado: " << u << " - " << v << endl;
         }
-        // teste
-        cout << endl;
-        imprimirSubarvores(vetorSubavores);
-        cout << endl;
     }
 
     // imprimir arvore minima
-    cout << "Imprimir arvore minima" << endl;
-    for (int i = 0; i < totalNos; i++)
-    {
-        if (arvoreMinima[i] != -1)
-        {
-            cout << arvoreMinima[i] << endl;
-        }
-    }
+    arvoreMinima->imprimeListaOrdenada();
+    arvoreMinimaGrafo.generateDreampufFile("arvoreMinima.dat");
 
     delete listaAresta;
+    delete arvoreMinima;
+    delete subgrafo;
     for (int i = 0; i < totalNos; i++)
     {
         if (vetorSubavores[i].nos != nullptr)
@@ -492,143 +476,11 @@ void Grafo::arvoreMinimaKruskal()
     delete[] vetorSubavores;
 }
 
-/*
-void Grafo::arvoreMinimaKruskal()
-{
-    ListaOrdenaAresta *listaAresta = new ListaOrdenaAresta();
-    criaListaOrdenadaAresta(listaAresta, direcionado);
-    // teste: aresta ordenada
-    listaAresta->imprimeListaOrdenada();
-
-    Lista **vetorSubarvores = new Lista *[totalNos];
-    criaSubarvoreNos(vetorSubarvores);
-
-    Lista *arvoreMinima = new Lista();
-    int cont = 0;
-
-    while (cont < totalNos - 1 && listaAresta != nullptr)
-    {
-        int u = listaAresta->getPrimeiraAresta()->getOrigem();
-        int v = listaAresta->getPrimeiraAresta()->getDestino();
-        listaAresta->removeArestaInicio();
-
-        int raizU = encontrarSubarvore(vetorSubarvores, u);
-        int raizV = encontrarSubarvore(vetorSubarvores, v);
-
-        if (raizU != raizV && raizU != -1 && raizV != -1)
-        {
-            arvoreMinima->AddElemento(u);
-            arvoreMinima->AddElemento(v);
-            vetorSubarvores[raizU]->unirListas(*vetorSubarvores[raizV]);
-            cont++;
-        }
-    }
-
-    cout << "Imprime arvore minima" << endl;
-    arvoreMinima->imprime();
-
-    // desalocar
-    delete listaAresta;
-    for (int i = 0; i < totalNos; i++)
-    {
-        delete vetorSubarvores[i];
-    }
-    delete[] vetorSubarvores;
-    delete arvoreMinima;
-}
-*/
-
-/*
-void Grafo::arvoreMinimaKruskal()
-{
-    ListaOrdenaAresta *listaAresta = new ListaOrdenaAresta();
-    criaListaOrdenadaAresta(listaAresta, direcionado);
-    // teste: aresta ordenada
-    listaAresta->imprimeListaOrdenada();
-
-    int *parent = new int[totalNos];
-    for (int i = 0; i < totalNos; i++)
-    {
-        parent[i] = -1; // Inicializa todas as subárvores como raízes.
-    }
-
-    int arvoreMinima[totalNos];
-    int contArv = 0;
-    int cont = 0;
-
-    while (cont < totalNos - 1 && listaAresta != nullptr)
-    {
-        int u = listaAresta->getPrimeiraAresta()->getOrigem();
-        int v = listaAresta->getPrimeiraAresta()->getDestino();
-        listaAresta->removeArestaInicio();
-
-        int raizU = encontrarSubarvore(u, parent);
-        int raizV = encontrarSubarvore(v, parent);
-
-        if (raizU != raizV)
-        {
-            arvoreMinima[contArv] = u;
-            contArv++;
-            arvoreMinima[contArv] = v;
-            contArv++;
-            parent[raizU] = raizV; // Unir as subárvores.
-            cont++;
-        }
-    }
-
-    cout << "Imprime arvore minima" << endl;
-    arvoreMinima->imprime();
-
-    // desalocar
-    delete listaAresta;
-    delete[] parent;
-    delete arvoreMinima;
-}
-*/
-
-/*
-
-int Grafo::encontrarSubarvore(Lista *vetorNos[], int id)
-{
-    for (int i = 0; i < totalNos; i++)
-    {
-        if (vetorNos[i]->getPrimeiroElemento()->getValue() == id)
-        {
-            return i;
-        }
-    }
-    return -1; // Retorna -1 se o id não for encontrado
-}
-
-int Grafo::encontrarSubarvore(int id, int parent[])
-{
-    if (parent[id] == -1)
-    {
-        return id;
-    }
-    return encontrarSubarvore(parent[id], parent);
-}
-
-bool Grafo::unirSubarvores(int u, int v, int parent[])
-{
-    int raizU = encontrarSubarvore(u, parent);
-    int raizV = encontrarSubarvore(v, parent);
-
-    if (raizU != raizV)
-    {
-        parent[raizU] = raizV;
-        return true; // Vértices unidos com sucesso.
-    }
-
-    return false; // Vértices já pertencem à mesma subárvore (evita ciclo).
-}
-*/
-
-void Grafo::criaListaOrdenadaAresta(ListaOrdenaAresta *lista, bool direcionado)
+void Grafo::criaListaOrdenadaAresta(ListaOrdenaAresta *lista, bool direcionado, Grafo *subGrafo)
 {
     cout << "Criando lista de arestas" << endl;
     Aresta *arestaGrafo;
-    No *noGrafo = raizGrafo;
+    No *noGrafo = subGrafo->raizGrafo;
     if (direcionado)
     {
         while (noGrafo != NULL)
@@ -661,41 +513,6 @@ void Grafo::criaListaOrdenadaAresta(ListaOrdenaAresta *lista, bool direcionado)
     lista->ordenaLista();
 }
 
-/*
-void Grafo::criaSubarvoreNos(Lista *subarvoreNos[])
-{
-    No *listaNos = raizGrafo;
-    for (int i = 0; i < totalNos; i++)
-    {
-        subarvoreNos[i] = new Lista();
-        subarvoreNos[i]->AddElemento(listaNos->getId());
-        listaNos = listaNos->getProxNo();
-    }
-}
-
-bool Grafo::avaliaSubarvores(int no1, int no2, Lista *subarvoreNos[])
-{
-    for (int i = 0; i < totalNos; i++)
-    {
-        if (subarvoreNos[i]->getPrimeiroElemento()->getValue() == no1)
-        {
-            if (subarvoreNos[i]->contem(no2))
-            {
-                return false;
-            }
-            if (subarvoreNos[i]->getPrimeiroElemento()->getValue() == no2)
-            {
-                if (subarvoreNos[i]->contem(no1))
-                {
-                    return false;
-                }
-            }
-        }
-    }
-    return true;
-}
-*/
-
 void Grafo::criarSubarvores(Subarvore subarvore[])
 { // inicializar cada arvore
     No *nosGrafo = raizGrafo;
@@ -706,16 +523,7 @@ void Grafo::criarSubarvores(Subarvore subarvore[])
         subarvore[i].max = totalNos; // capacidade max
         // criar nó
         subarvore[i].nos[0] = nosGrafo->getId();
-        subarvore[i].tam = 1;
-
-        // teste
-        cout << "cria subarvore" << subarvore[i].nos[0] << endl;
-        for (int j = 0; j < totalNos; j++)
-        {
-            subarvore[i].nos[j] = -1;
-        }
-        // fimTeste
-
+        subarvore[i].tam++;
         nosGrafo = nosGrafo->getProxNo();
     }
 }
@@ -759,11 +567,7 @@ void Grafo::unirSubarvores(int idxArvU, int idxArvV, Subarvore *vetorSub)
         adicionarNo(vetorSub[idxArvV], vetorSub[idxArvU].nos[i]);
     }
 
-    liberarSubarvore(vetorSub[idxArvV]);
-}
-
-void Grafo::arvoreMinimaPrim()
-{
+    liberarSubarvore(vetorSub[idxArvU]);
 }
 
 // funcao teste
@@ -772,11 +576,77 @@ void Grafo::imprimirSubarvores(Subarvore vetorNos[])
     for (int i = 0; i < totalNos; i++)
     {
         int j = 0;
-        cout << "subarvore " << i << endl;
-        while (vetorNos[i].nos[j] != -1)
+        cout << "subarvore " << i << ": ";
+        for (int j = 0; j < vetorNos[i].tam; j++)
+        // while (vetorNos[i].nos[j] != -1)
         {
-            cout << vetorNos[i].nos[j] << endl;
-            j++;
+            cout << vetorNos[i].nos[j] << " ";
+            // j++;
+        }
+        cout << endl;
+    }
+}
+
+bool Grafo::nosPertencemSubarvore(int raizU, int raizV, Subarvore *vetorSub, int tamVetorSub)
+{
+    for (int arvoreIndex = 0; arvoreIndex < tamVetorSub; arvoreIndex++)
+    {
+        bool no1 = false;
+        bool no2 = false;
+        for (int noUIndex = 0; noUIndex < vetorSub[arvoreIndex].tam; noUIndex++)
+        {
+            if (vetorSub[arvoreIndex].nos[noUIndex] == raizU)
+            {
+                no1 = true;
+            }
+            if (vetorSub[arvoreIndex].nos[noUIndex] == raizV)
+            {
+                no1 = true;
+            }
+            if (no1 == true && no2 == true)
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool Grafo::temAresta(int no1, int no2)
+{
+    No *noNav = raizGrafo;
+    while (noNav != NULL)
+    {
+        if (noNav->getId() == no1)
+        {
+            Aresta *arestaNav = noNav->getPrimeiraAresta();
+            while (arestaNav != NULL)
+            {
+                if (arestaNav->getDestino() == no2)
+                {
+                    return true;
+                }
+                arestaNav = arestaNav->getProxAresta();
+            }
+        }
+        noNav = noNav->getProxNo();
+    }
+    return false;
+}
+
+void Grafo::gerarSubgrafoInduzido(Lista *vertices, Grafo *&subgrafo)
+{
+    subgrafo = new Grafo(direcionado, ponderadoId);
+    ListaElemento *elementoNav = vertices->getPrimeiroElemento();
+
+    for (ListaElemento *elementoNav = vertices->getPrimeiroElemento(); elementoNav != NULL; elementoNav = elementoNav->getProxElemento())
+    {
+        for (ListaElemento *elementoNav2 = vertices->getPrimeiroElemento(); elementoNav2 != NULL; elementoNav2 = elementoNav2->getProxElemento())
+        {
+            if (temAresta(elementoNav->getValue(), elementoNav2->getValue()))
+            {
+                subgrafo->AddNoAresta(elementoNav->getValue(), elementoNav2->getValue());
+            }
         }
     }
 }
