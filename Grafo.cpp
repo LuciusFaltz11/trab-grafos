@@ -427,7 +427,6 @@ void Grafo::arvoreMinimaKruskal(Lista *vertices)
     // lista ordenada do subgrafo
     ListaOrdenaAresta *listaAresta = new ListaOrdenaAresta();
     criaListaOrdenadaAresta(listaAresta, direcionado, subgrafo);
-    listaAresta->imprimeListaOrdenada();
 
     // vetor de subarvores
     Subarvore *vetorSubavores = new Subarvore[totalNos];
