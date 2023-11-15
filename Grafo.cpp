@@ -1,6 +1,7 @@
 #define PESO_NAO_PONDERADO 0
 
 #include "Grafo.h"
+#include <iostream>
 
 Grafo::Grafo(bool direcionado, int ponderadoId)
 {
@@ -417,67 +418,69 @@ void Grafo::arvoreProfundidade(int id)
     }
 }
 
-void Grafo::arvoreMinimaKruskal()
+void Grafo::arvoreMinimaKruskal(Lista *vertices)
 {
+    // criar subgrafo vertice-induzido
+    Grafo *subgrafo;
+    gerarSubgrafoInduzido(vertices, subgrafo);
+
+    // lista ordenada do subgrafo
     ListaOrdenaAresta *listaAresta = new ListaOrdenaAresta();
-    criaListaOrdenadaAresta(listaAresta, direcionado);
-    // teste: aresta ordenada
+    criaListaOrdenadaAresta(listaAresta, direcionado, subgrafo);
     listaAresta->imprimeListaOrdenada();
 
-    Lista **vetorSubarvores = new Lista *[totalNos];
-    criaSubarvoreNos(vetorSubarvores);
-
-    Lista *arvoreMinima = new Lista();
+    // vetor de subarvores
+    Subarvore *vetorSubavores = new Subarvore[totalNos];
+    cout << "total nós:" << totalNos << endl;
+    criarSubarvores(vetorSubavores);
     int cont = 0;
 
-    while (cont < totalNos - 1 && listaAresta != nullptr)
+    // vetor dos nós da arvore minima
+    ListaOrdenaAresta *arvoreMinima = new ListaOrdenaAresta();
+    // gerar arquivo com a arvore minimakruskal
+    Grafo arvoreMinimaGrafo(false, 0);
+
+    while (cont < totalNos - 1 && !listaAresta->listaVazia())
     {
         int u = listaAresta->getPrimeiraAresta()->getOrigem();
         int v = listaAresta->getPrimeiraAresta()->getDestino();
         listaAresta->removeArestaInicio();
 
-        int raizU = encontrarSubarvore(vetorSubarvores, u);
-        int raizV = encontrarSubarvore(vetorSubarvores, v);
+        // verificar se estão na mesma subarvore
+        int raizU = encontraSubarvore(u, vetorSubavores);
+        int raizV = encontraSubarvore(v, vetorSubavores);
 
-        if (raizU != raizV && raizU != -1 && raizV != -1)
+        if (!nosPertencemSubarvore(u, v, vetorSubavores, totalNos) && raizU != raizV)
         {
-            arvoreMinima->AddElemento(u);
-            arvoreMinima->AddElemento(v);
-            vetorSubarvores[raizU]->unirListas(*vetorSubarvores[raizV]);
+            arvoreMinima->addAresta(u, v, 0);
+            arvoreMinimaGrafo.AddNoAresta(u, v);
+            unirSubarvores(raizV, raizU, vetorSubavores);
             cont++;
         }
     }
 
-    cout << "Imprime arvore minima" << endl;
-    arvoreMinima->imprime();
+    // imprimir arvore minima
+    arvoreMinima->imprimeListaOrdenada();
+    arvoreMinimaGrafo.generateDreampufFile("arvoreMinima.dat");
 
-    // desalocar
     delete listaAresta;
-    for (int i = 0; i < totalNos; i++)
-    {
-        delete vetorSubarvores[i];
-    }
-    delete[] vetorSubarvores;
     delete arvoreMinima;
-}
-
-int Grafo::encontrarSubarvore(Lista *vetorNos[], int id)
-{
+    delete subgrafo;
     for (int i = 0; i < totalNos; i++)
     {
-        if (vetorNos[i]->getPrimeiroElemento()->getValue() == id)
+        if (vetorSubavores[i].nos != nullptr)
         {
-            return i;
+            delete[] vetorSubavores[i].nos;
         }
     }
-    return -1; // Retorna -1 se o id não for encontrado
+    delete[] vetorSubavores;
 }
 
-void Grafo::criaListaOrdenadaAresta(ListaOrdenaAresta *lista, bool direcionado)
+void Grafo::criaListaOrdenadaAresta(ListaOrdenaAresta *lista, bool direcionado, Grafo *subGrafo)
 {
     cout << "Criando lista de arestas" << endl;
     Aresta *arestaGrafo;
-    No *noGrafo = raizGrafo;
+    No *noGrafo = subGrafo->raizGrafo;
     if (direcionado)
     {
         while (noGrafo != NULL)
@@ -510,35 +513,140 @@ void Grafo::criaListaOrdenadaAresta(ListaOrdenaAresta *lista, bool direcionado)
     lista->ordenaLista();
 }
 
-void Grafo::criaSubarvoreNos(Lista *subarvoreNos[])
-{
-    No *listaNos = raizGrafo;
+void Grafo::criarSubarvores(Subarvore subarvore[])
+{ // inicializar cada arvore
+    No *nosGrafo = raizGrafo;
     for (int i = 0; i < totalNos; i++)
     {
-        subarvoreNos[i] = new Lista();
-        subarvoreNos[i]->AddElemento(listaNos->getId());
-        listaNos = listaNos->getProxNo();
+        subarvore[i].nos = new int[totalNos];
+        subarvore[i].tam = 0;
+        subarvore[i].max = totalNos; // capacidade max
+        // criar nó
+        subarvore[i].nos[0] = nosGrafo->getId();
+        subarvore[i].tam++;
+        nosGrafo = nosGrafo->getProxNo();
     }
 }
 
-bool Grafo::avaliaSubarvores(int no1, int no2, Lista *subarvoreNos[])
+void Grafo::adicionarNo(Subarvore &subarvore, int no)
+{
+    if (subarvore.tam < subarvore.max)
+    {
+        subarvore.nos[subarvore.tam] = no;
+        subarvore.tam++;
+    }
+}
+
+void Grafo::liberarSubarvore(Subarvore &subarvore)
+{
+    delete[] subarvore.nos;
+    subarvore.nos = nullptr;
+    subarvore.tam = 0;
+    subarvore.max = 0;
+}
+
+int Grafo::encontraSubarvore(int id, Subarvore *vetorSub)
 {
     for (int i = 0; i < totalNos; i++)
     {
-        if (subarvoreNos[i]->getPrimeiroElemento()->getValue() == no1)
+        for (int j = 0; j < vetorSub[i].tam; j++)
         {
-            if (subarvoreNos[i]->contem(no2))
+            if (vetorSub[i].nos[j] == id)
             {
-                return false;
-            }
-            if (subarvoreNos[i]->getPrimeiroElemento()->getValue() == no2)
-            {
-                if (subarvoreNos[i]->contem(no1))
-                {
-                    return false;
-                }
+                return i; // indice da arvore com o nó
             }
         }
     }
-    return true;
+    return -1; // nao encontra o nó em nenhuma subarvore
+}
+
+void Grafo::unirSubarvores(int idxArvU, int idxArvV, Subarvore *vetorSub)
+{
+    for (int i = 0; i < vetorSub[idxArvU].tam; i++)
+    {
+        adicionarNo(vetorSub[idxArvV], vetorSub[idxArvU].nos[i]);
+    }
+
+    liberarSubarvore(vetorSub[idxArvU]);
+}
+
+// funcao teste
+void Grafo::imprimirSubarvores(Subarvore vetorNos[])
+{
+    for (int i = 0; i < totalNos; i++)
+    {
+        int j = 0;
+        cout << "subarvore " << i << ": ";
+        for (int j = 0; j < vetorNos[i].tam; j++)
+        // while (vetorNos[i].nos[j] != -1)
+        {
+            cout << vetorNos[i].nos[j] << " ";
+            // j++;
+        }
+        cout << endl;
+    }
+}
+
+bool Grafo::nosPertencemSubarvore(int raizU, int raizV, Subarvore *vetorSub, int tamVetorSub)
+{
+    for (int arvoreIndex = 0; arvoreIndex < tamVetorSub; arvoreIndex++)
+    {
+        bool no1 = false;
+        bool no2 = false;
+        for (int noUIndex = 0; noUIndex < vetorSub[arvoreIndex].tam; noUIndex++)
+        {
+            if (vetorSub[arvoreIndex].nos[noUIndex] == raizU)
+            {
+                no1 = true;
+            }
+            if (vetorSub[arvoreIndex].nos[noUIndex] == raizV)
+            {
+                no1 = true;
+            }
+            if (no1 == true && no2 == true)
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool Grafo::temAresta(int no1, int no2)
+{
+    No *noNav = raizGrafo;
+    while (noNav != NULL)
+    {
+        if (noNav->getId() == no1)
+        {
+            Aresta *arestaNav = noNav->getPrimeiraAresta();
+            while (arestaNav != NULL)
+            {
+                if (arestaNav->getDestino() == no2)
+                {
+                    return true;
+                }
+                arestaNav = arestaNav->getProxAresta();
+            }
+        }
+        noNav = noNav->getProxNo();
+    }
+    return false;
+}
+
+void Grafo::gerarSubgrafoInduzido(Lista *vertices, Grafo *&subgrafo)
+{
+    subgrafo = new Grafo(direcionado, ponderadoId);
+    ListaElemento *elementoNav = vertices->getPrimeiroElemento();
+
+    for (ListaElemento *elementoNav = vertices->getPrimeiroElemento(); elementoNav != NULL; elementoNav = elementoNav->getProxElemento())
+    {
+        for (ListaElemento *elementoNav2 = vertices->getPrimeiroElemento(); elementoNav2 != NULL; elementoNav2 = elementoNav2->getProxElemento())
+        {
+            if (temAresta(elementoNav->getValue(), elementoNav2->getValue()))
+            {
+                subgrafo->AddNoAresta(elementoNav->getValue(), elementoNav2->getValue());
+            }
+        }
+    }
 }
