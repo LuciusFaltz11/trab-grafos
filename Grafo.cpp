@@ -649,3 +649,89 @@ void Grafo::gerarSubgrafoInduzido(Lista *vertices, Grafo *&subgrafo)
         }
     }
 }
+
+int Grafo::selecionaVerticeDeMenorDistancia(int numNos, int distancia[], bool visitados[]){
+    const int INFINITO = 1e9;
+    int menorDistancia = INFINITO;
+    int idMenorDistancia = -1;
+    for(int i = 0; i < numNos; i++){
+        if(distancia[i] < menorDistancia && !visitados[i]){
+            menorDistancia = distancia[i];
+            idMenorDistancia = i;
+        }
+    }
+    return idMenorDistancia;
+}
+
+int encontrarPosicaoPorId(int id, int* vetor, int tamanho) {
+    for (int i = 0; i < tamanho; i++) {
+        if (vetor[i] == id) {
+            return i;  // Retorna a posição se o ID for encontrado
+        }
+    }
+    return -1;  // Retorna -1 se o ID não for encontrado
+}
+
+void Grafo::getCaminhoMaisCurtoDjkstra(int idNo1, int idNo2){
+    const int INFINITO = 1e9;
+    int numNos = this->totalNos;
+    int distancia[numNos];
+    int predecessores[numNos];
+    bool visitados[numNos];
+    No *noNav = raizGrafo;
+    //inicializacaoDosVetores
+    int* idNos = new int[numNos];
+    for(int i = 0; i < numNos; i++){
+        idNos[i] = noNav->getId();
+        noNav = noNav->getProxNo();
+        distancia[i] = (idNos[i] == idNo1) ? 0 : INFINITO;
+        predecessores[i] = -1;
+        visitados[i] = false;
+    }
+
+    for (int i = 0; i < numNos - 1; i++) {
+        int idMenorDistancia = selecionaVerticeDeMenorDistancia(numNos, distancia, visitados);
+        int posicaoNo = encontrarPosicaoPorId(idMenorDistancia, idNos, numNos);
+        visitados[posicaoNo] = true;
+
+        // Atualizar as distâncias
+        No *verticeAtual = this->procuraId(idMenorDistancia);
+        Aresta *arestaAtual = verticeAtual->getPrimeiraAresta();
+
+        while (arestaAtual != nullptr) {
+            int idAdjacente = arestaAtual->getDestino();
+            int posicaoAdjacente = encontrarPosicaoPorId(idAdjacente, idNos, numNos);
+            if (!visitados[posicaoAdjacente] && (distancia[posicaoNo] + arestaAtual->getPeso() < distancia[posicaoAdjacente])) {
+                distancia[posicaoAdjacente] = distancia[posicaoNo] + arestaAtual->getPeso();
+                predecessores[posicaoAdjacente] = posicaoNo;
+            }
+            arestaAtual = arestaAtual->getProxAresta();
+        }
+    }
+
+    //refazendo o caminho
+    int* caminho = new int[numNos];
+    int tamanhoCaminho = 0;
+    int posicaoAtual = encontrarPosicaoPorId(idNo2, idNos, numNos);
+
+    while (predecessores[posicaoAtual] != -1) {
+        caminho[tamanhoCaminho++] = idNos[posicaoAtual];
+        posicaoAtual = predecessores[posicaoAtual];
+    }
+
+    // Adicionar o nó de origem ao caminho
+    caminho[tamanhoCaminho++] = idNo1;
+
+    // verificar se existe caminho entre os nos
+    if(tamanhoCaminho == 1){
+        cout << "Não existe caminho entre os nós " << idNo1 << " e " << idNo2 << endl;
+        return;
+    }
+
+    // Exibir o caminho mais curto
+    cout << "Caminho mais curto entre " << idNo1 << " e " << idNo2 << " utilizando o algoritmo de Djkstra é: ";
+    for (int i = tamanhoCaminho - 1; i >= 0; --i) {
+        cout << caminho[i] << " ";
+    }
+    cout << endl;
+}

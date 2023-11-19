@@ -40,6 +40,8 @@ private:
     bool nosPertencemSubarvore(int raizU, int raizV, Subarvore *vetorSub, int tamVetorSub);
     bool temAresta(int no1, int no2);
     void gerarSubgrafoInduzido(Lista *vertices, Grafo *&subgrafo);
+    int selecionaVerticeDeMenorDistancia(int numNos, int *distancia, bool *visitados);
+    int encontraPosicaoPorId(int id, int *vetor, int tam);
 
 public:
     string nome;
@@ -59,8 +61,6 @@ public:
     Grafo *inverteArestasDirecionadas();
     void arvoreProfundidade(int id);
     void arvoreProfundidade(int id, bool generateDreampufFile);
-    int contabilizaArestas(bool direcionado);
-    void getCaminhoMaisCurtoDjkstra(int idNo1, int idNo2);
     void arvoreMinimaKruskal(Lista *vertices);
     void setTotalNos(int qtd) { this->totalNos = qtd; };
     void arvoreMinimaPrim();
