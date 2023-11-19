@@ -12,6 +12,12 @@
 #include "ListaOrdenaAresta.h"
 using namespace std;
 
+struct Subarvore
+{
+    int *nos; // nos da subarvore
+    int tam;  // tamanho atual do vetor
+    int max;  // capacidade máxima
+};
 class Grafo
 {
 private:
@@ -19,18 +25,21 @@ private:
     No *ultimoNo;
     int totalNos = 0;
     void AddNoArestaAux(int no1, int no2, int peso);
-    // void AddNoArestaAux(int no1, int no2);
     void AddNo(int no);
     bool direcionado;
     bool ponderadoAresta;
     bool ponderadoVertice;
     int ponderadoId;
-    void criaListaOrdenadaAresta(ListaOrdenaAresta *lista, bool direcionado);
-    int encontrarSubarvore(Lista *vetorNos[], int id);
-    void criaSubarvoreNos(Lista *subarvoreNos[]);
-    bool avaliaSubarvores(int no1, int no2, Lista *subarvoreNos[]);
-    void unirSubarvores(int no1, int no2, Lista *subarvoreNos[]);
-    int selecionaVerticeDeMenorDistancia(int numVertices, int distancia[], bool visitados[]);
+    void criaListaOrdenadaAresta(ListaOrdenaAresta *lista, bool direcionado, Grafo *subGrafo);
+    void criarSubarvores(Subarvore subarvore[]);
+    void adicionarNo(Subarvore &subarvore, int no);
+    void liberarSubarvore(Subarvore &subarvore);
+    int encontraSubarvore(int id, Subarvore *vetorSub);
+    void unirSubarvores(int idxArvU, int idxArvV, Subarvore *vetorSub);
+    void imprimirSubarvores(Subarvore vetorNos[]);
+    bool nosPertencemSubarvore(int raizU, int raizV, Subarvore *vetorSub, int tamVetorSub);
+    bool temAresta(int no1, int no2);
+    void gerarSubgrafoInduzido(Lista *vertices, Grafo *&subgrafo);
 
 public:
     string nome;
@@ -52,8 +61,11 @@ public:
     void arvoreProfundidade(int id, bool generateDreampufFile);
     int contabilizaArestas(bool direcionado);
     void getCaminhoMaisCurtoDjkstra(int idNo1, int idNo2);
-    void arvoreMinimaKruskal();
+    void arvoreMinimaKruskal(Lista *vertices);
     void setTotalNos(int qtd) { this->totalNos = qtd; };
+    void arvoreMinimaPrim();
+    int contabilizaArestas(bool direcionado);
+    void getCaminhoMaisCurtoDjkstra(int idNo1, int idNo2);
 };
 
 #endif // GrafoDefined
