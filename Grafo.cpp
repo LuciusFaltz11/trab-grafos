@@ -588,7 +588,4 @@ void Grafo::getCaminhoMaisCurtoDjkstra(int idNo1, int idNo2){
             arestaAtual = arestaAtual->getProxAresta();
         }
     }
-    
-
-
 }
