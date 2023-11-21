@@ -656,6 +656,7 @@ int Grafo::selecionaVerticeDeMenorDistancia(int numNos, int distancia[], bool vi
     int idMenorDistancia = -1;
     for(int i = 0; i < numNos; i++){
         if(distancia[i] < menorDistancia && !visitados[i]){
+            cout << "CHEGOU NO IF NO NO: " << i << endl;
             menorDistancia = distancia[i];
             idMenorDistancia = i;
         }
@@ -679,31 +680,34 @@ void Grafo::getCaminhoMaisCurtoDjkstra(int idNo1, int idNo2){
     int predecessores[numNos];
     bool visitados[numNos];
     No *noNav = raizGrafo;
+
     //inicializacaoDosVetores
     int* idNos = new int[numNos];
     for(int i = 0; i < numNos; i++){
         idNos[i] = noNav->getId();
-        noNav = noNav->getProxNo();
         distancia[i] = (idNos[i] == idNo1) ? 0 : INFINITO;
+        cout << distancia[i] << endl;
         predecessores[i] = -1;
         visitados[i] = false;
+        noNav = noNav->getProxNo();
     }
 
     for (int i = 0; i < numNos - 1; i++) {
-        int idMenorDistancia = selecionaVerticeDeMenorDistancia(numNos, distancia, visitados);
-        int posicaoNo = encontrarPosicaoPorId(idMenorDistancia, idNos, numNos);
-        visitados[posicaoNo] = true;
+        int posicaoMenorDistancia = selecionaVerticeDeMenorDistancia(numNos, distancia, visitados);
+        int idNoMenorDistancia = idNos[posicaoMenorDistancia];
+        visitados[posicaoMenorDistancia] = true;
 
         // Atualizar as distâncias
-        No *verticeAtual = this->procuraId(idMenorDistancia);
+        No *verticeAtual = this->procuraId(idNoMenorDistancia);
         Aresta *arestaAtual = verticeAtual->getPrimeiraAresta();
 
-        while (arestaAtual != nullptr) {
+        while (arestaAtual != NULL) {
             int idAdjacente = arestaAtual->getDestino();
+            
             int posicaoAdjacente = encontrarPosicaoPorId(idAdjacente, idNos, numNos);
-            if (!visitados[posicaoAdjacente] && (distancia[posicaoNo] + arestaAtual->getPeso() < distancia[posicaoAdjacente])) {
-                distancia[posicaoAdjacente] = distancia[posicaoNo] + arestaAtual->getPeso();
-                predecessores[posicaoAdjacente] = posicaoNo;
+            if (!visitados[posicaoAdjacente] && (distancia[posicaoMenorDistancia] + arestaAtual->getPeso() < distancia[posicaoAdjacente])) {
+                distancia[posicaoAdjacente] = distancia[posicaoMenorDistancia] + arestaAtual->getPeso();
+                predecessores[posicaoAdjacente] = idNoMenorDistancia;
             }
             arestaAtual = arestaAtual->getProxAresta();
         }
@@ -714,13 +718,28 @@ void Grafo::getCaminhoMaisCurtoDjkstra(int idNo1, int idNo2){
     int tamanhoCaminho = 0;
     int posicaoAtual = encontrarPosicaoPorId(idNo2, idNos, numNos);
 
-    while (predecessores[posicaoAtual] != -1) {
-        caminho[tamanhoCaminho++] = idNos[posicaoAtual];
-        posicaoAtual = predecessores[posicaoAtual];
+    for(int i = 0; i < numNos; i++){
+        cout << "distancia: " << distancia[i] << endl;
     }
 
+    for(int i = 0; i < numNos; i++){
+        cout << "predecessores: " << predecessores[i] << endl;
+    }
+    
+    // for(int i = 0; i < numNos; i++){
+    //     caminho[tamanhoCaminho + 1] = idNos[posicaoAtual];
+    //     posicaoAtual = predecessores[posicaoAtual];
+    //     tamanhoCaminho++;
+    // }
+
+    // while (predecessores[posicaoAtual] != -1) {
+    //     caminho[tamanhoCaminho + 1] = idNos[posicaoAtual];
+    //     posicaoAtual = predecessores[posicaoAtual];
+    //     tamanhoCaminho++;
+    // }
+
     // Adicionar o nó de origem ao caminho
-    caminho[tamanhoCaminho++] = idNo1;
+    caminho[tamanhoCaminho] = idNo1;
 
     // verificar se existe caminho entre os nos
     if(tamanhoCaminho == 1){
