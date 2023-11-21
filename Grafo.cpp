@@ -233,7 +233,7 @@ void Grafo::generateDreampufFile(string filename)
 
     if (!outdata)
     { // file couldn't be opened
-        cerr << "Error: file could not be opened" << endl;
+        cerr << "Error: file could not be opened (crie a pasta out)" << endl;
         return;
     }
 
@@ -256,11 +256,24 @@ void Grafo::generateDreampufFile(string filename)
             }
             if (direcionado)
             {
-                outdata << nosNav->getId() << " -> " << arestaNav->getDestino() << ";" << endl;
+                outdata << nosNav->getId() << " -> " << arestaNav->getDestino();
+                if (ponderadoAresta)
+                {
+                    outdata << " [label=" << arestaNav->getPeso() << "]";
+                }
+                outdata << ";" << endl;
             }
             else
             {
-                outdata << nosNav->getId() << " -- " << arestaNav->getDestino() << ";" << endl;
+                if (nosNav->getId() < arestaNav->getDestino())
+                {
+                    outdata << nosNav->getId() << " -- " << arestaNav->getDestino();
+                    if (ponderadoAresta)
+                    {
+                        outdata << " [label=" << arestaNav->getPeso() << "]";
+                    }
+                    outdata << ";" << endl;
+                }
             }
             arestaNav = arestaNav->getProxAresta();
         }
@@ -318,7 +331,7 @@ void Grafo::arvoreProfundidade(int id, bool generateDreampufFile)
 
     if (!outdata)
     {
-        cerr << "Error: file could not be opened" << endl;
+        cerr << "Error: file could not be opened (crie a pasta out)" << endl;
         return;
     }
     outdata << "digraph G {" << endl;
@@ -650,12 +663,15 @@ void Grafo::gerarSubgrafoInduzido(Lista *vertices, Grafo *&subgrafo)
     }
 }
 
-int Grafo::selecionaVerticeDeMenorDistancia(int numNos, int distancia[], bool visitados[]){
+int Grafo::selecionaVerticeDeMenorDistancia(int numNos, int distancia[], bool visitados[])
+{
     const int INFINITO = 1e9;
     int menorDistancia = INFINITO;
     int idMenorDistancia = -1;
-    for(int i = 0; i < numNos; i++){
-        if(distancia[i] < menorDistancia && !visitados[i]){
+    for (int i = 0; i < numNos; i++)
+    {
+        if (distancia[i] < menorDistancia && !visitados[i])
+        {
             menorDistancia = distancia[i];
             idMenorDistancia = i;
         }
@@ -663,75 +679,198 @@ int Grafo::selecionaVerticeDeMenorDistancia(int numNos, int distancia[], bool vi
     return idMenorDistancia;
 }
 
-int encontrarPosicaoPorId(int id, int* vetor, int tamanho) {
-    for (int i = 0; i < tamanho; i++) {
-        if (vetor[i] == id) {
-            return i;  // Retorna a posição se o ID for encontrado
+int encontrarPosicaoPorId(int id, int *vetor, int tamanho)
+{
+    for (int i = 0; i < tamanho; i++)
+    {
+        if (vetor[i] == id)
+        {
+            return i; // Retorna a posição se o ID for encontrado
         }
     }
-    return -1;  // Retorna -1 se o ID não for encontrado
+    return -1; // Retorna -1 se o ID não for encontrado
 }
 
-void Grafo::getCaminhoMaisCurtoDjkstra(int idNo1, int idNo2){
+void Grafo::getCaminhoMaisCurtoDjkstra(int idNo1, int idNo2)
+{
+    //! coisa pra gerar o arquivo
+    ofstream outdata;
+    outdata.open("out/getCaminhoMaisCurtoDjkstra.dat");
+    if (!outdata)
+    {
+        cerr << "Error: file could not be opened (crie a pasta out)" << endl;
+        return;
+    }
+    if (direcionado)
+    {
+        outdata << "di";
+    }
+    outdata << "graph G {" << endl;
+    //! fim coisa pra gerar o arquivo
+
+    No *noNav = raizGrafo;
+
+    //! coisa pra gerar o arquivo
+    while (noNav != NULL)
+    {
+        Aresta *arestaNav = noNav->getPrimeiraAresta();
+        while (arestaNav != NULL)
+        {
+            if (direcionado)
+            {
+                outdata << noNav->getId() << " -> " << arestaNav->getDestino();
+                if (ponderadoAresta)
+                {
+                    outdata << " [label=" << arestaNav->getPeso() << "]";
+                }
+                outdata << ";" << endl;
+            }
+            else
+            {
+                if (noNav->getId() < arestaNav->getDestino())
+                {
+                    if (direcionado)
+                    {
+                        outdata << noNav->getId() << " -> " << arestaNav->getDestino();
+                    }
+                    else
+                    {
+                        outdata << noNav->getId() << " -- " << arestaNav->getDestino();
+                    }
+                    // outdata << noNav->getId() << " -- " << arestaNav->getDestino();
+                    if (ponderadoAresta)
+                    {
+                        outdata << " [label=" << arestaNav->getPeso() << "]";
+                    }
+                    outdata << ";" << endl;
+                }
+            }
+            arestaNav = arestaNav->getProxAresta();
+        }
+        noNav = noNav->getProxNo();
+    }
+    noNav = raizGrafo;
+    //! fim coisa pra gerar o arquivo
+
     const int INFINITO = 1e9;
     int numNos = this->totalNos;
-    int distancia[numNos];
-    int predecessores[numNos];
-    bool visitados[numNos];
-    No *noNav = raizGrafo;
-    //inicializacaoDosVetores
-    int* idNos = new int[numNos];
-    for(int i = 0; i < numNos; i++){
+    int *distancia = new int[numNos];
+    bool *visitados = new bool[numNos];
+
+    int rows = numNos;
+    int cols = numNos;
+    int **caminhos = new int *[rows];
+    for (int i = 0; i < rows; ++i)
+        caminhos[i] = new int[cols];
+    int *tamanhoCaminhos = new int[numNos];
+
+    //* inicia todos os vetores com infinito exceto o no de origem
+    int *idNos = new int[numNos];
+    for (int i = 0; i < numNos; i++)
+    {
         idNos[i] = noNav->getId();
         noNav = noNav->getProxNo();
         distancia[i] = (idNos[i] == idNo1) ? 0 : INFINITO;
-        predecessores[i] = -1;
         visitados[i] = false;
     }
 
-    for (int i = 0; i < numNos - 1; i++) {
-        int idMenorDistancia = selecionaVerticeDeMenorDistancia(numNos, distancia, visitados);
-        int posicaoNo = encontrarPosicaoPorId(idMenorDistancia, idNos, numNos);
-        visitados[posicaoNo] = true;
+    //* inicia todos os caminhos com o no de origem
+    for (int i = 0; i < numNos; i++)
+    {
+        caminhos[i][0] = idNos[i];
+        tamanhoCaminhos[i] = 1;
+    }
+
+    for (int i = 0; i < numNos - 1; i++)
+    {
+        int posicaoNoMenorDistancia = selecionaVerticeDeMenorDistancia(numNos, distancia, visitados);
+        visitados[posicaoNoMenorDistancia] = true;
 
         // Atualizar as distâncias
-        No *verticeAtual = this->procuraId(idMenorDistancia);
+        No *verticeAtual = this->procuraId(idNos[posicaoNoMenorDistancia]);
         Aresta *arestaAtual = verticeAtual->getPrimeiraAresta();
 
-        while (arestaAtual != nullptr) {
+        while (arestaAtual != nullptr)
+        {
             int idAdjacente = arestaAtual->getDestino();
             int posicaoAdjacente = encontrarPosicaoPorId(idAdjacente, idNos, numNos);
-            if (!visitados[posicaoAdjacente] && (distancia[posicaoNo] + arestaAtual->getPeso() < distancia[posicaoAdjacente])) {
-                distancia[posicaoAdjacente] = distancia[posicaoNo] + arestaAtual->getPeso();
-                predecessores[posicaoAdjacente] = posicaoNo;
+
+            //* se achar um caminho mais curto
+            if (!visitados[posicaoAdjacente] && (distancia[posicaoNoMenorDistancia] + arestaAtual->getPeso() < distancia[posicaoAdjacente]))
+            {
+
+                //* atualiza a distancia
+                distancia[posicaoAdjacente] = distancia[posicaoNoMenorDistancia] + arestaAtual->getPeso();
+
+                //* atualiza o caminho
+
+                //* zera o caminho do vertice adjacente
+                tamanhoCaminhos[posicaoAdjacente] = 0;
+
+                //* pega todos os elementos do caminho do vertice atual e adiciona no caminho do vertice adjacente
+                for (int j = 0; j < tamanhoCaminhos[posicaoNoMenorDistancia]; j++)
+                {
+                    caminhos[posicaoAdjacente][j] = caminhos[posicaoNoMenorDistancia][j];
+                    tamanhoCaminhos[posicaoAdjacente]++;
+                }
+
+                //* adiciona o vertice adjacente no caminho
+                caminhos[posicaoAdjacente][tamanhoCaminhos[posicaoAdjacente]] = idAdjacente;
+                tamanhoCaminhos[posicaoAdjacente]++;
+
+                //* imprime o caminho se for o vertice procurado
+                if (idAdjacente == idNo2)
+                {
+                    cout << "Tamanho: " << tamanhoCaminhos[posicaoAdjacente] << endl;
+                    cout << "Caminho mais curto ate o: " << idNos[posicaoAdjacente] << " com peso total de " << distancia[posicaoAdjacente] << endl;
+                    //! coisa pra gerar o arquivo
+                    int idAnterior = caminhos[posicaoAdjacente][0];
+                    //! fim coisa pra gerar o arquivo
+                    for (int j = 0; j < tamanhoCaminhos[posicaoAdjacente]; j++)
+                    {
+
+                        //! coisa pra gerar o arquivo
+                        if (j > 0)
+                        {
+                            if (direcionado)
+                            {
+                                outdata << idAnterior << " -> " << caminhos[posicaoAdjacente][j] << " [color=red,constraint=false];" << endl;
+                            }
+                            else
+                            {
+                                outdata << idAnterior << " -- " << caminhos[posicaoAdjacente][j] << " [color=red,constraint=false];" << endl;
+                            }
+                            idAnterior = caminhos[posicaoAdjacente][j];
+                        }
+                        //! fim coisa pra gerar o arquivo
+                        cout << caminhos[posicaoAdjacente][j] << " ";
+                    }
+                    cout << endl;
+
+                    //! coisa pra gerar o arquivo
+                    outdata << "}" << endl;
+                    outdata.close();
+                    cout << "Dreampuf File getCaminhoMaisCurtoDjkstra.dat criado no local out/getCaminhoMaisCurtoDjkstra.dat." << endl;
+                    //! fim coisa pra gerar o arquivo
+                    delete[] distancia;
+                    delete[] visitados;
+                    delete[] tamanhoCaminhos;
+                    delete[] idNos;
+                    for (int i = 0; i < rows; ++i)
+                        delete[] caminhos[i];
+                    delete[] caminhos;
+                    return;
+                }
             }
             arestaAtual = arestaAtual->getProxAresta();
         }
     }
 
-    //refazendo o caminho
-    int* caminho = new int[numNos];
-    int tamanhoCaminho = 0;
-    int posicaoAtual = encontrarPosicaoPorId(idNo2, idNos, numNos);
-
-    while (predecessores[posicaoAtual] != -1) {
-        caminho[tamanhoCaminho++] = idNos[posicaoAtual];
-        posicaoAtual = predecessores[posicaoAtual];
-    }
-
-    // Adicionar o nó de origem ao caminho
-    caminho[tamanhoCaminho++] = idNo1;
-
-    // verificar se existe caminho entre os nos
-    if(tamanhoCaminho == 1){
-        cout << "Não existe caminho entre os nós " << idNo1 << " e " << idNo2 << endl;
-        return;
-    }
-
-    // Exibir o caminho mais curto
-    cout << "Caminho mais curto entre " << idNo1 << " e " << idNo2 << " utilizando o algoritmo de Djkstra é: ";
-    for (int i = tamanhoCaminho - 1; i >= 0; --i) {
-        cout << caminho[i] << " ";
-    }
-    cout << endl;
+    delete[] distancia;
+    delete[] visitados;
+    delete[] tamanhoCaminhos;
+    delete[] idNos;
+    for (int i = 0; i < rows; ++i)
+        delete[] caminhos[i];
+    delete[] caminhos;
 }
