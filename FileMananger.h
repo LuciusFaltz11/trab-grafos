@@ -37,6 +37,6 @@ func Read:
         chama a função passada a cada linha passando como argumento a linha do arquivo e o grafo para construção
     */
     void Read(string fileName);
-    void Read(string fileName, void (*func)(string, Grafo *), Grafo *grafo);
+    void Read(string fileName, void (*func)(string, Grafo *, int), Grafo *grafo, int tipoArquivo);
 };
 #endif // FileManagerDefined

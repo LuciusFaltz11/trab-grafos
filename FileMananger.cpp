@@ -60,13 +60,8 @@ string FileMananger::GetFileNameByIndex(int index)
 	return "";
 }
 
-void FileMananger::Read(string fileName, void (*func)(string, Grafo*), Grafo *grafo)
+void FileMananger::Read(string fileName, void (*func)(string, Grafo*, int), Grafo *grafo, int tipoArquivo)
 {
-	if(ponderado == 's'){
-		fileName = "./files/grafosPonderados/" + fileName;	
-	}else{
-		fileName = "./files/grafosNaoPonderados/" + fileName;
-	}
 
 	fstream file;
 	file.open(fileName, ios::in);
@@ -79,7 +74,7 @@ void FileMananger::Read(string fileName, void (*func)(string, Grafo*), Grafo *gr
 		string line;
 		while (getline(file, line))
 		{
-			func(line, grafo);
+			func(line, grafo, tipoArquivo);
 		}
 		file.close();
 	}

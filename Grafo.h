@@ -45,10 +45,12 @@ public:
     string nome;
     int unico;
     int duplo;
-    Grafo(bool direcionado, int ponderadoId);
+    Grafo(bool direcionado, bool ponderadoAresta, bool ponderadoVertice);
     ~Grafo();
+    No *getRaizGrafo() { return raizGrafo; }
     bool getPonderadoAresta() { return ponderadoAresta; }
     bool getPonderadoVertice() { return ponderadoVertice; }
+    void AddNoCoord(int no, int coordenadaX, int coordenadaY);
     void AddNoAresta(int no1, int no2);
     void AddNoAresta(int no1, int no2, int peso);
     No *procuraId(int id);

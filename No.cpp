@@ -15,6 +15,18 @@ No::No()
 {
 }
 
+No::No(int id, int coordenadaX, int coordenadaY)
+{
+    this->grauEntrada = 0;
+    this->grauSaida = 0;
+    this->idNo = id;
+    this->pesoNo = 0;
+    this->primeiraAresta = NULL;
+    this->ultimaAresta = NULL;
+    this->proximoNo = NULL;
+    this->coordenadaX = coordenadaX;
+    this->coordenadaY = coordenadaY;
+}
 No::No(int id, int peso)
 {
     this->grauEntrada = 0;

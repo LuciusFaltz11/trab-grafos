@@ -17,9 +17,13 @@ private:
     Aresta *primeiraAresta;
     Aresta *ultimaAresta;
 
+    int coordenadaX;
+    int coordenadaY;
+
 public:
     // No(int id);
     No();
+    No(int id, int coordenadaX, int coordenadaY);
     No(int id, int peso);
     int getId();
     No *getProxNo();

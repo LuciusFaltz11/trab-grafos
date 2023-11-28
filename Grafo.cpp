@@ -3,7 +3,7 @@
 #include "Grafo.h"
 #include <iostream>
 
-Grafo::Grafo(bool direcionado, int ponderadoId)
+Grafo::Grafo(bool direcionado, bool ponderadoAresta, bool ponderadoVertice)
 {
     /*
     ponderado:
@@ -14,10 +14,10 @@ Grafo::Grafo(bool direcionado, int ponderadoId)
     */
     raizGrafo = NULL;
     ultimoNo = NULL;
-    this->ponderadoAresta = ponderadoId == 1 || ponderadoId == 3;
-    this->ponderadoVertice = ponderadoId == 2 || ponderadoId == 3;
+    this->ponderadoAresta = ponderadoAresta;
+    this->ponderadoVertice = ponderadoVertice;
     this->direcionado = direcionado;
-    this->ponderadoId = ponderadoId;
+    // this->ponderadoId = ponderadoId;
 }
 
 Grafo::~Grafo()
@@ -47,6 +47,25 @@ void Grafo::AddNo(int no)
         No *novoNo = new No(no, PESO_NAO_PONDERADO);
         ultimoNo->setProxNo(novoNo); //* adiciona o no na lista de nos
         ultimoNo = novoNo;
+    }
+}
+void Grafo::AddNoCoord(int no, int coordenadaX, int coordenadaY)
+{
+    No *noAdd = procuraId(no);
+    if (noAdd == NULL)
+    {
+        No *novoNo = new No(no, coordenadaX, coordenadaY);
+        if (raizGrafo == NULL)
+        {
+            raizGrafo = novoNo;
+            ultimoNo = novoNo;
+            return;
+        }
+        else
+        {
+            ultimoNo->setProxNo(novoNo); //* adiciona o no na lista de nos
+            ultimoNo = novoNo;
+        }
     }
 }
 void Grafo::AddNoArestaAux(int no1, int no2, int peso)
@@ -277,7 +296,7 @@ Grafo *Grafo::inverteArestasDirecionadas()
     {
         return NULL;
     }
-    Grafo *newGrafo = new Grafo(direcionado, ponderadoId);
+    Grafo *newGrafo = new Grafo(direcionado, ponderadoAresta, ponderadoVertice);
 
     No *nosNav = raizGrafo;
 
@@ -330,7 +349,7 @@ void Grafo::arvoreProfundidade(int id, bool generateDreampufFile)
     Lista adicionados;
     adicionados.AddElemento(id);
 
-    Grafo arvoreProfundidade(true, 0);
+    Grafo arvoreProfundidade(true, false, false);
 
     bool retorno = true;
 
@@ -381,7 +400,7 @@ void Grafo::arvoreProfundidade(int id)
     Lista adicionados;
     adicionados.AddElemento(id);
 
-    Grafo arvoreProfundidade(true, 0);
+    Grafo arvoreProfundidade(true, false, false);
 
     bool retorno = true;
 
@@ -437,7 +456,7 @@ void Grafo::arvoreMinimaKruskal(Lista *vertices)
     // vetor dos nós da arvore minima
     ListaOrdenaAresta *arvoreMinima = new ListaOrdenaAresta();
     // gerar arquivo com a arvore minimakruskal
-    Grafo arvoreMinimaGrafo(false, 0);
+    Grafo arvoreMinimaGrafo(false, false, false);
 
     while (cont < totalNos - 1 && !listaAresta->listaVazia())
     {
@@ -577,10 +596,8 @@ void Grafo::imprimirSubarvores(Subarvore vetorNos[])
         int j = 0;
         cout << "subarvore " << i << ": ";
         for (int j = 0; j < vetorNos[i].tam; j++)
-        // while (vetorNos[i].nos[j] != -1)
         {
             cout << vetorNos[i].nos[j] << " ";
-            // j++;
         }
         cout << endl;
     }
@@ -635,7 +652,7 @@ bool Grafo::temAresta(int no1, int no2)
 
 void Grafo::gerarSubgrafoInduzido(Lista *vertices, Grafo *&subgrafo)
 {
-    subgrafo = new Grafo(direcionado, ponderadoId);
+    subgrafo = new Grafo(direcionado, ponderadoAresta, ponderadoVertice);
     ListaElemento *elementoNav = vertices->getPrimeiroElemento();
 
     for (ListaElemento *elementoNav = vertices->getPrimeiroElemento(); elementoNav != NULL; elementoNav = elementoNav->getProxElemento())
