@@ -18,6 +18,12 @@ struct Subarvore
     int tam;  // tamanho atual do vetor
     int max;  // capacidade máxima
 };
+struct ArestaAux
+{
+    int origem;
+    int destino;
+    int peso;
+};
 class Grafo
 {
 private:
@@ -40,6 +46,7 @@ private:
     bool nosPertencemSubarvore(int raizU, int raizV, Subarvore *vetorSub, int tamVetorSub);
     bool temAresta(int no1, int no2);
     void gerarSubgrafoInduzido(Lista *vertices, Grafo *&subgrafo);
+    ArestaAux getMenorPesoAresta();
 
 public:
     string nome;

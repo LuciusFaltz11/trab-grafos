@@ -649,3 +649,12 @@ void Grafo::gerarSubgrafoInduzido(Lista *vertices, Grafo *&subgrafo)
         }
     }
 }
+
+void Grafo::arvoreMinimaPrim()
+{
+}
+
+ArestaAux Grafo::getMenorPesoAresta()
+{
+    ArestaAux menorPeso;
+}
