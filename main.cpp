@@ -365,6 +365,45 @@ void incluiMergeNasRotas(Rota *novaRota, ListaRotas *listaRotas)
     listaRotas->AddElemento(novaRota);
 }
 
+void generateGraphvizFile(Grafo *grafo, ListaRotas *rotas)
+{
+    ofstream outdata; // outdata is like cin
+
+    outdata.open("graphviz.txt"); // opens the file
+
+    outdata << "graph G {" << endl;
+    outdata << "layout=\"fdp\";" << endl;
+    No *noNav = grafo->getRaizGrafo();
+    while (noNav != NULL)
+    {
+        outdata << noNav->getId() << " [pos=\"" << noNav->getCoordenadaX() << "," << noNav->getCoordenadaY() << "\"];" << endl;
+        noNav = noNav->getProxNo();
+    }
+    Rota *rotaNav = rotas->getPrimeiroElemento();
+
+    // criar uma array de string de cores para as rotas
+    string cores[10] = {"red", "blue", "green", "yellow", "orange", "purple", "pink", "brown", "black", "gray"};
+    int corAtual = 0;
+
+    while (rotaNav != NULL)
+    {
+        No *noNav = rotaNav->getPrimeiroElemento();
+        while (noNav != NULL)
+        {
+            No *noNav2 = noNav->getProxNo();
+            if (noNav2 != NULL)
+            {
+                outdata << noNav->getId() << " -- " << noNav2->getId() << "[color=\"" << cores[corAtual] << "\" , penwidth=5]"
+                        << ";" << endl;
+            }
+            noNav = noNav->getProxNo();
+        }
+        corAtual++;
+        rotaNav = rotaNav->getProxElemento();
+    }
+    outdata << "}" << endl;
+}
+
 void algoritmoClarkeWright(Grafo *grafo)
 {
     // Clarke-Wright
@@ -442,17 +481,13 @@ void algoritmoClarkeWright(Grafo *grafo)
 
         outdata << "iteracao: " << iteracao << " => ";
 
-        
-
         cout << "economias: " << endl;
         economias->imprime();
 
-        // cout << "Rotas antes do merge: " << endl;
-        // rotas->imprime();
         incluiMergeNasRotas(economias->getPrimeiroElemento()->getRota(), rotas);
 
         outdata << "iteracao: " << iteracao << " => ";
-        Rota* rotaNav = rotas->getPrimeiroElemento();
+        Rota *rotaNav = rotas->getPrimeiroElemento();
         while (rotaNav != NULL)
         {
             outdata << rotaNav->getDistanciaTotal() << " ";
@@ -464,6 +499,7 @@ void algoritmoClarkeWright(Grafo *grafo)
         cout << "Rotas depois do merge: " << endl;
         rotas->imprime();
     }
+    generateGraphvizFile(grafo, rotas);
 }
 
 void menuOpcoes()
