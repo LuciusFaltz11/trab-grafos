@@ -2,8 +2,7 @@
 #define NO_H
 #include "Aresta.h"
 #include <iostream>
-
-using namespace std;
+// using namespace std;
 
 class No
 {
@@ -13,9 +12,9 @@ private:
     int pesoNo;
     int grauEntrada;
     int grauSaida;
-    No *proximoNo;
-    Aresta *primeiraAresta;
-    Aresta *ultimaAresta;
+    No *proximoNo = NULL;
+    Aresta *primeiraAresta = NULL;
+    Aresta *ultimaAresta = NULL;
 
     int coordenadaX;
     int coordenadaY;
@@ -23,6 +22,7 @@ private:
 public:
     // No(int id);
     No();
+    No(int id, int peso, int coordenadaX, int coordenadaY);
     No(int id, int coordenadaX, int coordenadaY);
     No(int id, int peso);
     int getId();
@@ -34,6 +34,10 @@ public:
     Aresta *getUltimaAresta();
     void setUltimaAresta(Aresta *ultimaAresta);
     void setId(int id) { this->idNo = id; };
+    void setPeso(int peso);
+    int getPeso(){return pesoNo;};
+    int getCoordenadaX(){return coordenadaX;};
+    int getCoordenadaY(){return coordenadaY;};
 };
 
 #endif

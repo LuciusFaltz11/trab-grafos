@@ -79,6 +79,50 @@ ListaElemento *Lista::getPrimeiroElemento()
     return primeiroElemento;
 }
 
+void Lista::sort(bool crescente)
+{
+    ListaElemento *elementoNav = primeiroElemento;
+    ListaElemento *elementoNav2 = primeiroElemento;
+    int aux;
+    while (elementoNav != NULL)
+    {
+        elementoNav2 = primeiroElemento;
+        while (elementoNav2 != NULL)
+        {
+            if (crescente)
+            {
+                if (elementoNav->getValue() < elementoNav2->getValue())
+                {
+                    aux = elementoNav->getValue();
+                    elementoNav->setValue(elementoNav2->getValue());
+                    elementoNav2->setValue(aux);
+                }
+            }
+            else
+            {
+                if (elementoNav->getValue() > elementoNav2->getValue())
+                {
+                    aux = elementoNav->getValue();
+                    elementoNav->setValue(elementoNav2->getValue());
+                    elementoNav2->setValue(aux);
+                }
+            }
+            elementoNav2 = elementoNav2->getProxElemento();
+        }
+        elementoNav = elementoNav->getProxElemento();
+    }
+}
+
+int Lista::getElemento(int posicao)
+{
+    ListaElemento *elementoNav = primeiroElemento;
+    for (int i = 0; i < posicao; i++)
+    {
+        elementoNav = elementoNav->getProxElemento();
+    }
+    return elementoNav->getValue();
+}
+
 /*
 void Lista::unirListas(Lista &novaLista)
 {

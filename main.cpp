@@ -1,3 +1,4 @@
+#define DEBUG false
 #define RESET "\033[0m"
 #define BOLDGREEN "\033[1m\033[32m"
 
@@ -6,13 +7,21 @@
 
 #include <chrono>
 #include <ctime>
+// #include <cmath>
 
 #include <fstream>
-#include <cstdlib>
+// #include <cstdlib>
 
 using namespace std;
-#include "FileMananger.h"
 #include "Grafo.h"
+#include "FileMananger.h"
+
+#include "ListaEconomias.h"
+#include "Economia.h"
+#include "ListaNos.h"
+#include "No.h"
+#include "ListaRotas.h"
+#include "Rota.h"
 
 /*
 converte a linha do arquivo para (int, int) e chama a função de construção no grafo
@@ -72,14 +81,8 @@ void controiGrafoTipo2(string fileLocation, Grafo *grafo)
         // 1 41 49
         // ...
         // DEMAND_SECTION
-
-        //     for (int i = 0; i < 20; i++)
-        //     {
-        //         string linha;
-        //         getline(file, linha);
-        //         cout << linha << " linha.find('NODE_COORD_SECTION') => " << linha.find("NODE_COORD_SECTION") << endl;
-        //     }
-        // return;
+        // ...
+        // DEMAND_SECTION
 
         string linha;
         cout << "Características do arquivo: " << endl;
@@ -96,10 +99,370 @@ void controiGrafoTipo2(string fileLocation, Grafo *grafo)
             iss >> id;
             iss >> x;
             iss >> y;
-            // cout << id << " " << x << " " << y << endl;
             grafo->AddNoCoord(id, x, y);
             getline(file, linha);
         }
+        getline(file, linha);
+        while (linha.find("DEPOT_SECTION") != 0)
+        {
+            istringstream iss(linha);
+            int id, peso;
+            iss >> id;
+            iss >> peso;
+            grafo->AddPesoAoNo(id, peso);
+            getline(file, linha);
+        }
+    }
+}
+
+void preencheGrafo(Grafo *grafo)
+{
+    // função que pega os nós do grafo e preenche o grafo com as arestas com peso igual a distancia entre os nos
+    No *noNav = grafo->getRaizGrafo();
+    No *noNav2 = grafo->getRaizGrafo();
+    while (noNav != NULL)
+    {
+        while (noNav2 != NULL)
+        {
+            cout << "Adicionando aresta entre " << noNav->getId() << " e " << noNav2->getId() << endl;
+            if (noNav->getId() != noNav2->getId())
+            {
+                // double distancia = sqrt(pow(noNav->getCoordenadaX() - noNav2->getCoordenadaX(), 2) + pow(noNav->getCoordenadaY() - noNav2->getCoordenadaY(), 2));
+                double distancia = 0;
+                grafo->AddNoAresta(noNav->getId(), noNav2->getId(), distancia);
+            }
+            noNav2 = noNav2->getProxNo();
+        }
+        noNav = noNav->getProxNo();
+        noNav2 = grafo->getRaizGrafo();
+    }
+}
+bool rotasSaoEquivalentes(Rota *rota1, Rota *rota2)
+{
+    // if (rota1->getNElementos() != rota2->getNElementos())
+    // {
+    //     return false;
+    // }
+    if (DEBUG)
+        cout << "Pegando o primeiro elemento" << endl;
+    No *noNav1 = rota1->getPrimeiroElemento();
+    No *noNav2 = rota2->getPrimeiroElemento();
+
+    if (DEBUG)
+        cout << "Verificando se a segunda rota inclui a primeira" << endl;
+    while (noNav1 != NULL)
+    {
+        if (!rota2->possuiNo(noNav1->getId()))
+        {
+            return false;
+        }
+        noNav1 = noNav1->getProxNo();
+    }
+    if (DEBUG)
+    {
+        cout << "Verificando se a primeira rota inclui a segunda" << endl;
+        cout << "Rota 2: ";
+        rota2->imprime();
+    }
+    while (noNav2 != NULL)
+    {
+        if (DEBUG)
+        {
+            cout << "noNav2->getId() = " << noNav2->getId() << endl;
+            cout << "rota1->possuiNo(noNav2->getId()) = " << rota1->possuiNo(noNav2->getId()) << endl;
+        }
+        if (!rota1->possuiNo(noNav2->getId()))
+        {
+
+            return false;
+        }
+        noNav2 = noNav2->getProxNo();
+    }
+    if (DEBUG)
+    {
+        cout << "Ta retornando que as rotas sao equivalentes!" << endl;
+        cout << "Rota 1: ";
+        rota1->imprime();
+        cout << "Rota 2: ";
+        rota2->imprime();
+    }
+    return true;
+}
+float calcularDistanciaNos(No *no1, No *no2)
+{
+    if (DEBUG)
+    {
+
+        cout << "Calculando distancia entre " << no1->getId() << " e " << no2->getId() << endl;
+        cout << "No1 X = " << no1->getCoordenadaX() << " Y = " << no1->getCoordenadaY() << endl;
+        cout << "No2 X = " << no2->getCoordenadaX() << " Y = " << no2->getCoordenadaY() << endl;
+    }
+    float distancia = sqrt(pow(no1->getCoordenadaX() - no2->getCoordenadaX(), 2) + pow(no1->getCoordenadaY() - no2->getCoordenadaY(), 2));
+
+    if (DEBUG)
+        cout << "Distancia entre " << no1->getId() << " e " << no2->getId() << " = " << distancia << endl;
+    return distancia;
+}
+Rota *mesclarRotas(Rota *rota1, Rota *rota2)
+{
+    if (DEBUG)
+    {
+        cout << "Mesclando rotas: " << endl;
+        cout << "Rota 1: ";
+        rota1->imprime();
+        cout << "Rota 2: ";
+        rota2->imprime();
+    }
+
+    //* rota começa no ponto inicial
+    Rota *novaRota = new Rota();
+    novaRota->AddElemento(1, 0, 0, 0);
+    Rota *rotaReferencia = rota1->somaRota(rota2);
+    if (DEBUG)
+    {
+        cout << "Somando rotas: " << endl;
+        rotaReferencia->imprime();
+        cout << "Mesclando rotas: " << endl;
+    }
+    No *noNav1 = rota1->getPrimeiroElemento();
+    No *noNav2 = rota2->getPrimeiroElemento();
+
+    while (!rotasSaoEquivalentes(novaRota, rotaReferencia))
+    {
+        if (DEBUG)
+            cout << "As rotas não são equivalentes!" << endl;
+        //* adicionar o no da rota mais proximo ao ultimo no da rota
+        float menorDistancia = 9999999;
+        No *noMaisProximo = NULL;
+        noNav1 = rota1->getPrimeiroElemento();
+        noNav2 = rota2->getPrimeiroElemento();
+        while (noNav1 != NULL)
+        {
+            if (novaRota->possuiNo(noNav1->getId()))
+            {
+                if (DEBUG)
+                    cout << "O no " << noNav1->getId() << " ja esta na rota" << endl;
+                noNav1 = noNav1->getProxNo();
+                continue;
+            }
+            float distancia = calcularDistanciaNos(novaRota->getUltimoElemento(), noNav2);
+
+            if (DEBUG)
+                cout << "Distancia entre = " << distancia << endl;
+            if (distancia < menorDistancia)
+            {
+                menorDistancia = distancia;
+                noMaisProximo = noNav1;
+            }
+            noNav1 = noNav1->getProxNo();
+        }
+        while (noNav2 != NULL)
+        {
+            if (novaRota->possuiNo(noNav2->getId()))
+            {
+                if (DEBUG)
+                    cout << "O no " << noNav2->getId() << " ja esta na rota" << endl;
+                noNav2 = noNav2->getProxNo();
+                continue;
+            }
+            float distancia = calcularDistanciaNos(novaRota->getUltimoElemento(), noNav2);
+            if (DEBUG)
+                cout << "Distancia entre" << distancia << endl;
+            if (distancia < menorDistancia)
+            {
+                menorDistancia = distancia;
+                noMaisProximo = noNav2;
+            }
+            noNav2 = noNav2->getProxNo();
+        }
+
+        if (DEBUG)
+        {
+            cout << "Fim de procura pelo no mais proximo" << endl;
+            cout << "nova rota: ";
+            novaRota->imprime();
+            cout << "rota referencia: ";
+            rotaReferencia->imprime();
+            cout << "Menor distancia: " << menorDistancia << endl;
+            cout << "No mais proximo: " << noMaisProximo->getId() << endl;
+        }
+        novaRota->AddElemento(noMaisProximo->getId(), noMaisProximo->getPeso(), noMaisProximo->getCoordenadaX(), noMaisProximo->getCoordenadaY());
+    }
+    novaRota->AddElemento(1, 0, 0, 0);
+    cout << "Rota mesclada com distancia " << novaRota->getDistanciaTotal() << endl;
+    novaRota->imprime();
+
+    return novaRota;
+}
+ListaEconomias *calculaEconomias(ListaRotas *listaRotas)
+{
+    cout << "Calcular economias" << endl;
+    ListaEconomias *economias = new ListaEconomias();
+
+    Rota *rotaNav = listaRotas->getPrimeiroElemento();
+    while (rotaNav != NULL)
+    {
+        Rota *rotaNav2 = listaRotas->getPrimeiroElemento();
+        while (rotaNav2 != NULL)
+        {
+
+            if (rotaNav == rotaNav2)
+            {
+                rotaNav2 = rotaNav2->getProxElemento();
+                continue;
+            }
+            cout << "Calculando economia entre: " << endl;
+            rotaNav->imprime();
+            rotaNav2->imprime();
+            Rota *novaRota = mesclarRotas(rotaNav, rotaNav2);
+            cout << "resultado: " << endl;
+            novaRota->imprime();
+
+            float valorEconomizado = rotaNav->getDistanciaTotal() + rotaNav2->getDistanciaTotal() - novaRota->getDistanciaTotal();
+
+            cout << "Valor economizado: " << valorEconomizado << endl;
+
+            Economia *novaEconomia = new Economia(novaRota, valorEconomizado);
+            economias->AddElemento(novaEconomia);
+
+            rotaNav2 = rotaNav2->getProxElemento();
+        }
+        rotaNav = rotaNav->getProxElemento();
+    }
+
+    return economias;
+}
+
+bool estaContido(Rota *rota1, Rota *rota2)
+{
+    No *noNav = rota1->getPrimeiroElemento();
+    while (noNav != NULL)
+    {
+        if (!rota2->possuiNo(noNav->getId()))
+        {
+            return false;
+        }
+        noNav = noNav->getProxNo();
+    }
+    return true;
+}
+
+void incluiMergeNasRotas(Rota *novaRota, ListaRotas *listaRotas)
+{
+    // Remover todas as rotas da lista de rotas que foram mescladas e estão contidas na nova rota
+
+    Rota *rotaNav = listaRotas->getPrimeiroElemento();
+
+    while (rotaNav != NULL)
+    {
+
+        if (estaContido(rotaNav, novaRota))
+        {
+            listaRotas->removeElemento(rotaNav);
+        }
+        rotaNav = rotaNav->getProxElemento();
+    }
+    listaRotas->AddElemento(novaRota);
+}
+
+void algoritmoClarkeWright(Grafo *grafo)
+{
+    // Clarke-Wright
+    // 1. Crie uma lista de rotas vazia.
+    // 2. Para cada par de nós, calcule a economia de mesclagem.
+    // 3. Classifique as economias de mesclagem em ordem decrescente.
+    // 4. Para cada economia de mesclagem, verifique se os nós podem ser mesclados.
+    // 5. Se os nós puderem ser mesclados, mesclar os nós e adicionar a rota à lista de rotas.
+    // 6. Se os nós não puderem ser mesclados, verifique se os nós podem ser adicionados a uma rota existente.
+    // 7. Se os nós puderem ser adicionados a uma rota existente, adicione os nós à rota.
+    // 8. Se os nós não puderem ser adicionados a uma rota existente, crie uma nova rota com os nós.
+    // 9. Retorne a lista de rotas.
+
+    ListaRotas *rotas = new ListaRotas();
+    ListaEconomias *economias = new ListaEconomias();
+
+    No *noNav = grafo->getRaizGrafo();
+    while (noNav != NULL)
+    {
+
+        if (noNav->getId() == 1)
+        {
+            noNav = noNav->getProxNo();
+            continue;
+        }
+        cout << "------------------------------------------------------" << endl;
+        cout << "Adicionando no " << noNav->getId() << endl;
+        cout << "nonav x = " << noNav->getCoordenadaX() << " y = " << noNav->getCoordenadaY() << endl;
+
+        cout << "== Criando a rota ==" << endl;
+
+        Rota *newRota = new Rota();
+
+        cout << "newRota == NULL: " << (newRota->getUltimoElemento() == NULL) << endl;
+        newRota->AddElemento(1, 0, 0, 0);
+        newRota->AddElemento(
+            noNav->getId(),
+            noNav->getPeso(),
+            noNav->getCoordenadaX(),
+            noNav->getCoordenadaY());
+        newRota->AddElemento(1, 0, 0, 0);
+        cout << "newRota == NULL: " << (newRota->getUltimoElemento() == NULL) << endl;
+        rotas->AddElemento(newRota);
+
+        cout << "criado com sucesso" << endl;
+
+        noNav = noNav->getProxNo();
+    }
+    cout << "fim do loop " << endl;
+
+    cout << "Rotas criadas: " << endl;
+    Rota *rotaNav = rotas->getPrimeiroElemento();
+    while (rotaNav != NULL)
+    {
+        rotaNav->imprime();
+        rotaNav = rotaNav->getProxElemento();
+    }
+
+    cout << "==============================================" << endl;
+    cout << "========== < Calculando economias > ==========" << endl;
+    cout << "==============================================" << endl;
+
+    //* Aqui ta a parte do guloso em si, ordenando as economias e pegando a melhor delas
+
+    ofstream outdata; // outdata is like cin
+
+    outdata.open("Logs.txt"); // opens the file
+    int iteracao = 0;
+
+    cout << "rotas->getNElementos() = " << rotas->getNElementos() << endl;
+    while (rotas->getNElementos() > 5)
+    {
+        economias = calculaEconomias(rotas);
+        economias->sort();
+
+        outdata << "iteracao: " << iteracao << " => ";
+
+        
+
+        cout << "economias: " << endl;
+        economias->imprime();
+
+        // cout << "Rotas antes do merge: " << endl;
+        // rotas->imprime();
+        incluiMergeNasRotas(economias->getPrimeiroElemento()->getRota(), rotas);
+
+        outdata << "iteracao: " << iteracao << " => ";
+        Rota* rotaNav = rotas->getPrimeiroElemento();
+        while (rotaNav != NULL)
+        {
+            outdata << rotaNav->getDistanciaTotal() << " ";
+            rotaNav = rotaNav->getProxElemento();
+        }
+        outdata << endl;
+        iteracao++;
+
+        cout << "Rotas depois do merge: " << endl;
+        rotas->imprime();
     }
 }
 
@@ -138,6 +501,8 @@ string selecionarArquivo(bool grafoPonderado)
 int main(int argc, char const *argv[])
 {
     //* estrutura de argumentos:
+    // ex.: ./a ./A-n34-k5.txt ./out 0 1 1
+    // ex.: g++ *.cpp && ./a ./A-n34-k5.txt ./out 0 1 1
     // <arquivo_entrada> <arquivo_saida> <Opc_Direc> <Opc_Peso_Aresta> <Opc_Peso_Nos>
 
     string arquivoEntrada = "";
@@ -211,7 +576,6 @@ int main(int argc, char const *argv[])
         direcionado = (direcionadoChar == 's');
     }
 
-
     int tipoGrafo = 0;
     do
     {
@@ -229,6 +593,9 @@ int main(int argc, char const *argv[])
     {
         //* gera um grafo sem arestas, apenas com os nos e suas coordenadas
         controiGrafoTipo2(arquivoEntrada, &grafo);
+        // preencheGrafo(&grafo);
+        grafo.generateDreampufFile("grafo.dat");
+        algoritmoClarkeWright(&grafo);
     }
     else
     {
@@ -246,7 +613,6 @@ int main(int argc, char const *argv[])
     cout << "O grafo é: " << endl;
     cout << "Ponderado nas arestas " << grafo.getPonderadoAresta() << endl;
     cout << "Ponderado nos vertices " << grafo.getPonderadoVertice() << endl;
-
 
     int input;
     do

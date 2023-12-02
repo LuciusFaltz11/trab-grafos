@@ -1,3 +1,4 @@
+#define DEBUG false
 #include "No.h"
 
 // No::No(int id)
@@ -15,6 +16,25 @@ No::No()
 {
 }
 
+No::No(int id, int peso, int coordenadaX, int coordenadaY)
+{
+    if (DEBUG)
+    {
+        cout << "No criado com peso -----------> " << peso << endl;
+        cout << "No criado com id -----------> " << id << endl;
+    }
+    this->grauEntrada = 0;
+    this->grauSaida = 0;
+    this->idNo = id;
+    this->pesoNo = peso;
+    this->primeiraAresta = NULL;
+    this->ultimaAresta = NULL;
+    this->proximoNo = NULL;
+    this->coordenadaX = coordenadaX;
+    this->coordenadaY = coordenadaY;
+    if(DEBUG)
+        cout << "O no foi criado" << endl;
+}
 No::No(int id, int coordenadaX, int coordenadaY)
 {
     this->grauEntrada = 0;
@@ -41,6 +61,10 @@ No::No(int id, int peso)
 int No::getId()
 {
     return this->idNo;
+}
+void No::setPeso(int peso)
+{
+    this->pesoNo = peso;
 }
 
 void No::setProxNo(No *prox)

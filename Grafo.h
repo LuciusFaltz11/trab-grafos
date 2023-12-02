@@ -64,6 +64,8 @@ public:
     void arvoreMinimaKruskal(Lista *vertices);
     void setTotalNos(int qtd) { this->totalNos = qtd; };
     void arvoreMinimaPrim();
+    void AddPesoAoNo(int no, int peso);
+
 };
 
 #endif // GrafoDefined

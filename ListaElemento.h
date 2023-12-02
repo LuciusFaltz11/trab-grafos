@@ -16,6 +16,7 @@ public:
     };
     ~ListaElemento(){};
     int getValue() { return value; };
+    void setValue(int value) { this->value = value; };
     void setProxElemento(ListaElemento *proxElemento)
     {
         this->proxElemento = proxElemento;

@@ -5,13 +5,6 @@
 
 Grafo::Grafo(bool direcionado, bool ponderadoAresta, bool ponderadoVertice)
 {
-    /*
-    ponderado:
-        0: não ponderado
-        1: ponderado na aresta
-        2: ponderado no vértice
-        3: ponderado nos dois
-    */
     raizGrafo = NULL;
     ultimoNo = NULL;
     this->ponderadoAresta = ponderadoAresta;
@@ -47,6 +40,12 @@ void Grafo::AddNo(int no)
         No *novoNo = new No(no, PESO_NAO_PONDERADO);
         ultimoNo->setProxNo(novoNo); //* adiciona o no na lista de nos
         ultimoNo = novoNo;
+    }
+}
+void Grafo::AddPesoAoNo(int no, int peso){
+    No *noAdd = procuraId(no);
+    if(noAdd != NULL){
+        noAdd->setPeso(peso);
     }
 }
 void Grafo::AddNoCoord(int no, int coordenadaX, int coordenadaY)
@@ -105,8 +104,18 @@ void Grafo::AddNoArestaAux(int no1, int no2, int peso)
         if (ultimaAresta == NULL) //* o no não possui nenhuma aresta
         {
             //* cria a primeira aresta e a registra como ultima aresta
-            Aresta *arestaUnica = noAddAresta->setPrimeiraAresta(no2, peso);
-            noAddAresta->setUltimaAresta(arestaUnica);
+            if (ponderadoAresta)
+            {
+                Aresta *arestaUnica = noAddAresta->setPrimeiraAresta(no2, peso);
+                noAddAresta->setUltimaAresta(arestaUnica);
+            }
+            else
+            {
+                Aresta *arestaUnica = noAddAresta->setPrimeiraAresta(no2, PESO_NAO_PONDERADO);
+                noAddAresta->setUltimaAresta(arestaUnica);
+            }
+            // Aresta *arestaUnica = noAddAresta->setPrimeiraAresta(no2, peso);
+            // noAddAresta->setUltimaAresta(arestaUnica);
         }
         else
         {
