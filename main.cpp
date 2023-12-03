@@ -378,6 +378,23 @@ void incluiMergeNasRotas(Rota *novaRota, ListaRotas *listaRotas)
     listaRotas->AddElemento(novaRota);
 }
 
+bool avaliarCapacidadeMaximaRota(Rota *rota)
+{
+    int capMax = rota->getCapacidade();
+    No *noNav = rota->getPrimeiroElemento();
+    int capacidadeAtual = 0;
+    while (noNav != NULL)
+    {
+        capacidadeAtual += noNav->getPeso();
+        if (capacidadeAtual > capMax)
+        {
+            return false;
+        }
+        noNav = noNav->getProxNo();
+    }
+    return true;
+}
+
 void generateGraphvizFile(Grafo *grafo, ListaRotas *rotas)
 {
     ofstream outdata; // outdata is like cin
