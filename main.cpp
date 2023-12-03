@@ -360,6 +360,28 @@ bool estaContido(Rota *rota1, Rota *rota2)
     return true;
 }
 
+bool avaliarCapacidadeMaximaRota(Rota *rota, Rota *novaRota)
+{
+    int capMax = rota->getCapacidade();
+    int capacidadeAtual = 0;
+
+    No *noNav = rota->getPrimeiroElemento();
+    while (noNav != NULL)
+    {
+        capacidadeAtual += noNav->getPeso();
+        noNav = noNav->getProxNo();
+    }
+
+    noNav = novaRota->getPrimeiroElemento();
+    while (noNav != NULL)
+    {
+        capacidadeAtual += noNav->getPeso();
+        noNav = noNav->getProxNo();
+    }
+
+    return capacidadeAtual <= capMax;
+}
+
 void incluiMergeNasRotas(Rota *novaRota, ListaRotas *listaRotas)
 {
     // Remover todas as rotas da lista de rotas que foram mescladas e estão contidas na nova rota
@@ -376,23 +398,6 @@ void incluiMergeNasRotas(Rota *novaRota, ListaRotas *listaRotas)
         rotaNav = rotaNav->getProxElemento();
     }
     listaRotas->AddElemento(novaRota);
-}
-
-bool avaliarCapacidadeMaximaRota(Rota *rota)
-{
-    int capMax = rota->getCapacidade();
-    No *noNav = rota->getPrimeiroElemento();
-    int capacidadeAtual = 0;
-    while (noNav != NULL)
-    {
-        capacidadeAtual += noNav->getPeso();
-        if (capacidadeAtual > capMax)
-        {
-            return false;
-        }
-        noNav = noNav->getProxNo();
-    }
-    return true;
 }
 
 void generateGraphvizFile(Grafo *grafo, ListaRotas *rotas)
