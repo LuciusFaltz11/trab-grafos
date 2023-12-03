@@ -85,6 +85,19 @@ void controiGrafoTipo2(string fileLocation, Grafo *grafo)
         // DEMAND_SECTION
 
         string linha;
+
+        int totalNos = 0;
+        while (linha.find("DIMENSION") != 0)
+        {
+            getline(file, linha);
+            if (linha.find("DIMENSION") != string::npos)
+            {
+                string dimension = linha.substr(linha.find(":") + 1);
+                totalNos = stoi(dimension);
+            }
+        }
+        grafo->setTotalNos(totalNos);
+
         cout << "Características do arquivo: " << endl;
         while (linha.find("NODE_COORD_SECTION") != 0)
         {
@@ -404,8 +417,55 @@ void generateGraphvizFile(Grafo *grafo, ListaRotas *rotas)
     outdata << "}" << endl;
 }
 
+float **matrizDistancias(Grafo *grafo)
+{
+    float **matriz = new float *[grafo->getTotalNos()];
+    for (int i = 0; i < grafo->getTotalNos(); i++)
+    {
+        matriz[i] = new float[grafo->getTotalNos()];
+    }
+
+    for (int i = 0; i < grafo->getTotalNos(); i++)
+    {
+        for (int j = 0; j < grafo->getTotalNos(); j++)
+        {
+            matriz[i][j] = 0;
+        }
+    }
+
+    No *noNav = grafo->getRaizGrafo();
+    while (noNav != NULL)
+    {
+        No *noNav2 = grafo->getRaizGrafo();
+        while (noNav2 != NULL)
+        {
+            if (noNav->getId() != noNav2->getId())
+            {
+                matriz[noNav->getId() - 1][noNav2->getId() - 1] = calcularDistanciaNos(noNav, noNav2);
+            }
+            noNav2 = noNav2->getProxNo();
+        }
+        noNav = noNav->getProxNo();
+    }
+
+    // teste
+    cout << "Matriz de distancias: " << endl;
+    for (int i = 0; i < grafo->getTotalNos(); i++)
+    {
+        for (int j = 0; j < grafo->getTotalNos(); j++)
+        {
+            cout << matriz[i][j] << " ";
+        }
+        cout << endl;
+    }
+    // fim-teste
+
+    return matriz;
+}
+
 void algoritmoClarkeWright(Grafo *grafo)
 {
+
     // Clarke-Wright
     // 1. Crie uma lista de rotas vazia.
     // 2. Para cada par de nós, calcule a economia de mesclagem.

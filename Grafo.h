@@ -65,7 +65,7 @@ public:
     void setTotalNos(int qtd) { this->totalNos = qtd; };
     void arvoreMinimaPrim();
     void AddPesoAoNo(int no, int peso);
-
+    int getTotalNos() { return this->totalNos; };
 };
 
 #endif // GrafoDefined
