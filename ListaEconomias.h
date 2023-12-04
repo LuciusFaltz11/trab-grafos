@@ -15,6 +15,7 @@ public:
     ~ListaEconomias(){};
     void AddElemento(Economia *elemento)
     {
+        nElementos++;
         if (primeiroElemento == NULL)
         {
             primeiroElemento = elemento;
@@ -25,8 +26,22 @@ public:
         ultimoElemento = elemento;
     };
     Economia *getPrimeiroElemento() { return primeiroElemento; };
+    Economia *getMaiorEconomia(){
+        Economia *elementoNav = primeiroElemento;
+        Economia *maiorEconomia = primeiroElemento;
+        while (elementoNav != NULL)
+        {
+            if (elementoNav->getValor() > maiorEconomia->getValor())
+            {
+                maiorEconomia = elementoNav;
+            }
+            elementoNav = elementoNav->getProxElemento();
+        }
+        return maiorEconomia;
+    };
     void removePrimeiroElemento()
     {
+        nElementos--;
         Economia* aux = primeiroElemento;
         primeiroElemento = primeiroElemento->getProxElemento();
         delete aux;

@@ -11,7 +11,7 @@ private:
     No *primeiroElemento = NULL;
     No *ultimoElemento = NULL;
     Rota *proxElemento = NULL;
-    int capacidade = 100;
+    int capacidade = 200;
     int capacidadeAtual = 0;
     int nElementos = 0;
     double distanciaTotal = 0;
@@ -68,6 +68,7 @@ public:
     int getNElementos() { return nElementos; };
     // void setNElementos(int nElementos){this->nElementos = nElementos;};
     int getCapacidade() { return capacidade; };
+    int getCapacidadeAtual() { return capacidadeAtual; };
     void setCapacidade(int novaCapacidade) { this->capacidade = novaCapacidade; };
     void setProxElemento(Rota *prox) { proxElemento = prox; };
     Rota *getProxElemento() { return proxElemento; };

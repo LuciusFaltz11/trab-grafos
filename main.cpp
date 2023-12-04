@@ -87,10 +87,10 @@ void controiGrafoTipo2(string fileLocation, Grafo *grafo)
         string linha;
 
         int totalNos = 0;
-        while (linha.find("DIMENSION") != 0)
+        while (linha.find("CAPACITY") != 0)
         {
             getline(file, linha);
-            if (linha.find("DIMENSION") != string::npos)
+            if (linha.find("CAPACITY") != string::npos)
             {
                 string dimension = linha.substr(linha.find(":") + 1);
                 totalNos = stoi(dimension);
@@ -222,20 +222,6 @@ bool avaliarCapacidadeMaximaRota(Rota *rota, Rota *novaRota)
     int capMax = rota->getCapacidade();
     int capacidadeAtual = 0;
 
-    No *noNav = rota->getPrimeiroElemento();
-    while (noNav != NULL)
-    {
-        capacidadeAtual += noNav->getPeso();
-        noNav = noNav->getProxNo();
-    }
-
-    noNav = novaRota->getPrimeiroElemento();
-    while (noNav != NULL)
-    {
-        capacidadeAtual += noNav->getPeso();
-        noNav = noNav->getProxNo();
-    }
-
     return (capacidadeAtual <= capMax);
 }
 
@@ -252,7 +238,12 @@ Rota *mesclarRotas(Rota *rota1, Rota *rota2)
 
     //* rota começa no ponto inicial
     Rota *novaRota = new Rota();
-    novaRota->AddElemento(1, 0, 0, 0);
+    // novaRota->AddElemento(1, 0, 0, 0);
+    novaRota->AddElemento(
+        rota1->getPrimeiroElemento()->getId(),   //* tem que ser o 1
+        rota1->getPrimeiroElemento()->getPeso(), //* tem que ser 0
+        rota1->getPrimeiroElemento()->getCoordenadaX(),
+        rota1->getPrimeiroElemento()->getCoordenadaY());
     Rota *rotaReferencia = rota1->somaRota(rota2);
 
     if (DEBUG)
@@ -282,7 +273,7 @@ Rota *mesclarRotas(Rota *rota1, Rota *rota2)
                 noNav1 = noNav1->getProxNo();
                 continue;
             }
-            float distancia = calcularDistanciaNos(novaRota->getUltimoElemento(), noNav2);
+            float distancia = calcularDistanciaNos(novaRota->getUltimoElemento(), noNav1);
 
             if (DEBUG)
                 cout << "Distancia entre = " << distancia << endl;
@@ -325,7 +316,12 @@ Rota *mesclarRotas(Rota *rota1, Rota *rota2)
         }
         novaRota->AddElemento(noMaisProximo->getId(), noMaisProximo->getPeso(), noMaisProximo->getCoordenadaX(), noMaisProximo->getCoordenadaY());
     }
-    novaRota->AddElemento(1, 0, 0, 0);
+    // novaRota->AddElemento(1, 0, 0, 0);
+    novaRota->AddElemento(
+        rota1->getPrimeiroElemento()->getId(),   //* tem que ser o 1
+        rota1->getPrimeiroElemento()->getPeso(), //* tem que ser 0
+        rota1->getPrimeiroElemento()->getCoordenadaX(),
+        rota1->getPrimeiroElemento()->getCoordenadaY());
     cout << "Rota mesclada com distancia " << novaRota->getDistanciaTotal() << endl;
     novaRota->imprime();
 
@@ -337,12 +333,16 @@ ListaEconomias *calculaEconomias(ListaRotas *listaRotas)
     ListaEconomias *economias = new ListaEconomias();
 
     Rota *rotaNav = listaRotas->getPrimeiroElemento();
+    int noNavI = 0;
+    int noNav2I = 0;
     while (rotaNav != NULL)
     {
         Rota *rotaNav2 = listaRotas->getPrimeiroElemento();
+        noNavI++;
+        noNav2I = 0;
         while (rotaNav2 != NULL)
         {
-
+            noNav2I++;
             if (rotaNav == rotaNav2)
             {
                 rotaNav2 = rotaNav2->getProxElemento();
@@ -354,18 +354,18 @@ ListaEconomias *calculaEconomias(ListaRotas *listaRotas)
             rotaNav2->imprime();
 
             // Verificar se a junção das duas rotas excede a capacidade máxima
-            if (!avaliarCapacidadeMaximaRota(rotaNav, rotaNav2))
+
+            Rota *novaRota = mesclarRotas(rotaNav, rotaNav2);
+            cout << "resultado: " << endl;
+            novaRota->imprime();
+
+            if (novaRota->getCapacidadeAtual() > novaRota->getCapacidade())
             {
                 cout << "A junção das rotas excede a capacidade máxima. Não será realizada a junção." << endl;
                 rotaNav2 = rotaNav2->getProxElemento();
 
                 continue;
             }
-
-            Rota *novaRota = mesclarRotas(rotaNav, rotaNav2);
-            cout << "resultado: " << endl;
-            novaRota->imprime();
-
             float valorEconomizado = rotaNav->getDistanciaTotal() + rotaNav2->getDistanciaTotal() - novaRota->getDistanciaTotal();
 
             cout << "Valor economizado: " << valorEconomizado << endl;
@@ -423,7 +423,7 @@ void generateGraphvizFile(Grafo *grafo, ListaRotas *rotas)
     No *noNav = grafo->getRaizGrafo();
     while (noNav != NULL)
     {
-        outdata << noNav->getId() << " [pos=\"" << noNav->getCoordenadaX() << "," << noNav->getCoordenadaY() << "\"];" << endl;
+        outdata << noNav->getId() << " [pos=\"" << noNav->getCoordenadaX() << "," << noNav->getCoordenadaY() << "!\", width=5, height=5, fillcolor=green, style=filled];" << endl;
         noNav = noNav->getProxNo();
     }
     Rota *rotaNav = rotas->getPrimeiroElemento();
@@ -440,7 +440,7 @@ void generateGraphvizFile(Grafo *grafo, ListaRotas *rotas)
             No *noNav2 = noNav->getProxNo();
             if (noNav2 != NULL)
             {
-                outdata << noNav->getId() << " -- " << noNav2->getId() << "[color=\"" << cores[corAtual] << "\" , penwidth=5]"
+                outdata << noNav->getId() << " -- " << noNav2->getId() << "[color=\"" << cores[corAtual % 10] << "\" , penwidth=15]"
                         << ";" << endl;
             }
             noNav = noNav->getProxNo();
@@ -496,6 +496,44 @@ float **matrizDistancias(Grafo *grafo)
 
     return matriz;
 }
+float calculateCustoTotal(ListaRotas *listaRotas)
+{
+    float custoTotal = 0;
+    Rota *rotaNav = listaRotas->getPrimeiroElemento();
+    while (rotaNav != NULL)
+    {
+        custoTotal += rotaNav->getDistanciaTotal();
+        rotaNav = rotaNav->getProxElemento();
+    }
+    return custoTotal;
+}
+
+void geraLogDasRotas(ListaRotas *rotas)
+{
+    ofstream outdata; // outdata is like cin
+
+    outdata.open("LogsRotas.txt"); // opens the file
+    int rotaIndex = 0;
+    Rota *rotaNav = rotas->getPrimeiroElemento();
+    while (rotaNav != NULL)
+    {
+        outdata << "==============================================" << endl;
+        outdata << "Rota " << rotaIndex << ": ";
+        No *noNav = rotaNav->getPrimeiroElemento();
+        while (noNav != NULL)
+        {
+            outdata << noNav->getId() << " ";
+            noNav = noNav->getProxNo();
+        }
+        outdata << endl;
+        outdata << "Distancia total: " << rotaNav->getDistanciaTotal() << endl;
+        outdata << "Capacidade total: " << rotaNav->getCapacidade() << endl;
+        outdata << "Capacidade atual: " << rotaNav->getCapacidadeAtual() << endl;
+        outdata << "==============================================" << endl;
+        rotaIndex++;
+        rotaNav = rotaNav->getProxElemento();
+    }
+}
 
 void algoritmoClarkeWright(Grafo *grafo)
 {
@@ -515,6 +553,11 @@ void algoritmoClarkeWright(Grafo *grafo)
     ListaEconomias *economias = new ListaEconomias();
 
     No *noNav = grafo->getRaizGrafo();
+    No *origem = new No(
+        grafo->getRaizGrafo()->getId(),
+        grafo->getRaizGrafo()->getPeso(),
+        grafo->getRaizGrafo()->getCoordenadaX(),
+        grafo->getRaizGrafo()->getCoordenadaY());
     while (noNav != NULL)
     {
 
@@ -532,13 +575,27 @@ void algoritmoClarkeWright(Grafo *grafo)
         Rota *newRota = new Rota();
 
         cout << "newRota == NULL: " << (newRota->getUltimoElemento() == NULL) << endl;
-        newRota->AddElemento(1, 0, 0, 0);
+        // newRota->AddElemento(1, 0, 0, 0);
+
+        newRota->AddElemento(
+            origem->getId(), //* tem que ser o 1
+            origem->getPeso(), //* tem que ser 0
+            origem->getCoordenadaX(),
+            origem->getCoordenadaY());
+
         newRota->AddElemento(
             noNav->getId(),
             noNav->getPeso(),
             noNav->getCoordenadaX(),
             noNav->getCoordenadaY());
-        newRota->AddElemento(1, 0, 0, 0);
+
+        // newRota->AddElemento(1, 0, 0, 0);
+        newRota->AddElemento(
+            origem->getId(), //* tem que ser o 1
+            origem->getPeso(), //* tem que ser 0
+            origem->getCoordenadaX(),
+            origem->getCoordenadaY());
+
         cout << "newRota == NULL: " << (newRota->getUltimoElemento() == NULL) << endl;
         rotas->AddElemento(newRota);
 
@@ -568,10 +625,17 @@ void algoritmoClarkeWright(Grafo *grafo)
     int iteracao = 0;
 
     cout << "rotas->getNElementos() = " << rotas->getNElementos() << endl;
-    while (rotas->getNElementos() > 5)
+    // while (rotas->getNElementos() >= 10)
+    while (rotas->getNElementos() >= 10)
     {
         economias = calculaEconomias(rotas);
-        economias->sort();
+        if (economias->getNElementos() == 0)
+        {
+            cout << "Não há mais economias a serem feitas!" << endl;
+            break;
+        }
+        //! Essa parte so fica comentada pro algorítimo guloso simples
+        // economias->sort();
 
         outdata << "iteracao: " << iteracao << " => ";
 
@@ -580,7 +644,9 @@ void algoritmoClarkeWright(Grafo *grafo)
 
         cout << "Rotas antes do merge: " << endl;
         rotas->imprime();
-        incluiMergeNasRotas(economias->getPrimeiroElemento()->getRota(), rotas);
+        //! aqui mudar para randomizado
+        // incluiMergeNasRotas(economias->getPrimeiroElemento()->getRota(), rotas);
+        incluiMergeNasRotas(economias->getMaiorEconomia()->getRota(), rotas);
 
         // fim-teste
 
@@ -599,6 +665,8 @@ void algoritmoClarkeWright(Grafo *grafo)
     }
 
     generateGraphvizFile(grafo, rotas);
+    geraLogDasRotas(rotas);
+    cout << "O custo total foi de: " << calculateCustoTotal(rotas) << endl;
 }
 
 void menuOpcoes()
