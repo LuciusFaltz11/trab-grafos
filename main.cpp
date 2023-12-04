@@ -216,6 +216,29 @@ float calcularDistanciaNos(No *no1, No *no2)
         cout << "Distancia entre " << no1->getId() << " e " << no2->getId() << " = " << distancia << endl;
     return distancia;
 }
+
+bool avaliarCapacidadeMaximaRota(Rota *rota, Rota *novaRota)
+{
+    int capMax = rota->getCapacidade();
+    int capacidadeAtual = 0;
+
+    No *noNav = rota->getPrimeiroElemento();
+    while (noNav != NULL)
+    {
+        capacidadeAtual += noNav->getPeso();
+        noNav = noNav->getProxNo();
+    }
+
+    noNav = novaRota->getPrimeiroElemento();
+    while (noNav != NULL)
+    {
+        capacidadeAtual += noNav->getPeso();
+        noNav = noNav->getProxNo();
+    }
+
+    return (capacidadeAtual <= capMax);
+}
+
 Rota *mesclarRotas(Rota *rota1, Rota *rota2)
 {
     if (DEBUG)
@@ -231,6 +254,7 @@ Rota *mesclarRotas(Rota *rota1, Rota *rota2)
     Rota *novaRota = new Rota();
     novaRota->AddElemento(1, 0, 0, 0);
     Rota *rotaReferencia = rota1->somaRota(rota2);
+
     if (DEBUG)
     {
         cout << "Somando rotas: " << endl;
@@ -324,9 +348,19 @@ ListaEconomias *calculaEconomias(ListaRotas *listaRotas)
                 rotaNav2 = rotaNav2->getProxElemento();
                 continue;
             }
+
             cout << "Calculando economia entre: " << endl;
             rotaNav->imprime();
             rotaNav2->imprime();
+
+            // Verificar se a junção das duas rotas excede a capacidade máxima
+            if (!avaliarCapacidadeMaximaRota(rotaNav, rotaNav2))
+            {
+                cout << "A junção das rotas excede a capacidade máxima. Não será realizada a junção." << endl;
+                rotaNav2 = rotaNav2->getProxElemento();
+                continue;
+            }
+
             Rota *novaRota = mesclarRotas(rotaNav, rotaNav2);
             cout << "resultado: " << endl;
             novaRota->imprime();
@@ -360,28 +394,6 @@ bool estaContido(Rota *rota1, Rota *rota2)
     return true;
 }
 
-bool avaliarCapacidadeMaximaRota(Rota *rota, Rota *novaRota)
-{
-    int capMax = rota->getCapacidade();
-    int capacidadeAtual = 0;
-
-    No *noNav = rota->getPrimeiroElemento();
-    while (noNav != NULL)
-    {
-        capacidadeAtual += noNav->getPeso();
-        noNav = noNav->getProxNo();
-    }
-
-    noNav = novaRota->getPrimeiroElemento();
-    while (noNav != NULL)
-    {
-        capacidadeAtual += noNav->getPeso();
-        noNav = noNav->getProxNo();
-    }
-
-    return capacidadeAtual <= capMax;
-}
-
 void incluiMergeNasRotas(Rota *novaRota, ListaRotas *listaRotas)
 {
     // Remover todas as rotas da lista de rotas que foram mescladas e estão contidas na nova rota
@@ -390,7 +402,6 @@ void incluiMergeNasRotas(Rota *novaRota, ListaRotas *listaRotas)
 
     while (rotaNav != NULL)
     {
-
         if (estaContido(rotaNav, novaRota))
         {
             listaRotas->removeElemento(rotaNav);
@@ -566,7 +577,11 @@ void algoritmoClarkeWright(Grafo *grafo)
         cout << "economias: " << endl;
         economias->imprime();
 
+        cout << "Rotas antes do merge: " << endl;
+        rotas->imprime();
         incluiMergeNasRotas(economias->getPrimeiroElemento()->getRota(), rotas);
+
+        // fim-teste
 
         outdata << "iteracao: " << iteracao << " => ";
         Rota *rotaNav = rotas->getPrimeiroElemento();
@@ -581,6 +596,7 @@ void algoritmoClarkeWright(Grafo *grafo)
         cout << "Rotas depois do merge: " << endl;
         rotas->imprime();
     }
+
     generateGraphvizFile(grafo, rotas);
 }
 
