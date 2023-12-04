@@ -219,24 +219,7 @@ float calcularDistanciaNos(No *no1, No *no2)
 
 bool avaliarCapacidadeMaximaRota(Rota *rota, Rota *novaRota)
 {
-    int capMax = rota->getCapacidade();
-    int capacidadeAtual = 0;
-
-    No *noNav = rota->getPrimeiroElemento();
-    while (noNav != NULL)
-    {
-        capacidadeAtual += noNav->getPeso();
-        noNav = noNav->getProxNo();
-    }
-
-    noNav = novaRota->getPrimeiroElemento();
-    while (noNav != NULL)
-    {
-        capacidadeAtual += noNav->getPeso();
-        noNav = noNav->getProxNo();
-    }
-
-    return (capacidadeAtual <= capMax);
+    return (rota->getPesoTotal() + novaRota->getPesoTotal()) <= Grafo->getCapacidadeMaxima();
 }
 
 Rota *mesclarRotas(Rota *rota1, Rota *rota2)
