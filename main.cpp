@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <random>
 
 #include <chrono>
 #include <ctime>
@@ -535,6 +536,155 @@ void geraLogDasRotas(ListaRotas *rotas)
     }
 }
 
+int randomRange(int min, int max)
+{
+    // Generate a random number between min and max (inclusive)
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(min, max);
+    return dis(gen);
+}
+
+void algoritmoClarkeWrightRandomizado(Grafo *grafo)
+{
+    const int capacidadeCaminhao = 100;
+    const int quantidadeRotas = 5;
+    const float alfa = 0.5; // ajustar esse valor
+
+    // Clarke-Wright
+    // 1. Crie uma lista de rotas vazia.
+    // 2. Para cada par de nós, calcule a economia de mesclagem.
+    // 3. Classifique as economias de mesclagem em ordem decrescente.
+    // 4. Para cada economia de mesclagem, verifique se os nós podem ser mesclados.
+    // 5. Se os nós puderem ser mesclados, mesclar os nós e adicionar a rota à lista de rotas.
+    // 6. Se os nós não puderem ser mesclados, verifique se os nós podem ser adicionados a uma rota existente.
+    // 7. Se os nós puderem ser adicionados a uma rota existente, adicione os nós à rota.
+    // 8. Se os nós não puderem ser adicionados a uma rota existente, crie uma nova rota com os nós.
+    // 9. Retorne a lista de rotas.
+
+    ListaRotas *rotas = new ListaRotas(capacidadeCaminhao);
+    ListaEconomias *economias = new ListaEconomias(capacidadeCaminhao);
+
+    No *noNav = grafo->getRaizGrafo();
+    No *origem = new No(
+        grafo->getRaizGrafo()->getId(),
+        grafo->getRaizGrafo()->getPeso(),
+        grafo->getRaizGrafo()->getCoordenadaX(),
+        grafo->getRaizGrafo()->getCoordenadaY());
+    while (noNav != NULL)
+    {
+
+        if (noNav->getId() == 1)
+        {
+            noNav = noNav->getProxNo();
+            continue;
+        }
+        cout << "------------------------------------------------------" << endl;
+        cout << "Adicionando no " << noNav->getId() << endl;
+        cout << "nonav x = " << noNav->getCoordenadaX() << " y = " << noNav->getCoordenadaY() << endl;
+
+        cout << "== Criando a rota ==" << endl;
+
+        Rota *newRota = new Rota(capacidadeCaminhao);
+
+        cout << "newRota == NULL: " << (newRota->getUltimoElemento() == NULL) << endl;
+        // newRota->AddElemento(1, 0, 0, 0);
+
+        newRota->AddElemento(
+            origem->getId(),   //* tem que ser o 1
+            origem->getPeso(), //* tem que ser 0
+            origem->getCoordenadaX(),
+            origem->getCoordenadaY());
+
+        newRota->AddElemento(
+            noNav->getId(),
+            noNav->getPeso(),
+            noNav->getCoordenadaX(),
+            noNav->getCoordenadaY());
+
+        // newRota->AddElemento(1, 0, 0, 0);
+        newRota->AddElemento(
+            origem->getId(),   //* tem que ser o 1
+            origem->getPeso(), //* tem que ser 0
+            origem->getCoordenadaX(),
+            origem->getCoordenadaY());
+
+        cout << "newRota == NULL: " << (newRota->getUltimoElemento() == NULL) << endl;
+        rotas->AddElemento(newRota);
+
+        cout << "criado com sucesso" << endl;
+
+        noNav = noNav->getProxNo();
+    }
+    cout << "fim do loop " << endl;
+
+    cout << "Rotas criadas: " << endl;
+    Rota *rotaNav = rotas->getPrimeiroElemento();
+    while (rotaNav != NULL)
+    {
+        rotaNav->imprime();
+        rotaNav = rotaNav->getProxElemento();
+    }
+
+    cout << "==============================================" << endl;
+    cout << "========== < Calculando economias > ==========" << endl;
+    cout << "==============================================" << endl;
+
+    //* Aqui ta a parte do guloso em si, ordenando as economias e pegando a melhor delas
+
+    ofstream outdata; // outdata is like cin
+
+    outdata.open("Logs.txt"); // opens the file
+    int iteracao = 0;
+
+    cout << "rotas->getNElementos() = " << rotas->getNElementos() << endl;
+    // while (rotas->getNElementos() >= 10)
+    while (rotas->getNElementos() >= quantidadeRotas)
+    {
+        economias = calculaEconomias(rotas);
+        if (economias->getNElementos() == 0)
+        {
+            cout << "Não há mais economias a serem feitas!" << endl;
+            break;
+        }
+        //! Essa parte so fica comentada pro algorítimo guloso simples
+        economias->sort();
+
+        outdata << "iteracao: " << iteracao << " => ";
+
+        cout << "economias: " << endl;
+        economias->imprime();
+
+        cout << "Rotas antes do merge: " << endl;
+        rotas->imprime();
+        int k = randomRange(0, alfa * economias->getNElementos() - 1);
+        Rota *rotaToMerge = economias->getElemento(k)->getRota();
+        if (rotaToMerge != NULL)
+        {
+            incluiMergeNasRotas(rotaToMerge, rotas);
+        }
+
+        // fim-teste
+
+        outdata << "iteracao: " << iteracao << " => ";
+        Rota *rotaNav = rotas->getPrimeiroElemento();
+        while (rotaNav != NULL)
+        {
+            outdata << rotaNav->getDistanciaTotal() << " ";
+            rotaNav = rotaNav->getProxElemento();
+        }
+        outdata << endl;
+        iteracao++;
+
+        cout << "Rotas depois do merge: " << endl;
+        rotas->imprime();
+    }
+
+    generateGraphvizFile(grafo, rotas);
+    geraLogDasRotas(rotas);
+    cout << "O custo total foi de: " << calculateCustoTotal(rotas) << endl;
+}
+
 void algoritmoClarkeWright(Grafo *grafo)
 {
     const int capacidadeCaminhao = 100;
@@ -580,7 +730,7 @@ void algoritmoClarkeWright(Grafo *grafo)
         // newRota->AddElemento(1, 0, 0, 0);
 
         newRota->AddElemento(
-            origem->getId(), //* tem que ser o 1
+            origem->getId(),   //* tem que ser o 1
             origem->getPeso(), //* tem que ser 0
             origem->getCoordenadaX(),
             origem->getCoordenadaY());
@@ -593,7 +743,7 @@ void algoritmoClarkeWright(Grafo *grafo)
 
         // newRota->AddElemento(1, 0, 0, 0);
         newRota->AddElemento(
-            origem->getId(), //* tem que ser o 1
+            origem->getId(),   //* tem que ser o 1
             origem->getPeso(), //* tem que ser 0
             origem->getCoordenadaX(),
             origem->getCoordenadaY());
@@ -800,7 +950,8 @@ int main(int argc, char const *argv[])
         controiGrafoTipo2(arquivoEntrada, &grafo);
         // preencheGrafo(&grafo);
         grafo.generateDreampufFile("grafo.dat");
-        algoritmoClarkeWright(&grafo);
+        // algoritmoClarkeWright(&grafo);
+        algoritmoClarkeWrightRandomizado(&grafo);
     }
     else
     {
