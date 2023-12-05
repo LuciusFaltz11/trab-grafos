@@ -11,9 +11,9 @@
 // #include <cmath>
 
 #include <fstream>
+#include <filesystem>
 // #include <cstdlib>
 
-using namespace std;
 #include "Grafo.h"
 #include "FileMananger.h"
 
@@ -24,6 +24,7 @@ using namespace std;
 #include "ListaRotas.h"
 #include "Rota.h"
 
+// using namespace std;
 /*
 converte a linha do arquivo para (int, int) e chama a função de construção no grafo
 se a linha so contiver um inteiro, a mesma representa o numero de nos do grafo (de acordo com a descrição do arquivo readme.txt)
@@ -413,11 +414,11 @@ void incluiMergeNasRotas(Rota *novaRota, ListaRotas *listaRotas)
     listaRotas->AddElemento(novaRota);
 }
 
-void generateGraphvizFile(Grafo *grafo, ListaRotas *rotas)
+void generateGraphvizFile(Grafo *grafo, ListaRotas *rotas, string filePathName = "./out/graphviz.txt")
 {
     ofstream outdata; // outdata is like cin
 
-    outdata.open("graphviz.txt"); // opens the file
+    outdata.open(filePathName); // opens the file
 
     outdata << "graph G {" << endl;
     outdata << "layout=\"fdp\";" << endl;
@@ -509,11 +510,13 @@ float calculateCustoTotal(ListaRotas *listaRotas)
     return custoTotal;
 }
 
-void geraLogDasRotas(ListaRotas *rotas)
+void geraLogDasRotas(ListaRotas *rotas, string filePathName = "./out/LogsRotas.txt")
 {
     ofstream outdata; // outdata is like cin
 
-    outdata.open("LogsRotas.txt"); // opens the file
+    cout << "filePathName = > " << endl;
+    cout << filePathName << endl;
+    outdata.open(filePathName, std::ios_base::app); // opens the file
     int rotaIndex = 0;
     Rota *rotaNav = rotas->getPrimeiroElemento();
     while (rotaNav != NULL)
@@ -545,7 +548,7 @@ int randomRange(int min, int max)
     return dis(gen);
 }
 
-void algoritmoClarkeWrightRandomizado(Grafo *grafo)
+void algoritmoClarkeWrightRandomizado(Grafo *grafo, string testeName = "")
 {
     const int capacidadeCaminhao = 100;
     const int quantidadeRotas = 5;
@@ -634,7 +637,7 @@ void algoritmoClarkeWrightRandomizado(Grafo *grafo)
 
     ofstream outdata; // outdata is like cin
 
-    outdata.open("Logs.txt"); // opens the file
+    outdata.open("./out/Logs.txt"); // opens the file
     int iteracao = 0;
 
     cout << "rotas->getNElementos() = " << rotas->getNElementos() << endl;
@@ -681,11 +684,13 @@ void algoritmoClarkeWrightRandomizado(Grafo *grafo)
     }
 
     generateGraphvizFile(grafo, rotas);
-    geraLogDasRotas(rotas);
+    geraLogDasRotas(rotas, "./out/"+
+    testeName
+    +"/LogsRotas.txt");
     cout << "O custo total foi de: " << calculateCustoTotal(rotas) << endl;
 }
 
-void algoritmoClarkeWright(Grafo *grafo)
+void algoritmoClarkeWright(Grafo *grafo, string testeName = "teste")
 {
     const int capacidadeCaminhao = 100;
     const int quantidadeRotas = 5;
@@ -773,7 +778,7 @@ void algoritmoClarkeWright(Grafo *grafo)
 
     ofstream outdata; // outdata is like cin
 
-    outdata.open("Logs.txt"); // opens the file
+    outdata.open("./out/" + testeName + "/Logs.txt"); // opens the file
     int iteracao = 0;
 
     cout << "rotas->getNElementos() = " << rotas->getNElementos() << endl;
@@ -816,8 +821,12 @@ void algoritmoClarkeWright(Grafo *grafo)
         rotas->imprime();
     }
 
-    generateGraphvizFile(grafo, rotas);
-    geraLogDasRotas(rotas);
+    generateGraphvizFile(grafo, rotas, "./out/" + testeName + "/graphviz.txt");
+    geraLogDasRotas(rotas, "./out/" + testeName + "/LogsRotas.txt");
+    outdata.close();
+    outdata.open("./out/" + testeName + "/LogsRotas.txt", std::ios_base::app);
+    cout << "O custo total foi de: " << calculateCustoTotal(rotas) << endl;
+    outdata.close();
     cout << "O custo total foi de: " << calculateCustoTotal(rotas) << endl;
 }
 
@@ -856,32 +865,50 @@ string selecionarArquivo(bool grafoPonderado)
 int main(int argc, char const *argv[])
 {
     //* estrutura de argumentos:
-    // ex.: ./a ./A-n34-k5.txt ./out 0 1 1
-    // ex.: g++ *.cpp && ./a ./A-n34-k5.txt ./out 0 1 1
-    // <arquivo_entrada> <arquivo_saida> <Opc_Direc> <Opc_Peso_Aresta> <Opc_Peso_Nos>
+    // ex.: ./a ./A-n34-k5.txt ./out 0 1 1 teste
+    // ex.: g++ *.cpp && ./a ./A-n34-k5.txt ./out 0 1 1 teste
+    // <arquivo_entrada> <arquivo_saida> <Opc_Direc> <Opc_Peso_Aresta> <Opc_Peso_Nos> <nome_teste>
 
     string arquivoEntrada = "";
     string arquivoSaida = "";
     bool direcionado = false;
     bool ponderadoAresta = false;
     bool ponderadoNo = false;
+    string nomeTeste = "";
 
+    int tipoGrafo = 0;
     //* se o programa for chamado com argumentos, o programa ignora o sistema de seleção de arquivo
-    if (argc == 6)
+    if (argc == 7)
     {
+        tipoGrafo = 2;
+        // cout << "Argumentos passados: " << endl;
+        // for (int i = 0; i < argc; i++)
+        // {
+        //     cout << "argv[" << i << "] = " << (argv[i]) << endl;
+        // }
         arquivoEntrada = argv[1];
         arquivoSaida = argv[2];
-        direcionado = (argv[3] == "1");
-        ponderadoAresta = (argv[4] == "1");
-        ponderadoNo = (argv[5] == "1");
+        direcionado = (argv[3][0] == '1');
+        ponderadoAresta = (argv[4][0] == '1');
+        ponderadoNo = (argv[5][0] == '1');
+        nomeTeste = argv[6];
+
         cout << "Arquivo de entrada: " << arquivoEntrada << endl;
         cout << "Arquivo de saida: " << arquivoSaida << endl;
         cout << "O grafo e direcionado? " << direcionado << endl;
         cout << "O grafo e ponderado nas arestas? " << ponderadoAresta << endl;
         cout << "O grafo e ponderado nos nos? " << ponderadoNo << endl;
+        cout << "Nome do teste: " << nomeTeste << endl;
+
+        ofstream outdata; // outdata is like cin
+        outdata.open("./out/" + nomeTeste + "/LogsRotas.txt", std::ios_base::app);
+        outdata << "Nome do teste: " << nomeTeste << endl;
+        outdata << "Arquivo de entrada: " << arquivoEntrada << endl;
+        outdata.close();
     }
     else
     {
+        tipoGrafo = 1;
         char grafoPonderado = ' ';
         do
         {
@@ -931,14 +958,14 @@ int main(int argc, char const *argv[])
         direcionado = (direcionadoChar == 's');
     }
 
-    int tipoGrafo = 0;
-    do
+    while (tipoGrafo != 1 && tipoGrafo != 2)
     {
+        cout << "tipo grafo == 2: " << (tipoGrafo == 2) << endl;
         cout << "Qual o tipo de arquivo do grafo grafo?" << endl;
         cout << "1: grafo primeira parte" << endl;
         cout << "2: grafo segunda parte" << endl;
         cin >> tipoGrafo;
-    } while (tipoGrafo != 1 && tipoGrafo != 2);
+    };
 
     FileMananger fileMananger;
     Grafo grafo(direcionado == 's', ponderadoAresta, ponderadoNo);
@@ -949,9 +976,9 @@ int main(int argc, char const *argv[])
         //* gera um grafo sem arestas, apenas com os nos e suas coordenadas
         controiGrafoTipo2(arquivoEntrada, &grafo);
         // preencheGrafo(&grafo);
-        grafo.generateDreampufFile("grafo.dat");
-        // algoritmoClarkeWright(&grafo);
-        algoritmoClarkeWrightRandomizado(&grafo);
+        // grafo.generateDreampufFile("grafo.dat");
+        algoritmoClarkeWright(&grafo, nomeTeste);
+        // algoritmoClarkeWrightRandomizado(&grafo);
     }
     else
     {
@@ -973,6 +1000,10 @@ int main(int argc, char const *argv[])
     int input;
     do
     {
+        if (tipoGrafo == 2)
+        {
+            return 0;
+        }
         cout << "\n\n\nDigite -1 para sair" << endl;
         cout << "Digite o id do no que vc deseja informacoes: ";
         cin >> input;
