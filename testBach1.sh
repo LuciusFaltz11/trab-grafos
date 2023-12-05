@@ -24,5 +24,5 @@ do
     else
         echo "Unsupported operating system"
     fi
-    python gerarGrafico.py "./out/${args[5]}/graphviz.txt" "${args[5]}"
+    python gerar-graphviz-image.py "./out/${args[5]}/graphviz.txt" "${args[5]}"
 done < <(tr -d '\r' < args.txt)

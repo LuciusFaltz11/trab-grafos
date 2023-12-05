@@ -537,6 +537,8 @@ void geraLogDasRotas(ListaRotas *rotas, string filePathName = "./out/LogsRotas.t
         rotaIndex++;
         rotaNav = rotaNav->getProxElemento();
     }
+    outdata << "Custo total: " << calculateCustoTotal(rotas) << endl;
+    outdata.close();
 }
 
 int randomRange(int min, int max)
@@ -701,11 +703,9 @@ void algoritmoClarkeWright(Grafo *grafo, string testeName = "teste", float alfa 
 
     generateGraphvizFile(grafo, rotas, "./out/" + testeName + "/graphviz.txt");
     geraLogDasRotas(rotas, "./out/" + testeName + "/LogsRotas.txt");
-    outdata.close();
     outdata.open("./out/" + testeName + "/LogsRotas.txt", std::ios_base::app);
     cout << "O custo total foi de: " << calculateCustoTotal(rotas) << endl;
     outdata.close();
-    cout << "O custo total foi de: " << calculateCustoTotal(rotas) << endl;
 }
 
 void menuOpcoes()
