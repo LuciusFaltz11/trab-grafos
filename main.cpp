@@ -237,7 +237,7 @@ Rota *mesclarRotas(Rota *rota1, Rota *rota2)
     }
 
     //* rota começa no ponto inicial
-    Rota *novaRota = new Rota();
+    Rota *novaRota = new Rota(rota1->getCapacidade());
     // novaRota->AddElemento(1, 0, 0, 0);
     novaRota->AddElemento(
         rota1->getPrimeiroElemento()->getId(),   //* tem que ser o 1
@@ -330,7 +330,7 @@ Rota *mesclarRotas(Rota *rota1, Rota *rota2)
 ListaEconomias *calculaEconomias(ListaRotas *listaRotas)
 {
     cout << "Calcular economias" << endl;
-    ListaEconomias *economias = new ListaEconomias();
+    ListaEconomias *economias = new ListaEconomias(listaRotas->getCapacidade());
 
     Rota *rotaNav = listaRotas->getPrimeiroElemento();
     int noNavI = 0;
@@ -423,7 +423,7 @@ void generateGraphvizFile(Grafo *grafo, ListaRotas *rotas)
     No *noNav = grafo->getRaizGrafo();
     while (noNav != NULL)
     {
-        outdata << noNav->getId() << " [pos=\"" << noNav->getCoordenadaX() << "," << noNav->getCoordenadaY() << "!\", width=5, height=5, fillcolor=green, style=filled];" << endl;
+        outdata << noNav->getId() << " [pos=\"" << noNav->getCoordenadaX() << "," << noNav->getCoordenadaY() << "!\", width=0, height=0, fillcolor=green, style=filled];" << endl;
         noNav = noNav->getProxNo();
     }
     Rota *rotaNav = rotas->getPrimeiroElemento();
@@ -537,6 +537,8 @@ void geraLogDasRotas(ListaRotas *rotas)
 
 void algoritmoClarkeWright(Grafo *grafo)
 {
+    const int capacidadeCaminhao = 100;
+    const int quantidadeRotas = 5;
 
     // Clarke-Wright
     // 1. Crie uma lista de rotas vazia.
@@ -549,8 +551,8 @@ void algoritmoClarkeWright(Grafo *grafo)
     // 8. Se os nós não puderem ser adicionados a uma rota existente, crie uma nova rota com os nós.
     // 9. Retorne a lista de rotas.
 
-    ListaRotas *rotas = new ListaRotas();
-    ListaEconomias *economias = new ListaEconomias();
+    ListaRotas *rotas = new ListaRotas(capacidadeCaminhao);
+    ListaEconomias *economias = new ListaEconomias(capacidadeCaminhao);
 
     No *noNav = grafo->getRaizGrafo();
     No *origem = new No(
@@ -572,7 +574,7 @@ void algoritmoClarkeWright(Grafo *grafo)
 
         cout << "== Criando a rota ==" << endl;
 
-        Rota *newRota = new Rota();
+        Rota *newRota = new Rota(capacidadeCaminhao);
 
         cout << "newRota == NULL: " << (newRota->getUltimoElemento() == NULL) << endl;
         // newRota->AddElemento(1, 0, 0, 0);
@@ -626,7 +628,7 @@ void algoritmoClarkeWright(Grafo *grafo)
 
     cout << "rotas->getNElementos() = " << rotas->getNElementos() << endl;
     // while (rotas->getNElementos() >= 10)
-    while (rotas->getNElementos() >= 10)
+    while (rotas->getNElementos() >= quantidadeRotas)
     {
         economias = calculaEconomias(rotas);
         if (economias->getNElementos() == 0)

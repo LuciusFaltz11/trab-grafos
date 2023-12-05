@@ -1,60 +1,30 @@
 ==============================================
-Rota 0: 1 58 60 56 55 57 59 61 54 1 
-Distancia total: 110.563
-Capacidade total: 200
-Capacidade atual: 200
+Rota 0: 1 16 12 20 18 26 32 29 33 1 
+Distancia total: 209.057
+Capacidade total: 100
+Capacidade atual: 100
 ==============================================
 ==============================================
-Rota 1: 1 99 97 96 95 94 93 98 101 100 1 
-Distancia total: 97.3376
-Capacidade total: 200
-Capacidade atual: 190
+Rota 1: 1 7 9 2 28 24 1 
+Distancia total: 135.353
+Capacidade total: 100
+Capacidade atual: 99
 ==============================================
 ==============================================
-Rota 2: 1 33 34 35 37 40 39 38 36 32 1 
-Distancia total: 97.9948
-Capacidade total: 200
-Capacidade atual: 200
+Rota 2: 1 15 8 30 31 25 6 1 
+Distancia total: 123.737
+Capacidade total: 100
+Capacidade atual: 86
 ==============================================
 ==============================================
-Rota 3: 1 14 18 19 20 16 17 15 13 1 
-Distancia total: 95.8847
-Capacidade total: 200
-Capacidade atual: 190
+Rota 3: 1 34 17 23 10 13 4 3 22 1 
+Distancia total: 196.406
+Capacidade total: 100
+Capacidade atual: 99
 ==============================================
 ==============================================
-Rota 4: 1 85 84 83 82 79 77 72 71 74 78 80 81 1 
-Distancia total: 139.878
-Capacidade total: 200
-Capacidade atual: 200
-==============================================
-==============================================
-Rota 5: 1 76 2 3 5 7 10 9 12 11 1 
-Distancia total: 53.8144
-Capacidade total: 200
-Capacidade atual: 140
-==============================================
-==============================================
-Rota 6: 1 44 48 50 53 51 52 49 46 47 45 43 42 41 1 
-Distancia total: 66.6313
-Capacidade total: 200
-Capacidade atual: 160
-==============================================
-==============================================
-Rota 7: 1 68 66 64 63 67 70 69 65 62 73 75 1 
-Distancia total: 63.056
-Capacidade total: 200
-Capacidade atual: 200
-==============================================
-==============================================
-Rota 8: 1 6 4 8 92 90 89 86 87 88 91 1 
-Distancia total: 80.448
-Capacidade total: 200
-Capacidade atual: 160
-==============================================
-==============================================
-Rota 9: 1 21 22 23 24 27 29 28 26 25 30 31 1 
-Distancia total: 59.6155
-Capacidade total: 200
-Capacidade atual: 170
+Rota 4: 1 21 27 5 19 11 14 1 
+Distancia total: 172.458
+Capacidade total: 100
+Capacidade atual: 76
 ==============================================

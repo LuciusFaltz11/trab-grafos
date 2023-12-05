@@ -8,9 +8,14 @@ private:
     Rota *primeiroElemento = NULL;
     Rota *ultimoElemento = NULL;
     int nElementos;
+    int capacidade = 100;
 
 public:
-    ListaRotas(){};
+    ListaRotas(int capacidade){
+        this->capacidade = capacidade;
+        nElementos = 0;
+    };
+    int getCapacidade(){return capacidade;};
     ~ListaRotas(){};
     void AddElemento(Rota *elemento){
         nElementos++;

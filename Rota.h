@@ -11,18 +11,19 @@ private:
     No *primeiroElemento = NULL;
     No *ultimoElemento = NULL;
     Rota *proxElemento = NULL;
-    int capacidade = 200;
+    int capacidade = 100;
     int capacidadeAtual = 0;
     int nElementos = 0;
     double distanciaTotal = 0;
 
 public:
-    Rota()
+    Rota(int capacidade)
     {
         if (DEBUG)
         {
             cout << "== < Chamou o construtor de rota > ==" << endl;
         }
+        this->capacidade = capacidade;
         primeiroElemento = NULL;
         ultimoElemento = NULL;
         proxElemento = NULL;
@@ -117,7 +118,7 @@ public:
     };
     Rota *somaRota(Rota *rota)
     {
-        Rota *novaRota = new Rota();
+        Rota *novaRota = new Rota(this->capacidade);
         novaRota->AddElemento(1, 0, 0, 0);
         No *elementoNav = primeiroElemento;
         while (elementoNav != NULL)

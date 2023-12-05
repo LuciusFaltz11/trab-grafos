@@ -9,9 +9,13 @@ private:
     Economia *ultimoElemento = NULL;
     ListaEconomias *proxElemento = NULL;
     int nElementos;
+    int capacidade = 100;
 
 public:
-    ListaEconomias(){};
+    ListaEconomias(int capacidade){
+        this->capacidade = capacidade;
+        nElementos = 0;
+    };
     ~ListaEconomias(){};
     void AddElemento(Economia *elemento)
     {
