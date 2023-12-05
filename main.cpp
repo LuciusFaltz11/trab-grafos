@@ -549,6 +549,7 @@ void algoritmoClarkeWrightRandomizado(Grafo *grafo)
 {
     const int capacidadeCaminhao = 100;
     const int quantidadeRotas = 5;
+
     const float alfa = 0.5; // ajustar esse valor
 
     // Clarke-Wright
@@ -657,7 +658,8 @@ void algoritmoClarkeWrightRandomizado(Grafo *grafo)
 
         cout << "Rotas antes do merge: " << endl;
         rotas->imprime();
-        int k = randomRange(0, alfa * economias->getNElementos() - 1);
+
+        int k = randomRange(0, alfa * economias->getNElementos());
         Rota *rotaToMerge = economias->getElemento(k)->getRota();
         if (rotaToMerge != NULL)
         {
