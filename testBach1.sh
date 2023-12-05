@@ -10,6 +10,7 @@ do
     args=($line)
 
     mkdir "./out/${args[5]}"
+    mkdir "./out/${args[5]}/images"
     echo "Running test case: ${args[@]}"
     # Detect the output file type based on the user's operating system
     if [[ "$OSTYPE" == "linux-gnu"* ]]; then

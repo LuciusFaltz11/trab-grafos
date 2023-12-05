@@ -10,7 +10,7 @@ teste_name = sys.argv[2]
 
 graph, = pydot.graph_from_dot_data(open(input_file).read())
 
-if not os.path.exists("./out/" + teste_name):
-    os.makedirs("./out/" + teste_name)
+if not os.path.exists("./out/" + teste_name + "/images"):
+    os.makedirs("./out/" + teste_name + "/images")
 
 graph.write_png("./out/" + teste_name + "/images/" + file_name + '.png')
