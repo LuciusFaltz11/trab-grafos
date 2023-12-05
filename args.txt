@@ -1,3 +1,9 @@
-./A-n34-k5.txt ./out 0 1 1 teste1
-./A-n34-k5.txt ./out 0 1 1 teste2
-./A-n34-k5.txt ./out 0 1 1 teste3
+./A-n34-k5.txt ./out 0 1 1 gulosoSimples -1
+./A-n34-k5.txt ./out 0 1 1 gulosoRandomizado01 0.01
+./A-n34-k5.txt ./out 0 1 1 gulosoRandomizado05 0.05
+./A-n34-k5.txt ./out 0 1 1 gulosoRandomizado10 0.10
+./A-n34-k5.txt ./out 0 1 1 gulosoRandomizado15 0.15
+./A-n34-k5.txt ./out 0 1 1 gulosoRandomizado20 0.20
+./A-n34-k5.txt ./out 0 1 1 gulosoRandomizado25 0.25
+./A-n34-k5.txt ./out 0 1 1 gulosoRandomizado30 0.30
+./A-n34-k5.txt ./out 0 1 1 gulosoRandomizado50 0.50
