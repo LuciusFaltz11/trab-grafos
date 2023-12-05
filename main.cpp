@@ -550,6 +550,10 @@ int randomRange(int min, int max)
 
 void algoritmoClarkeWright(Grafo *grafo, string testeName = "teste", float alfa = -1)
 {
+    cout << "Algoritmo Clarke-Wright" << endl;
+    cout << "testeName = " << testeName << endl;
+    cout << "alfa = " << alfa << endl;
+
     const int capacidadeCaminhao = 100;
     const int quantidadeRotas = 5;
 
@@ -740,8 +744,9 @@ int main(int argc, char const *argv[])
 {
     //* estrutura de argumentos:
     // ex.: ./a ./A-n34-k5.txt ./out 0 1 1 teste
-    // ex.: g++ *.cpp && ./a ./A-n34-k5.txt ./out 0 1 1 teste
-    // <arquivo_entrada> <arquivo_saida> <Opc_Direc> <Opc_Peso_Aresta> <Opc_Peso_Nos> <nome_teste>
+    //* alfa = -1 : algoritmo guloso simples
+    // ex.: g++ *.cpp && ./a ./A-n34-k5.txt ./out 0 1 1 teste -1
+    // <arquivo_entrada> <arquivo_saida> <Opc_Direc> <Opc_Peso_Aresta> <Opc_Peso_Nos> <nome_teste> <alfa>
 
     string arquivoEntrada = "";
     string arquivoSaida = "";
@@ -749,10 +754,11 @@ int main(int argc, char const *argv[])
     bool ponderadoAresta = false;
     bool ponderadoNo = false;
     string nomeTeste = "";
+    float alfa = -1;
 
     int tipoGrafo = 0;
     //* se o programa for chamado com argumentos, o programa ignora o sistema de seleção de arquivo
-    if (argc == 7)
+    if (argc == 8)
     {
         tipoGrafo = 2;
         // cout << "Argumentos passados: " << endl;
@@ -766,6 +772,7 @@ int main(int argc, char const *argv[])
         ponderadoAresta = (argv[4][0] == '1');
         ponderadoNo = (argv[5][0] == '1');
         nomeTeste = argv[6];
+        alfa = atof(argv[7]);
 
         cout << "Arquivo de entrada: " << arquivoEntrada << endl;
         cout << "Arquivo de saida: " << arquivoSaida << endl;
@@ -851,7 +858,7 @@ int main(int argc, char const *argv[])
         controiGrafoTipo2(arquivoEntrada, &grafo);
         // preencheGrafo(&grafo);
         // grafo.generateDreampufFile("grafo.dat");
-        algoritmoClarkeWright(&grafo, nomeTeste);
+        algoritmoClarkeWright(&grafo, nomeTeste, alfa);
         // algoritmoClarkeWrightRandomizado(&grafo);
     }
     else
