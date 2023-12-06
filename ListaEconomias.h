@@ -12,11 +12,13 @@ private:
     int capacidade = 100;
 
 public:
-    ListaEconomias(int capacidade){
+    ListaEconomias(int capacidade)
+    {
         this->capacidade = capacidade;
         nElementos = 0;
     };
-    ~ListaEconomias(){
+    ~ListaEconomias()
+    {
         Economia *elementoNav = primeiroElemento;
         Economia *elementoAnterior = primeiroElemento;
         while (elementoNav != NULL)
@@ -38,8 +40,12 @@ public:
         ultimoElemento->setProxElemento(elemento);
         ultimoElemento = elemento;
     };
-    Economia *getPrimeiroElemento() { return primeiroElemento; };
-    Economia *getMaiorEconomia(){
+    Economia *getPrimeiroElemento()
+    {
+        return primeiroElemento;
+    };
+    Economia *getMaiorEconomia()
+    {
         Economia *elementoNav = primeiroElemento;
         Economia *maiorEconomia = primeiroElemento;
         while (elementoNav != NULL)
@@ -50,12 +56,13 @@ public:
             }
             elementoNav = elementoNav->getProxElemento();
         }
-        return maiorEconomia;
+        //* retorna uma copia da maior economia
+        return new Economia(maiorEconomia->cloneRota(), maiorEconomia->getValor());
     };
     void removePrimeiroElemento()
     {
         nElementos--;
-        Economia* aux = primeiroElemento;
+        Economia *aux = primeiroElemento;
         primeiroElemento = primeiroElemento->getProxElemento();
         delete aux;
     };
@@ -66,7 +73,8 @@ public:
         {
             elementoNav = elementoNav->getProxElemento();
         }
-        return elementoNav;
+        //* retornar uma copia do elementoNav
+        return new Economia(elementoNav->cloneRota(), elementoNav->getValor());
     };
     int getNElementos() { return nElementos; };
     // void setNElementos(int nElementos){this->nElementos = nElementos;};
@@ -82,7 +90,8 @@ public:
         }
         cout << endl;
     };
-    void sort(){
+    void sort()
+    {
         Economia *elementoNav = primeiroElemento;
         Economia *elementoNav2 = primeiroElemento;
         Economia *aux;

@@ -664,7 +664,6 @@ ListaRotas *algoritmoClarkeWright(Grafo *grafo, int capacidadeCaminhao, int quan
     // 9. Retorne a lista de rotas.
 
     ListaRotas *rotas = new ListaRotas(capacidadeCaminhao);
-    ListaEconomias *economias;
 
     No *noNav = grafo->getRaizGrafo();
     No *origem = new No(
@@ -760,9 +759,12 @@ ListaRotas *algoritmoClarkeWright(Grafo *grafo, int capacidadeCaminhao, int quan
     if (DEBUG)
         cout << "rotas->getNElementos() = " << rotas->getNElementos() << endl;
     // while (rotas->getNElementos() >= 10)
+    // ListaEconomias *economias = NULL;
     while (rotas->getNElementos() >= quantidadeRotas)
     {
-        economias = calculaEconomias(rotas);
+        // if (economias != NULL)
+        //     delete economias;
+        ListaEconomias *economias = calculaEconomias(rotas);
         if (economias->getNElementos() == 0)
         {
             if (DEBUG)
@@ -792,15 +794,17 @@ ListaRotas *algoritmoClarkeWright(Grafo *grafo, int capacidadeCaminhao, int quan
         //! aqui mudar para randomizado
         // incluiMergeNasRotas(economias->getPrimeiroElemento()->getRota(), rotas);
 
+        // cout << "Eu to certo" << endl;
         if (alfa != -1)
         {
             int k = randomRange(0, alfa * (economias->getNElementos() - 1));
-            Rota *rotaToMerge = economias->getElemento(k)->getRota();
+            Rota *rotaToMerge = economias->getElemento(k)->cloneRota();
             incluiMergeNasRotas(rotaToMerge, rotas);
         }
         else
-            incluiMergeNasRotas(economias->getMaiorEconomia()->getRota(), rotas);
+            incluiMergeNasRotas(economias->getMaiorEconomia()->cloneRota(), rotas);
 
+        delete economias;
         // fim-teste
         if (mostrarLog)
         {
@@ -820,7 +824,6 @@ ListaRotas *algoritmoClarkeWright(Grafo *grafo, int capacidadeCaminhao, int quan
             cout << "Rotas depois do merge: " << endl;
             rotas->imprime();
         }
-        delete economias;
     }
 
     // generateGraphvizFile(grafo, rotas, "./out/" + testeName + "/graphviz.txt");

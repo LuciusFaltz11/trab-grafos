@@ -28,7 +28,8 @@ public:
         ultimoElemento = NULL;
         proxElemento = NULL;
     };
-    ~Rota(){
+    ~Rota()
+    {
         No *elementoNav = primeiroElemento;
         No *elementoAnterior = primeiroElemento;
         while (elementoNav != NULL)
@@ -128,26 +129,19 @@ public:
     Rota *somaRota(Rota *rota)
     {
         Rota *novaRota = new Rota(this->capacidade);
-        novaRota->AddElemento(1, 0, 0, 0);
+        // novaRota->AddElemento(1, 0, 0, 0);
         No *elementoNav = primeiroElemento;
         while (elementoNav != NULL)
         {
-            if (elementoNav->getId() != 1)
-            {
-                novaRota->AddElemento(elementoNav->getId(), elementoNav->getPeso(), elementoNav->getCoordenadaX(), elementoNav->getCoordenadaY());
-            }
+            novaRota->AddElemento(elementoNav->getId(), elementoNav->getPeso(), elementoNav->getCoordenadaX(), elementoNav->getCoordenadaY());
             elementoNav = elementoNav->getProxNo();
         }
         elementoNav = rota->getPrimeiroElemento();
         while (elementoNav != NULL)
         {
-            if (elementoNav->getId() != 1)
-            {
-                novaRota->AddElemento(elementoNav->getId(), elementoNav->getPeso(), elementoNav->getCoordenadaX(), elementoNav->getCoordenadaY());
-            }
+            novaRota->AddElemento(elementoNav->getId(), elementoNav->getPeso(), elementoNav->getCoordenadaX(), elementoNav->getCoordenadaY());
             elementoNav = elementoNav->getProxNo();
         }
-        novaRota->AddElemento(1, 0, 0, 0);
         if (DEBUG)
         {
 

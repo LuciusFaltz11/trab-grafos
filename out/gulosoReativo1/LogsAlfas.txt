@@ -1,0 +1,225 @@
+ ========================================================= 
+iteracao: 0
+Resultado da iteracao: 1494.04
+Melhor resultado da iteracao: 1494.04
+[ 0.05 ] probabilidade = 0.259259
+[ 0.1 ] probabilidade = 0.185185
+[ 0.15 ] probabilidade = 0.185185
+[ 0.3 ] probabilidade = 0.185185
+[ 0.5 ] probabilidade = 0.185185
+ ========================================================= 
+iteracao: 100
+Resultado da iteracao: 1596.12
+Melhor resultado da iteracao: 1596.12
+[ 0.05 ] probabilidade = 0.0495486
+[ 0.1 ] probabilidade = 0.262998
+[ 0.15 ] probabilidade = 0.295346
+[ 0.3 ] probabilidade = 0.295205
+[ 0.5 ] probabilidade = 0.0969036
+ ========================================================= 
+iteracao: 200
+Resultado da iteracao: 1510.4
+Melhor resultado da iteracao: 1510.4
+[ 0.05 ] probabilidade = 0.00014063
+[ 0.1 ] probabilidade = 0.35061
+[ 0.15 ] probabilidade = 0.241753
+[ 0.3 ] probabilidade = 0.315171
+[ 0.5 ] probabilidade = 0.0923251
+ ========================================================= 
+iteracao: 300
+Resultado da iteracao: 1477.76
+Melhor resultado da iteracao: 1477.76
+[ 0.05 ] probabilidade = 5.46834e-07
+[ 0.1 ] probabilidade = 0.194853
+[ 0.15 ] probabilidade = 0.24895
+[ 0.3 ] probabilidade = 0.312332
+[ 0.5 ] probabilidade = 0.243865
+ ========================================================= 
+iteracao: 400
+Resultado da iteracao: 1518.24
+Melhor resultado da iteracao: 1518.24
+[ 0.05 ] probabilidade = 3.97663e-09
+[ 0.1 ] probabilidade = 0.418165
+[ 0.15 ] probabilidade = 0.160718
+[ 0.3 ] probabilidade = 0.409807
+[ 0.5 ] probabilidade = 0.0113101
+ ========================================================= 
+iteracao: 500
+Resultado da iteracao: 1345.65
+Melhor resultado da iteracao: 1345.65
+[ 0.05 ] probabilidade = 5.97617e-11
+[ 0.1 ] probabilidade = 0.486048
+[ 0.15 ] probabilidade = 0.107262
+[ 0.3 ] probabilidade = 0.40652
+[ 0.5 ] probabilidade = 0.000169971
+ ========================================================= 
+iteracao: 600
+Resultado da iteracao: 1402.86
+Melhor resultado da iteracao: 1402.86
+[ 0.05 ] probabilidade = 5.28726e-13
+[ 0.1 ] probabilidade = 0.4237
+[ 0.15 ] probabilidade = 0.353281
+[ 0.3 ] probabilidade = 0.223018
+[ 0.5 ] probabilidade = 1.50377e-06
+ ========================================================= 
+iteracao: 700
+Resultado da iteracao: 1387.37
+Melhor resultado da iteracao: 1387.37
+[ 0.05 ] probabilidade = 5.59639e-15
+[ 0.1 ] probabilidade = 0.283456
+[ 0.15 ] probabilidade = 0.286117
+[ 0.3 ] probabilidade = 0.430427
+[ 0.5 ] probabilidade = 1.59169e-08
+ ========================================================= 
+iteracao: 800
+Resultado da iteracao: 1312.4
+Melhor resultado da iteracao: 1312.4
+[ 0.05 ] probabilidade = 4.22035e-17
+[ 0.1 ] probabilidade = 0.430635
+[ 0.15 ] probabilidade = 0.257461
+[ 0.3 ] probabilidade = 0.311904
+[ 0.5 ] probabilidade = 1.20033e-10
+ ========================================================= 
+iteracao: 900
+Resultado da iteracao: 1532.35
+Melhor resultado da iteracao: 1532.35
+[ 0.05 ] probabilidade = 4.70706e-19
+[ 0.1 ] probabilidade = 0.239089
+[ 0.15 ] probabilidade = 0.321663
+[ 0.3 ] probabilidade = 0.439249
+[ 0.5 ] probabilidade = 1.33875e-12
+ ========================================================= 
+iteracao: 1000
+Resultado da iteracao: 1543.37
+Melhor resultado da iteracao: 1543.37
+[ 0.05 ] probabilidade = 3.74416e-21
+[ 0.1 ] probabilidade = 0.449889
+[ 0.15 ] probabilidade = 0.178887
+[ 0.3 ] probabilidade = 0.371224
+[ 0.5 ] probabilidade = 1.06489e-14
+ ========================================================= 
+iteracao: 1100
+Resultado da iteracao: 1439.93
+Melhor resultado da iteracao: 1439.93
+[ 0.05 ] probabilidade = 3.4147e-23
+[ 0.1 ] probabilidade = 0.348824
+[ 0.15 ] probabilidade = 0.272216
+[ 0.3 ] probabilidade = 0.37896
+[ 0.5 ] probabilidade = 9.71188e-17
+ ========================================================= 
+iteracao: 1200
+Resultado da iteracao: 1552.11
+Melhor resultado da iteracao: 1552.11
+[ 0.05 ] probabilidade = 3.03294e-25
+[ 0.1 ] probabilidade = 0.37061
+[ 0.15 ] probabilidade = 0.410015
+[ 0.3 ] probabilidade = 0.219375
+[ 0.5 ] probabilidade = 8.62611e-19
+ ========================================================= 
+iteracao: 1300
+Resultado da iteracao: 1333.43
+Melhor resultado da iteracao: 1333.43
+[ 0.05 ] probabilidade = 3.07487e-27
+[ 0.1 ] probabilidade = 0.315247
+[ 0.15 ] probabilidade = 0.347912
+[ 0.3 ] probabilidade = 0.336841
+[ 0.5 ] probabilidade = 8.74537e-21
+ ========================================================= 
+iteracao: 1400
+Resultado da iteracao: 1293.68
+Melhor resultado da iteracao: 1293.68
+[ 0.05 ] probabilidade = 3.16283e-29
+[ 0.1 ] probabilidade = 0.445138
+[ 0.15 ] probabilidade = 0.264191
+[ 0.3 ] probabilidade = 0.290671
+[ 0.5 ] probabilidade = 8.99553e-23
+ ========================================================= 
+iteracao: 1500
+Resultado da iteracao: 1476.63
+Melhor resultado da iteracao: 1476.63
+[ 0.05 ] probabilidade = 2.68254e-31
+[ 0.1 ] probabilidade = 0.21643
+[ 0.15 ] probabilidade = 0.510663
+[ 0.3 ] probabilidade = 0.272907
+[ 0.5 ] probabilidade = 7.62954e-25
+ ========================================================= 
+iteracao: 1600
+Resultado da iteracao: 1444.95
+Melhor resultado da iteracao: 1444.95
+[ 0.05 ] probabilidade = 3.1636e-33
+[ 0.1 ] probabilidade = 0.416634
+[ 0.15 ] probabilidade = 0.280264
+[ 0.3 ] probabilidade = 0.303102
+[ 0.5 ] probabilidade = 8.99773e-27
+ ========================================================= 
+iteracao: 1700
+Resultado da iteracao: 1315.03
+Melhor resultado da iteracao: 1315.03
+[ 0.05 ] probabilidade = 3.22272e-35
+[ 0.1 ] probabilidade = 0.526112
+[ 0.15 ] probabilidade = 0.243987
+[ 0.3 ] probabilidade = 0.229901
+[ 0.5 ] probabilidade = 9.16587e-29
+ ========================================================= 
+iteracao: 1800
+Resultado da iteracao: 1570.05
+Melhor resultado da iteracao: 1570.05
+[ 0.05 ] probabilidade = 2.72971e-37
+[ 0.1 ] probabilidade = 0.36481
+[ 0.15 ] probabilidade = 0.424054
+[ 0.3 ] probabilidade = 0.211136
+[ 0.5 ] probabilidade = 7.76368e-31
+ ========================================================= 
+iteracao: 1900
+Resultado da iteracao: 1583.2
+Melhor resultado da iteracao: 1583.2
+[ 0.05 ] probabilidade = 4.53801e-39
+[ 0.1 ] probabilidade = 0.392417
+[ 0.15 ] probabilidade = 0.561099
+[ 0.3 ] probabilidade = 0.0464849
+[ 0.5 ] probabilidade = 1.29067e-32
+ ========================================================= 
+iteracao: 2000
+Resultado da iteracao: 1377.31
+Melhor resultado da iteracao: 1377.31
+[ 0.05 ] probabilidade = 5.89082e-41
+[ 0.1 ] probabilidade = 0.267602
+[ 0.15 ] probabilidade = 0.42272
+[ 0.3 ] probabilidade = 0.309678
+[ 0.5 ] probabilidade = 1.67543e-34
+ ========================================================= 
+iteracao: 2100
+Resultado da iteracao: 1630.21
+Melhor resultado da iteracao: 1630.21
+[ 0.05 ] probabilidade = 8.77241e-43
+[ 0.1 ] probabilidade = 0.325625
+[ 0.15 ] probabilidade = 0.304685
+[ 0.3 ] probabilidade = 0.36969
+[ 0.5 ] probabilidade = 2.495e-36
+ ========================================================= 
+iteracao: 2200
+Resultado da iteracao: 1461.08
+Melhor resultado da iteracao: 1461.08
+[ 0.05 ] probabilidade = 1.83911e-44
+[ 0.1 ] probabilidade = 0.1559
+[ 0.15 ] probabilidade = 0.395247
+[ 0.3 ] probabilidade = 0.448853
+[ 0.5 ] probabilidade = 5.23068e-38
+ ========================================================= 
+iteracao: 2300
+Resultado da iteracao: 1300.73
+Melhor resultado da iteracao: 1300.73
+[ 0.05 ] probabilidade = 1.92707e-46
+[ 0.1 ] probabilidade = 0.285911
+[ 0.15 ] probabilidade = 0.347715
+[ 0.3 ] probabilidade = 0.366374
+[ 0.5 ] probabilidade = 5.48086e-40
+ ========================================================= 
+iteracao: 2400
+Resultado da iteracao: 1471.1
+Melhor resultado da iteracao: 1471.1
+[ 0.05 ] probabilidade = 3.3143e-48
+[ 0.1 ] probabilidade = 0.272083
+[ 0.15 ] probabilidade = 0.39808
+[ 0.3 ] probabilidade = 0.329837
+[ 0.5 ] probabilidade = 9.42634e-42
