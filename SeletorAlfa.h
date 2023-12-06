@@ -52,7 +52,7 @@ public:
     };
     void atualizarProbabilidade(int alfaIndex, float resultado)
     {
-        if(resultado > melhorResultado){
+        if(resultado < melhorResultado){
             melhorResultado = resultado;
         }
         const float fatorSuavizacao = 0.9;
@@ -61,8 +61,9 @@ public:
         {
             soma += probabilidades[i];
         }
-        probabilidades[alfaIndex] = (fatorSuavizacao * probabilidades[alfaIndex]) + ((1 - fatorSuavizacao) * (resultado / melhorResultado));
-        // normalizar as probabilidades
+        
+        probabilidades[alfaIndex] = (fatorSuavizacao * probabilidades[alfaIndex]) + ((1 - fatorSuavizacao) * (melhorResultado / resultado));
+        
         soma = 0;
         for (int i = 0; i < nAlfas; i++)
         {
