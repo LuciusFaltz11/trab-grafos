@@ -869,11 +869,7 @@ ResultadoClarkeWrightRandomizado ClarkeWrightRandomizado(Grafo *grafo, string no
         }
     }
 
-    if (nIteracoes > 0)
-        cout << BOLDGREEN << "A media do algorítimo de ClarkeWriteRandomizado para o alfa = " << alfa << " foi de " << somaCusto / nIteracoes << RESET << endl;
-    else
-    cout << BOLDGREEN << "Menor custo: " << melhorCusto << RESET << endl;
-
+    cout << "Menor custo: " << BOLDGREEN << melhorCusto << RESET << endl;
 
     // return somaCusto / nIteracoes;
     ResultadoClarkeWrightRandomizado resultado;
