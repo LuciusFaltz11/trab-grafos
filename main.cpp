@@ -23,6 +23,7 @@
 #include "No.h"
 #include "ListaRotas.h"
 #include "Rota.h"
+#include "SeletorAlfa.h"
 
 // using namespace std;
 /*
@@ -602,8 +603,8 @@ void geraLogDasRotas(ListaRotas *rotas, string filePathName = "./out/LogsRotas.t
 {
     ofstream outdata; // outdata is like cin
 
-    cout << "filePathName = > " << endl;
-    cout << filePathName << endl;
+    // cout << "filePathName = > " << endl;
+    // cout << filePathName << endl;
     outdata.open(filePathName, std::ios_base::app); // opens the file
     int rotaIndex = 0;
     Rota *rotaNav = rotas->getPrimeiroElemento();
@@ -640,9 +641,6 @@ int randomRange(int min, int max)
 
 ListaRotas *algoritmoClarkeWright(Grafo *grafo, string testeName = "teste", float alfa = -1)
 {
-    cout << "Algoritmo Clarke-Wright" << endl;
-    cout << "testeName = " << testeName << endl;
-    cout << "alfa = " << alfa << endl;
 
     const int capacidadeCaminhao = 100;
     const int quantidadeRotas = 5;
@@ -748,10 +746,13 @@ ListaRotas *algoritmoClarkeWright(Grafo *grafo, string testeName = "teste", floa
     }
 
     //* Aqui ta a parte do guloso em si, ordenando as economias e pegando a melhor delas
+    const bool mostrarLog = false; //* se quiser ver o arquivo de log, mudar para true (mais lento)
+    ofstream outdata;              // outdata is like cin
+    if (mostrarLog)
+    {
+        outdata.open("./out/" + testeName + "/Logs.txt"); // opens the file
+    }
 
-    ofstream outdata; // outdata is like cin
-
-    outdata.open("./out/" + testeName + "/Logs.txt"); // opens the file
     int iteracao = 0;
 
     if (DEBUG)
@@ -762,7 +763,10 @@ ListaRotas *algoritmoClarkeWright(Grafo *grafo, string testeName = "teste", floa
         economias = calculaEconomias(rotas);
         if (economias->getNElementos() == 0)
         {
-            cout << "Não há mais economias a serem feitas!" << endl;
+            if (DEBUG)
+            {
+                cout << "Não há mais economias a serem feitas!" << endl;
+            }
             break;
         }
         //! Essa parte so fica comentada pro algorítimo guloso simples
@@ -773,8 +777,10 @@ ListaRotas *algoritmoClarkeWright(Grafo *grafo, string testeName = "teste", floa
 
         if (DEBUG)
         {
-
-            outdata << "iteracao: " << iteracao << " => ";
+            if (mostrarLog)
+            {
+                outdata << "iteracao: " << iteracao << " => ";
+            }
             cout << "economias: " << endl;
             economias->imprime();
             cout << "Rotas antes do merge: " << endl;
@@ -794,15 +800,17 @@ ListaRotas *algoritmoClarkeWright(Grafo *grafo, string testeName = "teste", floa
             incluiMergeNasRotas(economias->getMaiorEconomia()->getRota(), rotas);
 
         // fim-teste
-
-        outdata << "iteracao: " << iteracao << " => ";
-        Rota *rotaNav = rotas->getPrimeiroElemento();
-        while (rotaNav != NULL)
+        if (mostrarLog)
         {
-            outdata << rotaNav->getDistanciaTotal() << " ";
-            rotaNav = rotaNav->getProxElemento();
+            outdata << "iteracao: " << iteracao << " => ";
+            Rota *rotaNav = rotas->getPrimeiroElemento();
+            while (rotaNav != NULL)
+            {
+                outdata << rotaNav->getDistanciaTotal() << " ";
+                rotaNav = rotaNav->getProxElemento();
+            }
+            outdata << endl;
         }
-        outdata << endl;
         iteracao++;
         if (DEBUG)
         {
@@ -815,13 +823,20 @@ ListaRotas *algoritmoClarkeWright(Grafo *grafo, string testeName = "teste", floa
     // generateGraphvizFile(grafo, rotas, "./out/" + testeName + "/graphviz.txt");
     // geraLogDasRotas(rotas, "./out/" + testeName + "/LogsRotas.txt");
     outdata.open("./out/" + testeName + "/LogsRotas.txt", std::ios_base::app);
-    cout << "O custo total foi de: " << calculateCustoTotal(rotas) << endl;
+    // cout << "O custo total foi de: " << calculateCustoTotal(rotas) << endl;
     outdata.close();
     return rotas;
 }
-float ClarkeWrightRandomizado(Grafo *grafo, string nomeTeste, int capacidade, float alfa)
+struct ResultadoClarkeWrightRandomizado
 {
-    const int nIteracoes = 100;
+    float custoMedio;
+    float alfa;
+    ListaRotas *melhorResultado;
+};
+
+ResultadoClarkeWrightRandomizado ClarkeWrightRandomizado(Grafo *grafo, string nomeTeste, int capacidade, float alfa)
+{
+    const int nIteracoes = 30;
     ListaRotas *melhorResultado = new ListaRotas(capacidade);
     float somaCusto = 0;
 
@@ -830,6 +845,7 @@ float ClarkeWrightRandomizado(Grafo *grafo, string nomeTeste, int capacidade, fl
     {
         ListaRotas *resultado = algoritmoClarkeWright(grafo, nomeTeste, alfa);
         float custo = calculateCustoTotal(resultado);
+        cout << BOLDGREEN << "Custo da iteracao " << i << " com alfa: " << alfa << " = " << custo << RESET << endl;
         somaCusto += custo;
         if (custo < melhorCusto)
         {
@@ -845,9 +861,57 @@ float ClarkeWrightRandomizado(Grafo *grafo, string nomeTeste, int capacidade, fl
     }
 
     cout << BOLDGREEN << "A media do algorítimo de ClarkeWriteRandomizado para o alfa = " << alfa << " foi de " << somaCusto / nIteracoes << RESET << endl;
+
+    // return somaCusto / nIteracoes;
+    ResultadoClarkeWrightRandomizado resultado;
+    resultado.custoMedio = somaCusto / nIteracoes;
+    resultado.alfa = alfa;
+    resultado.melhorResultado = melhorResultado;
+    return resultado;
+}
+struct ClarkeWrightReativoResultado
+{
+    ListaRotas *melhorResultado;
+    SeletorAlfa *seletorAlfa;
+};
+
+ClarkeWrightReativoResultado ClarkeWrightReativo(Grafo *grafo, string nomeTeste, int capacidade)
+{
+    ofstream outdata;                                      // outdata is like cin
+    outdata.open("./out/" + nomeTeste + "/LogsAlfas.txt"); // opens the file
+
+    SeletorAlfa *seletorAlfa = new SeletorAlfa();
+    float menorCusto = 99999999;
+    ListaRotas *melhorResultado = new ListaRotas(capacidade);
+    for (int iteracao = 0; iteracao < 1000; iteracao++)
+    {
+        int alfaSelecionadoIndex = seletorAlfa->selecionarAlfaIndex();
+        float alfaSelecionado = seletorAlfa->getAlfa(alfaSelecionadoIndex);
+        //* nessa implementação, selecionamos um alfa e rodamos o algorítimo randomizado com o mesmo alfa 30 vezes
+        //* e pegamos a media dos custos para atualizar a probabilidade do alfa
+        ResultadoClarkeWrightRandomizado resultado = ClarkeWrightRandomizado(grafo, nomeTeste, capacidade, alfaSelecionado);
+        if (calculateCustoTotal(resultado.melhorResultado) < menorCusto)
+        {
+            menorCusto = calculateCustoTotal(resultado.melhorResultado);
+            melhorResultado = resultado.melhorResultado;
+        }
+        seletorAlfa->atualizarProbabilidade(alfaSelecionadoIndex, resultado.custoMedio);
+        outdata << " ========================================================= " << endl;
+        outdata << "iteracao: " << iteracao << endl;
+        outdata << "Resultado da iteracao: " << resultado.custoMedio << endl;
+        outdata << "Melhor resultado da iteracao: " << calculateCustoTotal(resultado.melhorResultado) << endl;
+        if (iteracao % 100 == 0)
+        {
+            for (int i = 0; i < seletorAlfa->getNAlfas(); i++)
+            {
+                outdata << "[ " << seletorAlfa->getAlfa(i) << " ] probabilidade = " << seletorAlfa->getProbabilidade(i) << endl;
+            }
+            generateGraphvizFile(grafo, melhorResultado, "./out/" + nomeTeste + "/Graphviz" + std::to_string(iteracao) + ".txt");
+            geraLogDasRotas(melhorResultado, "./out/" + nomeTeste + "/LogsRotas" + std::to_string(iteracao) + ".txt");
+        }
+    }
     generateGraphvizFile(grafo, melhorResultado, "./out/" + nomeTeste + "/MelhorGraphviz.txt");
     geraLogDasRotas(melhorResultado, "./out/" + nomeTeste + "/MelhorLogsRotas.txt");
-    return somaCusto / nIteracoes;
 }
 
 void menuOpcoes()
@@ -992,6 +1056,8 @@ int main(int argc, char const *argv[])
 
     FileMananger fileMananger;
     Grafo grafo(direcionado == 's', ponderadoAresta, ponderadoNo);
+    ClarkeWrightReativoResultado resultado;
+    ClarkeWrightReativoResultado melhorResultado;
 
     auto start = chrono::system_clock::now(); //! inicio de codigo para contagem de tempo de execução
     if (tipoGrafo == 2)
@@ -1002,11 +1068,27 @@ int main(int argc, char const *argv[])
         {
             cout << BOLDGREEN << "Algoritmo Clarke-Wright Randomizado" << RESET << endl;
             int capacideCaminhao = getCapacidadeCaminhao(arquivoEntrada);
-            ClarkeWrightRandomizado(&grafo, nomeTeste, capacideCaminhao, alfa);
+            ResultadoClarkeWrightRandomizado resultado = ClarkeWrightRandomizado(&grafo, nomeTeste, capacideCaminhao, alfa);
+
+            generateGraphvizFile(&grafo, resultado.melhorResultado, "./out/" + nomeTeste + "/MelhorGraphviz.txt");
+            geraLogDasRotas(resultado.melhorResultado, "./out/" + nomeTeste + "/MelhorLogsRotas.txt");
+
+            cout << "O custo medio foi de: " << resultado.custoMedio << endl;
+            cout << "O alfa foi de: " << resultado.alfa << endl;
+            cout << "O melhor resultado foi: " << endl;
+            resultado.melhorResultado->imprime();
         }
         if (nomeTeste.find("Reativo") != string::npos)
         {
             cout << BOLDGREEN << "Algoritmo Clarke-Wright Reativo" << RESET << endl;
+            int capacideCaminhao = getCapacidadeCaminhao(arquivoEntrada);
+            resultado = ClarkeWrightReativo(&grafo, nomeTeste, capacideCaminhao);
+            cout << "O melhor resultado da iteração foi: " << endl;
+            resultado.melhorResultado->imprime();
+            if (calculateCustoTotal(resultado.melhorResultado) < calculateCustoTotal(melhorResultado.melhorResultado))
+            {
+                melhorResultado = resultado;
+            }
             // algoritmoClarkeWright(&grafo, nomeTeste);
         }
         // algoritmoClarkeWright(&grafo, nomeTeste, alfa);
@@ -1023,10 +1105,15 @@ int main(int argc, char const *argv[])
     cout << "grafo criado em: " << BOLDGREEN << elapsed_seconds.count() << " s" << RESET
          << endl;
     //!=================================================
+    ofstream outdata;
+    outdata.open("./out/" + nomeTeste + "/Resultado.txt", std::ios_base::app);
+    outdata << "O custo total foi de: " << calculateCustoTotal(melhorResultado.melhorResultado) << endl;
+    outdata << "O tempo gasto foi de " << elapsed_seconds.count() << " s" << endl;
+    outdata.close();
 
-    cout << "O grafo é: " << endl;
-    cout << "Ponderado nas arestas " << grafo.getPonderadoAresta() << endl;
-    cout << "Ponderado nos vertices " << grafo.getPonderadoVertice() << endl;
+    // cout << "O grafo é: " << endl;
+    // cout << "Ponderado nas arestas " << grafo.getPonderadoAresta() << endl;
+    // cout << "Ponderado nos vertices " << grafo.getPonderadoVertice() << endl;
 
     int input;
     do
