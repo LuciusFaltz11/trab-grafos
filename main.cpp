@@ -63,6 +63,86 @@ void constroiGrafo(string linha, Grafo *grafo, int tipoArquivo)
     }
     return;
 }
+int getCapacidadeCaminhao(string fileLocation)
+{
+    fstream file;
+    file.open(fileLocation, ios::in);
+    if (!file)
+    {
+        cout << "Arquivo '" << fileLocation << "' nao encontrado! " << endl;
+    }
+    else
+    {
+        // NAME : A-n34-k5
+        // COMMENT : (Augerat et al, No of trucks: 5, Optimal value: 778)
+        // TYPE : CVRP
+        // DIMENSION : 34
+        // EDGE_WEIGHT_TYPE : EUC_2D
+        // CAPACITY : 100
+        // NODE_COORD_SECTION
+        // 1 41 49
+        // ...
+        // DEMAND_SECTION
+        // ...
+        // DEMAND_SECTION
+
+        string linha;
+
+        int capacidade = 0;
+        while (linha.find("CAPACITY") != 0)
+        {
+            getline(file, linha);
+        }
+        if (linha.find("CAPACITY") != string::npos)
+        {
+            string capacidadeStr = linha.substr(linha.find(":") + 1);
+            capacidade = stoi(capacidadeStr);
+        }
+        return capacidade;
+    }
+    return 0;
+}
+int getNoOfTrucks(string fileLocation)
+{
+    fstream file;
+    file.open(fileLocation, ios::in);
+    if (!file)
+    {
+        cout << "Arquivo '" << fileLocation << "' nao encontrado! " << endl;
+    }
+    else
+    {
+        // NAME : A-n34-k5
+        // COMMENT : (Augerat et al, No of trucks: 5, Optimal value: 778)
+        // TYPE : CVRP
+        // DIMENSION : 34
+        // EDGE_WEIGHT_TYPE : EUC_2D
+        // CAPACITY : 100
+        // NODE_COORD_SECTION
+        // 1 41 49
+        // ...
+        // DEMAND_SECTION
+        // ...
+        // DEMAND_SECTION
+
+        string linha;
+        getline(file, linha);
+        while (linha.find("No of trucks") == string::npos)
+        {
+            getline(file, linha);
+        }
+        if (linha.find("No of trucks: ") != string::npos)
+        {
+            string noOfTrucksStr = linha.substr(linha.find("No of trucks: ") + 14);
+            noOfTrucksStr = noOfTrucksStr.substr(0, noOfTrucksStr.find(","));
+            // cout << "noOfTrucksStr = >> " << noOfTrucksStr << endl;
+            int noOfTrucks = stoi(noOfTrucksStr);
+            return noOfTrucks;
+        }
+        // cout << "linha => > > " << linha << endl;
+    }
+    return 0;
+}
 void controiGrafoTipo2(string fileLocation, Grafo *grafo)
 {
     fstream file;
@@ -324,14 +404,17 @@ Rota *mesclarRotas(Rota *rota1, Rota *rota2)
         rota1->getPrimeiroElemento()->getPeso(), //* tem que ser 0
         rota1->getPrimeiroElemento()->getCoordenadaX(),
         rota1->getPrimeiroElemento()->getCoordenadaY());
-    cout << "Rota mesclada com distancia " << novaRota->getDistanciaTotal() << endl;
-    novaRota->imprime();
-
+    if (DEBUG)
+    {
+        cout << "Rota mesclada com distancia " << novaRota->getDistanciaTotal() << endl;
+        novaRota->imprime();
+    }
     return novaRota;
 }
 ListaEconomias *calculaEconomias(ListaRotas *listaRotas)
 {
-    cout << "Calcular economias" << endl;
+    if (DEBUG)
+        cout << "Calcular economias" << endl;
     ListaEconomias *economias = new ListaEconomias(listaRotas->getCapacidade());
 
     Rota *rotaNav = listaRotas->getPrimeiroElemento();
@@ -350,27 +433,32 @@ ListaEconomias *calculaEconomias(ListaRotas *listaRotas)
                 rotaNav2 = rotaNav2->getProxElemento();
                 continue;
             }
-
-            cout << "Calculando economia entre: " << endl;
-            rotaNav->imprime();
-            rotaNav2->imprime();
-
+            if (DEBUG)
+            {
+                cout << "Calculando economia entre: " << endl;
+                rotaNav->imprime();
+                rotaNav2->imprime();
+            }
             // Verificar se a junção das duas rotas excede a capacidade máxima
 
             Rota *novaRota = mesclarRotas(rotaNav, rotaNav2);
-            cout << "resultado: " << endl;
-            novaRota->imprime();
+            if (DEBUG)
+            {
+
+                cout << "resultado: " << endl;
+                novaRota->imprime();
+            }
 
             if (novaRota->getCapacidadeAtual() > novaRota->getCapacidade())
             {
-                cout << "A junção das rotas excede a capacidade máxima. Não será realizada a junção." << endl;
                 rotaNav2 = rotaNav2->getProxElemento();
 
                 continue;
             }
             float valorEconomizado = rotaNav->getDistanciaTotal() + rotaNav2->getDistanciaTotal() - novaRota->getDistanciaTotal();
 
-            cout << "Valor economizado: " << valorEconomizado << endl;
+            if (DEBUG)
+                cout << "Valor economizado: " << valorEconomizado << endl;
 
             Economia *novaEconomia = new Economia(novaRota, valorEconomizado);
             economias->AddElemento(novaEconomia);
@@ -550,7 +638,7 @@ int randomRange(int min, int max)
     return dis(gen);
 }
 
-void algoritmoClarkeWright(Grafo *grafo, string testeName = "teste", float alfa = -1)
+ListaRotas *algoritmoClarkeWright(Grafo *grafo, string testeName = "teste", float alfa = -1)
 {
     cout << "Algoritmo Clarke-Wright" << endl;
     cout << "testeName = " << testeName << endl;
@@ -561,7 +649,7 @@ void algoritmoClarkeWright(Grafo *grafo, string testeName = "teste", float alfa 
 
     if (alfa != -1 && alfa < 0 && alfa > 1)
     {
-        return;
+        return NULL;
     }
 
     // Clarke-Wright
@@ -592,17 +680,23 @@ void algoritmoClarkeWright(Grafo *grafo, string testeName = "teste", float alfa 
             noNav = noNav->getProxNo();
             continue;
         }
-        cout << "------------------------------------------------------" << endl;
-        cout << "Adicionando no " << noNav->getId() << endl;
-        cout << "nonav x = " << noNav->getCoordenadaX() << " y = " << noNav->getCoordenadaY() << endl;
+        if (DEBUG)
+        {
 
-        cout << "== Criando a rota ==" << endl;
+            cout << "------------------------------------------------------" << endl;
+            cout << "Adicionando no " << noNav->getId() << endl;
+            cout << "nonav x = " << noNav->getCoordenadaX() << " y = " << noNav->getCoordenadaY() << endl;
+
+            cout << "== Criando a rota ==" << endl;
+        }
 
         Rota *newRota = new Rota(capacidadeCaminhao);
 
-        cout << "newRota == NULL: " << (newRota->getUltimoElemento() == NULL) << endl;
+        if (DEBUG)
+        {
+            cout << "newRota == NULL: " << (newRota->getUltimoElemento() == NULL) << endl;
+        }
         // newRota->AddElemento(1, 0, 0, 0);
-
         newRota->AddElemento(
             origem->getId(),   //* tem que ser o 1
             origem->getPeso(), //* tem que ser 0
@@ -622,26 +716,36 @@ void algoritmoClarkeWright(Grafo *grafo, string testeName = "teste", float alfa 
             origem->getCoordenadaX(),
             origem->getCoordenadaY());
 
-        cout << "newRota == NULL: " << (newRota->getUltimoElemento() == NULL) << endl;
         rotas->AddElemento(newRota);
 
-        cout << "criado com sucesso" << endl;
+        if (DEBUG)
+        {
+            cout << "newRota == NULL: " << (newRota->getUltimoElemento() == NULL) << endl;
+            cout << "criado com sucesso" << endl;
+        }
 
         noNav = noNav->getProxNo();
     }
-    cout << "fim do loop " << endl;
-
-    cout << "Rotas criadas: " << endl;
-    Rota *rotaNav = rotas->getPrimeiroElemento();
-    while (rotaNav != NULL)
+    if (DEBUG)
     {
-        rotaNav->imprime();
-        rotaNav = rotaNav->getProxElemento();
+
+        cout << "fim do loop " << endl;
+
+        cout << "Rotas criadas: " << endl;
+        Rota *rotaNav = rotas->getPrimeiroElemento();
+        while (rotaNav != NULL)
+        {
+            rotaNav->imprime();
+            rotaNav = rotaNav->getProxElemento();
+        }
     }
 
-    cout << "==============================================" << endl;
-    cout << "========== < Calculando economias > ==========" << endl;
-    cout << "==============================================" << endl;
+    if (DEBUG)
+    {
+        cout << "==============================================" << endl;
+        cout << "========== < Calculando economias > ==========" << endl;
+        cout << "==============================================" << endl;
+    }
 
     //* Aqui ta a parte do guloso em si, ordenando as economias e pegando a melhor delas
 
@@ -650,7 +754,8 @@ void algoritmoClarkeWright(Grafo *grafo, string testeName = "teste", float alfa 
     outdata.open("./out/" + testeName + "/Logs.txt"); // opens the file
     int iteracao = 0;
 
-    cout << "rotas->getNElementos() = " << rotas->getNElementos() << endl;
+    if (DEBUG)
+        cout << "rotas->getNElementos() = " << rotas->getNElementos() << endl;
     // while (rotas->getNElementos() >= 10)
     while (rotas->getNElementos() >= quantidadeRotas)
     {
@@ -666,13 +771,16 @@ void algoritmoClarkeWright(Grafo *grafo, string testeName = "teste", float alfa 
             economias->sort();
         }
 
-        outdata << "iteracao: " << iteracao << " => ";
+        if (DEBUG)
+        {
 
-        cout << "economias: " << endl;
-        economias->imprime();
+            outdata << "iteracao: " << iteracao << " => ";
+            cout << "economias: " << endl;
+            economias->imprime();
+            cout << "Rotas antes do merge: " << endl;
+            rotas->imprime();
+        }
 
-        cout << "Rotas antes do merge: " << endl;
-        rotas->imprime();
         //! aqui mudar para randomizado
         // incluiMergeNasRotas(economias->getPrimeiroElemento()->getRota(), rotas);
 
@@ -696,16 +804,50 @@ void algoritmoClarkeWright(Grafo *grafo, string testeName = "teste", float alfa 
         }
         outdata << endl;
         iteracao++;
+        if (DEBUG)
+        {
 
-        cout << "Rotas depois do merge: " << endl;
-        rotas->imprime();
+            cout << "Rotas depois do merge: " << endl;
+            rotas->imprime();
+        }
     }
 
-    generateGraphvizFile(grafo, rotas, "./out/" + testeName + "/graphviz.txt");
-    geraLogDasRotas(rotas, "./out/" + testeName + "/LogsRotas.txt");
+    // generateGraphvizFile(grafo, rotas, "./out/" + testeName + "/graphviz.txt");
+    // geraLogDasRotas(rotas, "./out/" + testeName + "/LogsRotas.txt");
     outdata.open("./out/" + testeName + "/LogsRotas.txt", std::ios_base::app);
     cout << "O custo total foi de: " << calculateCustoTotal(rotas) << endl;
     outdata.close();
+    return rotas;
+}
+float ClarkeWrightRandomizado(Grafo *grafo, string nomeTeste, int capacidade, float alfa)
+{
+    const int nIteracoes = 100;
+    ListaRotas *melhorResultado = new ListaRotas(capacidade);
+    float somaCusto = 0;
+
+    float melhorCusto = 99999999;
+    for (int i = 0; i < nIteracoes; i++)
+    {
+        ListaRotas *resultado = algoritmoClarkeWright(grafo, nomeTeste, alfa);
+        float custo = calculateCustoTotal(resultado);
+        somaCusto += custo;
+        if (custo < melhorCusto)
+        {
+            if (false) //! mudar para true caso queira gerar os graphviz e os logs de todas as melhores rotas
+            {
+
+                generateGraphvizFile(grafo, melhorResultado, "./out/" + nomeTeste + "/Graphviz" + std::to_string(i) + ".txt");
+                geraLogDasRotas(melhorResultado, "./out/" + nomeTeste + "/LogsRotas" + std::to_string(i) + ".txt");
+            }
+            melhorCusto = custo;
+            melhorResultado = resultado;
+        }
+    }
+
+    cout << BOLDGREEN << "A media do algorítimo de ClarkeWriteRandomizado para o alfa = " << alfa << " foi de " << somaCusto / nIteracoes << RESET << endl;
+    generateGraphvizFile(grafo, melhorResultado, "./out/" + nomeTeste + "/MelhorGraphviz.txt");
+    geraLogDasRotas(melhorResultado, "./out/" + nomeTeste + "/MelhorLogsRotas.txt");
+    return somaCusto / nIteracoes;
 }
 
 void menuOpcoes()
@@ -745,8 +887,8 @@ int main(int argc, char const *argv[])
     //* estrutura de argumentos:
     // ex.: ./a ./A-n34-k5.txt ./out 0 1 1 teste
     //* alfa = -1 : algoritmo guloso simples
-    // ex.: g++ *.cpp && ./a ./A-n34-k5.txt ./out 0 1 1 teste -1
-    // <arquivo_entrada> <arquivo_saida> <Opc_Direc> <Opc_Peso_Aresta> <Opc_Peso_Nos> <nome_teste> <alfa>
+    // ex.: g++ *.cpp && ./a ./A-n34-k5.txt ./out 0 1 1 teste
+    // <arquivo_entrada> <arquivo_saida> <Opc_Direc> <Opc_Peso_Aresta> <Opc_Peso_Nos> <nome_teste>
 
     string arquivoEntrada = "";
     string arquivoSaida = "";
@@ -774,12 +916,12 @@ int main(int argc, char const *argv[])
         nomeTeste = argv[6];
         alfa = atof(argv[7]);
 
-        cout << "Arquivo de entrada: " << arquivoEntrada << endl;
-        cout << "Arquivo de saida: " << arquivoSaida << endl;
-        cout << "O grafo e direcionado? " << direcionado << endl;
-        cout << "O grafo e ponderado nas arestas? " << ponderadoAresta << endl;
-        cout << "O grafo e ponderado nos nos? " << ponderadoNo << endl;
-        cout << "Nome do teste: " << nomeTeste << endl;
+        // cout << "Arquivo de entrada: " << arquivoEntrada << endl;
+        // cout << "Arquivo de saida: " << arquivoSaida << endl;
+        // cout << "O grafo e direcionado? " << direcionado << endl;
+        // cout << "O grafo e ponderado nas arestas? " << ponderadoAresta << endl;
+        // cout << "O grafo e ponderado nos nos? " << ponderadoNo << endl;
+        // cout << "Nome do teste: " << nomeTeste << endl;
 
         ofstream outdata; // outdata is like cin
         outdata.open("./out/" + nomeTeste + "/LogsRotas.txt", std::ios_base::app);
@@ -856,10 +998,18 @@ int main(int argc, char const *argv[])
     {
         //* gera um grafo sem arestas, apenas com os nos e suas coordenadas
         controiGrafoTipo2(arquivoEntrada, &grafo);
-        // preencheGrafo(&grafo);
-        // grafo.generateDreampufFile("grafo.dat");
-        algoritmoClarkeWright(&grafo, nomeTeste, alfa);
-        // algoritmoClarkeWrightRandomizado(&grafo);
+        if (nomeTeste.find("Randomizado") != string::npos)
+        {
+            cout << BOLDGREEN << "Algoritmo Clarke-Wright Randomizado" << RESET << endl;
+            int capacideCaminhao = getCapacidadeCaminhao(arquivoEntrada);
+            ClarkeWrightRandomizado(&grafo, nomeTeste, capacideCaminhao, alfa);
+        }
+        if (nomeTeste.find("Reativo") != string::npos)
+        {
+            cout << BOLDGREEN << "Algoritmo Clarke-Wright Reativo" << RESET << endl;
+            // algoritmoClarkeWright(&grafo, nomeTeste);
+        }
+        // algoritmoClarkeWright(&grafo, nomeTeste, alfa);
     }
     else
     {

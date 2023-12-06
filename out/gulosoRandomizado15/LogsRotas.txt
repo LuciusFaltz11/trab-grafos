@@ -1,0 +1,78 @@
+Nome do teste: gulosoRandomizado15
+Arquivo de entrada: ./A-n34-k5.txt
+==============================================
+Rota 0: 1 22 18 12 2 31 1 
+Distancia total: 197.886
+Capacidade total: 100
+Capacidade atual: 80
+==============================================
+==============================================
+Rota 1: 1 16 24 25 4 1 
+Distancia total: 280.807
+Capacidade total: 100
+Capacidade atual: 73
+==============================================
+==============================================
+Rota 2: 1 11 15 9 20 3 17 1 
+Distancia total: 228.494
+Capacidade total: 100
+Capacidade atual: 86
+==============================================
+==============================================
+Rota 3: 1 21 14 7 30 6 32 13 1 
+Distancia total: 328.208
+Capacidade total: 100
+Capacidade atual: 87
+==============================================
+==============================================
+Rota 4: 1 27 19 10 29 26 8 1 
+Distancia total: 225.543
+Capacidade total: 100
+Capacidade atual: 87
+==============================================
+==============================================
+Rota 5: 1 5 34 23 33 28 1 
+Distancia total: 290.13
+Capacidade total: 100
+Capacidade atual: 47
+==============================================
+Custo total: 1551.07
+Nome do teste: gulosoRandomizado15
+Arquivo de entrada: ./A-n34-k5.txt
+==============================================
+Rota 0: 1 6 16 24 20 17 13 1 
+Distancia total: 307.349
+Capacidade total: 100
+Capacidade atual: 89
+==============================================
+==============================================
+Rota 1: 1 27 19 8 31 18 32 4 1 
+Distancia total: 361.624
+Capacidade total: 100
+Capacidade atual: 98
+==============================================
+==============================================
+Rota 2: 1 15 30 7 26 29 1 
+Distancia total: 154.312
+Capacidade total: 100
+Capacidade atual: 87
+==============================================
+==============================================
+Rota 3: 1 21 34 23 33 12 25 5 1 
+Distancia total: 325.096
+Capacidade total: 100
+Capacidade atual: 84
+==============================================
+==============================================
+Rota 4: 1 14 9 28 10 1 
+Distancia total: 229.061
+Capacidade total: 100
+Capacidade atual: 55
+==============================================
+==============================================
+Rota 5: 1 11 22 3 2 1 
+Distancia total: 204.03
+Capacidade total: 100
+Capacidade atual: 47
+==============================================
+Custo total: 1581.47
