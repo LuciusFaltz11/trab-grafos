@@ -410,6 +410,8 @@ Rota *mesclarRotas(Rota *rota1, Rota *rota2)
         cout << "Rota mesclada com distancia " << novaRota->getDistanciaTotal() << endl;
         novaRota->imprime();
     }
+    delete rotaReferencia;
+
     return novaRota;
 }
 ListaEconomias *calculaEconomias(ListaRotas *listaRotas)
@@ -429,10 +431,10 @@ ListaEconomias *calculaEconomias(ListaRotas *listaRotas)
         while (rotaNav2 != NULL)
         {
             noNav2I++;
-            if (rotaNav == rotaNav2)
+            if (noNavI == noNav2I)
             {
-                rotaNav2 = rotaNav2->getProxElemento();
-                continue;
+                // rotaNav2 = rotaNav2->getProxElemento();
+                break;
             }
             if (DEBUG)
             {
@@ -662,7 +664,7 @@ ListaRotas *algoritmoClarkeWright(Grafo *grafo, int capacidadeCaminhao, int quan
     // 9. Retorne a lista de rotas.
 
     ListaRotas *rotas = new ListaRotas(capacidadeCaminhao);
-    ListaEconomias *economias = new ListaEconomias(capacidadeCaminhao);
+    ListaEconomias *economias;
 
     No *noNav = grafo->getRaizGrafo();
     No *origem = new No(
@@ -818,6 +820,7 @@ ListaRotas *algoritmoClarkeWright(Grafo *grafo, int capacidadeCaminhao, int quan
             cout << "Rotas depois do merge: " << endl;
             rotas->imprime();
         }
+        delete economias;
     }
 
     // generateGraphvizFile(grafo, rotas, "./out/" + testeName + "/graphviz.txt");
@@ -834,9 +837,8 @@ struct ResultadoClarkeWrightRandomizado
     ListaRotas *melhorResultado;
 };
 
-ResultadoClarkeWrightRandomizado ClarkeWrightRandomizado(Grafo *grafo, string nomeTeste, int capacidade, int nRotas, float alfa)
+ResultadoClarkeWrightRandomizado ClarkeWrightRandomizado(Grafo *grafo, string nomeTeste, int capacidade, int nRotas, float alfa, int nIteracoes)
 {
-    const int nIteracoes = 30;
     ListaRotas *melhorResultado = new ListaRotas(capacidade);
     float somaCusto = 0;
 
@@ -879,7 +881,7 @@ struct ClarkeWrightReativoResultado
     SeletorAlfa *seletorAlfa;
 };
 
-ClarkeWrightReativoResultado ClarkeWrightReativo(Grafo *grafo, string nomeTeste, int capacidade, int nRotas)
+ClarkeWrightReativoResultado ClarkeWrightReativo(Grafo *grafo, string nomeTeste, int capacidade, int nRotas, int nIteracoes)
 {
     ofstream outdata;                                      // outdata is like cin
     outdata.open("./out/" + nomeTeste + "/LogsAlfas.txt"); // opens the file
@@ -887,13 +889,13 @@ ClarkeWrightReativoResultado ClarkeWrightReativo(Grafo *grafo, string nomeTeste,
     SeletorAlfa *seletorAlfa = new SeletorAlfa();
     float menorCusto = 99999999;
     ListaRotas *melhorResultado = new ListaRotas(capacidade);
-    for (int iteracao = 0; iteracao < 1000; iteracao++)
+    for (int iteracao = 0; iteracao < nIteracoes; iteracao++)
     {
         int alfaSelecionadoIndex = seletorAlfa->selecionarAlfaIndex();
         float alfaSelecionado = seletorAlfa->getAlfa(alfaSelecionadoIndex);
         //* nessa implementação, selecionamos um alfa e rodamos o algorítimo randomizado com o mesmo alfa 30 vezes
         //* e pegamos a media dos custos para atualizar a probabilidade do alfa
-        ResultadoClarkeWrightRandomizado resultado = ClarkeWrightRandomizado(grafo, nomeTeste, capacidade, nRotas, alfaSelecionado);
+        ResultadoClarkeWrightRandomizado resultado = ClarkeWrightRandomizado(grafo, nomeTeste, capacidade, nRotas, alfaSelecionado, 1);
         if (calculateCustoTotal(resultado.melhorResultado) < menorCusto)
         {
             menorCusto = calculateCustoTotal(resultado.melhorResultado);
@@ -1076,7 +1078,7 @@ int main(int argc, char const *argv[])
         {
             cout << BOLDGREEN << "Algoritmo Clarke-Wright Randomizado" << RESET << endl;
             int capacideCaminhao = getCapacidadeCaminhao(arquivoEntrada);
-            ResultadoClarkeWrightRandomizado resultado = ClarkeWrightRandomizado(&grafo, nomeTeste, capacideCaminhao, getNoOfTrucks(arquivoEntrada), alfa);
+            ResultadoClarkeWrightRandomizado resultado = ClarkeWrightRandomizado(&grafo, nomeTeste, capacideCaminhao, getNoOfTrucks(arquivoEntrada), alfa, 500);
 
             generateGraphvizFile(&grafo, resultado.melhorResultado, "./out/" + nomeTeste + "/MelhorGraphviz.txt");
             geraLogDasRotas(resultado.melhorResultado, "./out/" + nomeTeste + "/MelhorLogsRotas.txt");
@@ -1090,7 +1092,7 @@ int main(int argc, char const *argv[])
         {
             cout << BOLDGREEN << "Algoritmo Clarke-Wright Reativo" << RESET << endl;
             int capacideCaminhao = getCapacidadeCaminhao(arquivoEntrada);
-            resultado = ClarkeWrightReativo(&grafo, nomeTeste, capacideCaminhao, getNoOfTrucks(arquivoEntrada));
+            resultado = ClarkeWrightReativo(&grafo, nomeTeste, capacideCaminhao, getNoOfTrucks(arquivoEntrada), 2500);
             cout << "O melhor resultado da iteração foi: " << endl;
             resultado.melhorResultado->imprime();
 

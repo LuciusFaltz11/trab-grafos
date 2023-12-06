@@ -16,7 +16,16 @@ public:
         this->capacidade = capacidade;
         nElementos = 0;
     };
-    ~ListaEconomias(){};
+    ~ListaEconomias(){
+        Economia *elementoNav = primeiroElemento;
+        Economia *elementoAnterior = primeiroElemento;
+        while (elementoNav != NULL)
+        {
+            elementoAnterior = elementoNav;
+            elementoNav = elementoNav->getProxElemento();
+            delete elementoAnterior;
+        }
+    };
     void AddElemento(Economia *elemento)
     {
         nElementos++;

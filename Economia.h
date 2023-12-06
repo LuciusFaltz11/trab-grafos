@@ -14,7 +14,9 @@ public:
         this->rota = rota;
         this->valor = valor;
     };
-    ~Economia(){};
+    ~Economia(){
+        delete rota;
+    };
     float getValor(){return valor;};
     Rota* getRota(){return rota;};
     void setValor(float valor){this->valor = valor;};
