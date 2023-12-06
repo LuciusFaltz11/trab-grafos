@@ -55,7 +55,7 @@ public:
         if(resultado < melhorResultado){
             melhorResultado = resultado;
         }
-        const float fatorSuavizacao = 0.9;
+        const float fatorSuavizacao = 0.8;
         double soma = 0;
         for (int i = 0; i < nAlfas; i++)
         {

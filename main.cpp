@@ -850,7 +850,7 @@ ResultadoClarkeWrightRandomizado ClarkeWrightRandomizado(Grafo *grafo, string no
     {
         ListaRotas *resultado = algoritmoClarkeWright(grafo, capacidade, nRotas, nomeTeste, alfa);
         float custo = calculateCustoTotal(resultado);
-        cout << BOLDGREEN << "Custo da iteracao " << i << " com alfa: " << alfa << " = " << custo << RESET << endl;
+        // cout << BOLDGREEN << "Custo da iteracao " << i << " com alfa: " << alfa << " = " << custo << RESET << endl;
         somaCusto += custo;
         if (custo < melhorCusto)
         {
@@ -869,7 +869,11 @@ ResultadoClarkeWrightRandomizado ClarkeWrightRandomizado(Grafo *grafo, string no
         }
     }
 
-    cout << BOLDGREEN << "A media do algorítimo de ClarkeWriteRandomizado para o alfa = " << alfa << " foi de " << somaCusto / nIteracoes << RESET << endl;
+    if (nIteracoes > 0)
+        cout << BOLDGREEN << "A media do algorítimo de ClarkeWriteRandomizado para o alfa = " << alfa << " foi de " << somaCusto / nIteracoes << RESET << endl;
+    else
+    cout << BOLDGREEN << "Menor custo: " << melhorCusto << RESET << endl;
+
 
     // return somaCusto / nIteracoes;
     ResultadoClarkeWrightRandomizado resultado;
@@ -905,7 +909,7 @@ ClarkeWrightReativoResultado ClarkeWrightReativo(Grafo *grafo, string nomeTeste,
             melhorResultado = resultado.melhorResultado;
         }
         seletorAlfa->atualizarProbabilidade(alfaSelecionadoIndex, resultado.custoMedio);
-        if (iteracao % 100 == 0)
+        if (iteracao % 500 == 0)
         {
             outdata << " ========================================================= " << endl;
             outdata << "iteracao: " << iteracao << endl;
