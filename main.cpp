@@ -426,7 +426,7 @@ Rota *mesclarRotas(Rota *rota1, Rota *rota2)
         {
             melhorDistancia = novaRota->getDistanciaTotal();
             melhorRota = novaRota;
-            cout << "Melhor distancia = " << melhorDistancia << endl;
+            // cout << "Melhor distancia = " << melhorDistancia << endl;
         }
     }
     return melhorRota;
