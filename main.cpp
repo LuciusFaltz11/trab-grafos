@@ -639,11 +639,11 @@ int randomRange(int min, int max)
     return dis(gen);
 }
 
-ListaRotas *algoritmoClarkeWright(Grafo *grafo, string testeName = "teste", float alfa = -1)
+ListaRotas *algoritmoClarkeWright(Grafo *grafo, int capacidadeCaminhao, int quantidadeRotas, string testeName = "teste", float alfa = -1)
 {
 
-    const int capacidadeCaminhao = 100;
-    const int quantidadeRotas = 5;
+    // const int capacidadeCaminhao = 100;
+    // const int quantidadeRotas = 5;
 
     if (alfa != -1 && alfa < 0 && alfa > 1)
     {
@@ -834,7 +834,7 @@ struct ResultadoClarkeWrightRandomizado
     ListaRotas *melhorResultado;
 };
 
-ResultadoClarkeWrightRandomizado ClarkeWrightRandomizado(Grafo *grafo, string nomeTeste, int capacidade, float alfa)
+ResultadoClarkeWrightRandomizado ClarkeWrightRandomizado(Grafo *grafo, string nomeTeste, int capacidade, int nRotas, float alfa)
 {
     const int nIteracoes = 30;
     ListaRotas *melhorResultado = new ListaRotas(capacidade);
@@ -843,7 +843,7 @@ ResultadoClarkeWrightRandomizado ClarkeWrightRandomizado(Grafo *grafo, string no
     float melhorCusto = 99999999;
     for (int i = 0; i < nIteracoes; i++)
     {
-        ListaRotas *resultado = algoritmoClarkeWright(grafo, nomeTeste, alfa);
+        ListaRotas *resultado = algoritmoClarkeWright(grafo, capacidade, nRotas, nomeTeste, alfa);
         float custo = calculateCustoTotal(resultado);
         cout << BOLDGREEN << "Custo da iteracao " << i << " com alfa: " << alfa << " = " << custo << RESET << endl;
         somaCusto += custo;
@@ -857,6 +857,10 @@ ResultadoClarkeWrightRandomizado ClarkeWrightRandomizado(Grafo *grafo, string no
             }
             melhorCusto = custo;
             melhorResultado = resultado;
+        }
+        else
+        {
+            delete resultado;
         }
     }
 
@@ -875,7 +879,7 @@ struct ClarkeWrightReativoResultado
     SeletorAlfa *seletorAlfa;
 };
 
-ClarkeWrightReativoResultado ClarkeWrightReativo(Grafo *grafo, string nomeTeste, int capacidade)
+ClarkeWrightReativoResultado ClarkeWrightReativo(Grafo *grafo, string nomeTeste, int capacidade, int nRotas)
 {
     ofstream outdata;                                      // outdata is like cin
     outdata.open("./out/" + nomeTeste + "/LogsAlfas.txt"); // opens the file
@@ -889,7 +893,7 @@ ClarkeWrightReativoResultado ClarkeWrightReativo(Grafo *grafo, string nomeTeste,
         float alfaSelecionado = seletorAlfa->getAlfa(alfaSelecionadoIndex);
         //* nessa implementação, selecionamos um alfa e rodamos o algorítimo randomizado com o mesmo alfa 30 vezes
         //* e pegamos a media dos custos para atualizar a probabilidade do alfa
-        ResultadoClarkeWrightRandomizado resultado = ClarkeWrightRandomizado(grafo, nomeTeste, capacidade, alfaSelecionado);
+        ResultadoClarkeWrightRandomizado resultado = ClarkeWrightRandomizado(grafo, nomeTeste, capacidade, nRotas, alfaSelecionado);
         if (calculateCustoTotal(resultado.melhorResultado) < menorCusto)
         {
             menorCusto = calculateCustoTotal(resultado.melhorResultado);
@@ -1072,7 +1076,7 @@ int main(int argc, char const *argv[])
         {
             cout << BOLDGREEN << "Algoritmo Clarke-Wright Randomizado" << RESET << endl;
             int capacideCaminhao = getCapacidadeCaminhao(arquivoEntrada);
-            ResultadoClarkeWrightRandomizado resultado = ClarkeWrightRandomizado(&grafo, nomeTeste, capacideCaminhao, alfa);
+            ResultadoClarkeWrightRandomizado resultado = ClarkeWrightRandomizado(&grafo, nomeTeste, capacideCaminhao, getNoOfTrucks(arquivoEntrada), alfa);
 
             generateGraphvizFile(&grafo, resultado.melhorResultado, "./out/" + nomeTeste + "/MelhorGraphviz.txt");
             geraLogDasRotas(resultado.melhorResultado, "./out/" + nomeTeste + "/MelhorLogsRotas.txt");
@@ -1086,7 +1090,7 @@ int main(int argc, char const *argv[])
         {
             cout << BOLDGREEN << "Algoritmo Clarke-Wright Reativo" << RESET << endl;
             int capacideCaminhao = getCapacidadeCaminhao(arquivoEntrada);
-            resultado = ClarkeWrightReativo(&grafo, nomeTeste, capacideCaminhao);
+            resultado = ClarkeWrightReativo(&grafo, nomeTeste, capacideCaminhao, getNoOfTrucks(arquivoEntrada));
             cout << "O melhor resultado da iteração foi: " << endl;
             resultado.melhorResultado->imprime();
 

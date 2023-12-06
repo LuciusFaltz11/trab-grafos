@@ -28,7 +28,16 @@ public:
         ultimoElemento = NULL;
         proxElemento = NULL;
     };
-    ~Rota(){};
+    ~Rota(){
+        No *elementoNav = primeiroElemento;
+        No *elementoAnterior = primeiroElemento;
+        while (elementoNav != NULL)
+        {
+            elementoAnterior = elementoNav;
+            elementoNav = elementoNav->getProxNo();
+            delete elementoAnterior;
+        }
+    };
     void AddElemento(int id, int peso, int coordenadaX, int coordenadaY)
     {
         if (DEBUG)

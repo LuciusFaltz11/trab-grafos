@@ -16,7 +16,16 @@ public:
         nElementos = 0;
     };
     int getCapacidade(){return capacidade;};
-    ~ListaRotas(){};
+    ~ListaRotas(){
+        Rota *elementoNav = primeiroElemento;
+        Rota *elementoAnterior = primeiroElemento;
+        while (elementoNav != NULL)
+        {
+            elementoAnterior = elementoNav;
+            elementoNav = elementoNav->getProxElemento();
+            delete elementoAnterior;
+        }
+    };
     void AddElemento(Rota *elemento){
         nElementos++;
         if (primeiroElemento == NULL)
