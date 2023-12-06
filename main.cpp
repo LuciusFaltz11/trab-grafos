@@ -638,6 +638,10 @@ int randomRange(int min, int max)
     return dis(gen);
 }
 
+ListaRotas *algoritmoClarkeWrightReativo(Grafo *grafo, string testeName = "teste")
+{
+}
+
 ListaRotas *algoritmoClarkeWright(Grafo *grafo, string testeName = "teste", float alfa = -1)
 {
     cout << "Algoritmo Clarke-Wright" << endl;
@@ -819,6 +823,7 @@ ListaRotas *algoritmoClarkeWright(Grafo *grafo, string testeName = "teste", floa
     outdata.close();
     return rotas;
 }
+
 float ClarkeWrightRandomizado(Grafo *grafo, string nomeTeste, int capacidade, float alfa)
 {
     const int nIteracoes = 100;
@@ -849,6 +854,71 @@ float ClarkeWrightRandomizado(Grafo *grafo, string nomeTeste, int capacidade, fl
     geraLogDasRotas(melhorResultado, "./out/" + nomeTeste + "/MelhorLogsRotas.txt");
     return somaCusto / nIteracoes;
 }
+
+/*
+float ClarkeWrightReativo(Grafo *grafo, string nomeTeste, int capacidade, vector<float> alfas)
+{
+    const int nIteracoes = 500;
+    vector<float> somaCusto(alfas.size(), 0);
+    vector<float> mediaQualidade(alfas.size(), 0);
+    vector<int> nIteracoesAlfa(alfas.size(), 0);
+    vector<float> probabilidade(alfas.size(), 1.0 / alfas.size()); // inicializar probabilidades iguais para todos os alfas
+    ListaRotas *melhorResultado = new ListaRotas(capacidade);
+    float melhorCusto = 99999999;
+
+    for (int i = 0; i < nIteracoes; i++)
+    {
+        // Escolha do alfa baseado nas probabilidades
+        float r = static_cast<float>(rand()) / RAND_MAX;
+        float acumulado = 0;
+        int indiceAlfa = 0;
+        for (int j = 0; j < alfas.size(); j++)
+        {
+            acumulado += probabilidade[j];
+            if (r <= acumulado)
+            {
+                indiceAlfa = j;
+                break;
+            }
+        }
+
+        // Execução do algoritmo com o alfa escolhido
+        ListaRotas *resultado = algoritmoClarkeWright(grafo, nomeTeste, alfas[indiceAlfa]);
+        float custo = calculateCustoTotal(resultado);
+        somaCusto[indiceAlfa] += custo;
+        nIteracoesAlfa[indiceAlfa]++;
+        // Atualização da melhor solução
+        if (custo < melhorCusto)
+        {
+            melhorCusto = custo;
+            melhorResultado = resultado;
+        }
+        // Atualização das médias e probabilidades
+        for (int j = 0; j < alfas.size(); j++)
+        {
+            if (nIteracoesAlfa[j] > 0)
+            {
+                mediaQualidade[j] = somaCusto[j] / nIteracoesAlfa[j];
+            }
+        }
+        float somaMedia = accumulate(mediaQualidade.begin(), mediaQualidade.end(), 0.0);
+        for (int j = 0; j < alfas.size(); j++)
+        {
+            probabilidade[j] = 1 - (mediaQualidade[j] / somaMedia);
+        }
+        float somaProbabilidade = accumulate(probabilidade.begin(), probabilidade.end(), 0.0);
+        for (int j = 0; j < alfas.size(); j++)
+        {
+            probabilidade[j] /= somaProbabilidade;
+        }
+
+        cout << BOLDGREEN << "A media do algorítimo de ClarkeWriteReativo foi de " << melhorCusto << RESET << endl;
+        generateGraphvizFile(grafo, melhorResultado, "./out/" + nomeTeste + "/MelhorGraphviz.txt");
+        geraLogDasRotas(melhorResultado, "./out/" + nomeTeste + "/MelhorLogsRotas.txt");
+        return melhorCusto;
+    }
+}
+*/
 
 void menuOpcoes()
 {
