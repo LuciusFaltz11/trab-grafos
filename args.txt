@@ -1,2 +1,3 @@
-./A-n34-k5.txt ./out 0 1 1 gulosoRandomizado1 0.1
-./A-n34-k5.txt ./out 0 1 1 gulosoReativo1 -1
+./X-n280-k17.txt ./out 0 1 1 gulosoSimples1 -1
+./X-n280-k17.txt ./out 0 1 1 gulosoAdaptativo3 -1
+./X-n280-k17.txt ./out 0 1 1 gulosoRandomizado2 0.2

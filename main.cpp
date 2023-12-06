@@ -284,6 +284,16 @@ bool rotasSaoEquivalentes(Rota *rota1, Rota *rota2)
     }
     return true;
 }
+
+int randomRange(int min, int max)
+{
+    // Generate a random number between min and max (inclusive)
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(min, max);
+    return dis(gen);
+}
+
 float calcularDistanciaNos(No *no1, No *no2)
 {
     if (DEBUG)
@@ -308,7 +318,40 @@ bool avaliarCapacidadeMaximaRota(Rota *rota, Rota *novaRota)
     return (capacidadeAtual <= capMax);
 }
 
-Rota *mesclarRotas(Rota *rota1, Rota *rota2)
+No *selecionaNoMenorDistancia(Rota *rotaOrigem, Rota *rotaReferencia, No *excluido = NULL)
+{
+    float menorDistancia = 9999999;
+    No *noMaisProximo = NULL;
+    No *noNav = rotaReferencia->getPrimeiroElemento();
+    while (noNav != NULL)
+    {
+        if (rotaOrigem->possuiNo(noNav->getId()))
+        {
+            if (DEBUG)
+                cout << "O no " << noNav->getId() << " ja esta na rota" << endl;
+            noNav = noNav->getProxNo();
+            continue;
+        }
+        if (excluido != NULL && excluido->getId() == noNav->getId())
+        {
+            noNav = noNav->getProxNo();
+            continue;
+        }
+
+        float distancia = calcularDistanciaNos(rotaOrigem->getUltimoElemento(), noNav);
+
+        if (DEBUG)
+            cout << "Distancia entre = " << distancia << endl;
+        if (distancia < menorDistancia)
+        {
+            menorDistancia = distancia;
+            noMaisProximo = noNav;
+        }
+        noNav = noNav->getProxNo();
+    }
+    return noMaisProximo;
+}
+Rota *mesclarRotasRand2(Rota *rota1, Rota *rota2)
 {
     if (DEBUG)
     {
@@ -335,69 +378,27 @@ Rota *mesclarRotas(Rota *rota1, Rota *rota2)
         rotaReferencia->imprime();
         cout << "Mesclando rotas: " << endl;
     }
-    No *noNav1 = rota1->getPrimeiroElemento();
-    No *noNav2 = rota2->getPrimeiroElemento();
+    No *rotaNav = rota1->getPrimeiroElemento();
+    // No *noNav2 = rota2->getPrimeiroElemento();
 
     while (!rotasSaoEquivalentes(novaRota, rotaReferencia))
     {
-        if (DEBUG)
-            cout << "As rotas não são equivalentes!" << endl;
-        //* adicionar o no da rota mais proximo ao ultimo no da rota
-        float menorDistancia = 9999999;
-        No *noMaisProximo = NULL;
-        noNav1 = rota1->getPrimeiroElemento();
-        noNav2 = rota2->getPrimeiroElemento();
-        while (noNav1 != NULL)
-        {
-            if (novaRota->possuiNo(noNav1->getId()))
-            {
-                if (DEBUG)
-                    cout << "O no " << noNav1->getId() << " ja esta na rota" << endl;
-                noNav1 = noNav1->getProxNo();
-                continue;
-            }
-            float distancia = calcularDistanciaNos(novaRota->getUltimoElemento(), noNav1);
+        No *noSelecionado1 = selecionaNoMenorDistancia(novaRota, rotaReferencia);
+        No *noSelecionado2 = selecionaNoMenorDistancia(novaRota, rotaReferencia, noSelecionado1);
 
-            if (DEBUG)
-                cout << "Distancia entre = " << distancia << endl;
-            if (distancia < menorDistancia)
-            {
-                menorDistancia = distancia;
-                noMaisProximo = noNav1;
-            }
-            noNav1 = noNav1->getProxNo();
-        }
-        while (noNav2 != NULL)
+        //* escolhe um dos nos aleatoriamente para adiciona-lo a rota
+
+        float randNum = randomRange(0, 1);
+        if (randNum > 0.5 || noSelecionado2 == NULL)
         {
-            if (novaRota->possuiNo(noNav2->getId()))
-            {
-                if (DEBUG)
-                    cout << "O no " << noNav2->getId() << " ja esta na rota" << endl;
-                noNav2 = noNav2->getProxNo();
-                continue;
-            }
-            float distancia = calcularDistanciaNos(novaRota->getUltimoElemento(), noNav2);
-            if (DEBUG)
-                cout << "Distancia entre" << distancia << endl;
-            if (distancia < menorDistancia)
-            {
-                menorDistancia = distancia;
-                noMaisProximo = noNav2;
-            }
-            noNav2 = noNav2->getProxNo();
+            novaRota->AddElemento(noSelecionado1->getId(), noSelecionado1->getPeso(), noSelecionado1->getCoordenadaX(), noSelecionado1->getCoordenadaY());
+        }
+        else
+        {
+            novaRota->AddElemento(noSelecionado2->getId(), noSelecionado2->getPeso(), noSelecionado2->getCoordenadaX(), noSelecionado2->getCoordenadaY());
         }
 
-        if (DEBUG)
-        {
-            cout << "Fim de procura pelo no mais proximo" << endl;
-            cout << "nova rota: ";
-            novaRota->imprime();
-            cout << "rota referencia: ";
-            rotaReferencia->imprime();
-            cout << "Menor distancia: " << menorDistancia << endl;
-            cout << "No mais proximo: " << noMaisProximo->getId() << endl;
-        }
-        novaRota->AddElemento(noMaisProximo->getId(), noMaisProximo->getPeso(), noMaisProximo->getCoordenadaX(), noMaisProximo->getCoordenadaY());
+        // novaRota->AddElemento(noMaisProximo->getId(), noMaisProximo->getPeso(), noMaisProximo->getCoordenadaX(), noMaisProximo->getCoordenadaY());
     }
     // novaRota->AddElemento(1, 0, 0, 0);
     novaRota->AddElemento(
@@ -413,6 +414,22 @@ Rota *mesclarRotas(Rota *rota1, Rota *rota2)
     delete rotaReferencia;
 
     return novaRota;
+}
+Rota *mesclarRotas(Rota *rota1, Rota *rota2)
+{
+    Rota *melhorRota = NULL;
+    float melhorDistancia = 9999999;
+    for (int i = 0; i < 100; i++)
+    {
+        Rota *novaRota = mesclarRotasRand2(rota1, rota2);
+        if (novaRota->getDistanciaTotal() < melhorDistancia)
+        {
+            melhorDistancia = novaRota->getDistanciaTotal();
+            melhorRota = novaRota;
+            cout << "Melhor distancia = " << melhorDistancia << endl;
+        }
+    }
+    return melhorRota;
 }
 ListaEconomias *calculaEconomias(ListaRotas *listaRotas)
 {
@@ -632,15 +649,6 @@ void geraLogDasRotas(ListaRotas *rotas, string filePathName = "./out/LogsRotas.t
     outdata.close();
 }
 
-int randomRange(int min, int max)
-{
-    // Generate a random number between min and max (inclusive)
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dis(min, max);
-    return dis(gen);
-}
-
 ListaRotas *algoritmoClarkeWright(Grafo *grafo, int capacidadeCaminhao, int quantidadeRotas, string testeName = "teste", float alfa = -1)
 {
 
@@ -828,9 +836,9 @@ ListaRotas *algoritmoClarkeWright(Grafo *grafo, int capacidadeCaminhao, int quan
 
     // generateGraphvizFile(grafo, rotas, "./out/" + testeName + "/graphviz.txt");
     // geraLogDasRotas(rotas, "./out/" + testeName + "/LogsRotas.txt");
-    outdata.open("./out/" + testeName + "/LogsRotas.txt", std::ios_base::app);
+    // outdata.open("./out/" + testeName + "/LogsRotas.txt", std::ios_base::app);
     // cout << "O custo total foi de: " << calculateCustoTotal(rotas) << endl;
-    outdata.close();
+    // outdata.close();
     return rotas;
 }
 struct ResultadoClarkeWrightRandomizado
@@ -1115,7 +1123,7 @@ int main(int argc, char const *argv[])
 
             outdata.close();
         }
-        if (nomeTeste.find("Reativo") != string::npos)
+        else if (nomeTeste.find("Reativo") != string::npos)
         {
             cout << BOLDGREEN << "Algoritmo Clarke-Wright Reativo" << RESET << endl;
             int capacideCaminhao = getCapacidadeCaminhao(arquivoEntrada);
@@ -1142,6 +1150,26 @@ int main(int argc, char const *argv[])
             }
 
             outdata.close();
+        }
+        else
+        {
+            cout << BOLDGREEN << "Algoritmo Clarke-Wright guloso simples" << RESET << endl;
+            int capacideCaminhao = getCapacidadeCaminhao(arquivoEntrada);
+            ListaRotas *resultado = algoritmoClarkeWright(&grafo, capacideCaminhao, getNoOfTrucks(arquivoEntrada), nomeTeste);
+            cout << "O melhor resultado da iteração foi: " << endl;
+            resultado->imprime();
+
+            generateGraphvizFile(&grafo, resultado, "./out/" + nomeTeste + "/MelhorGraphviz.txt");
+            geraLogDasRotas(resultado, "./out/" + nomeTeste + "/MelhorLogsRotas.txt");
+
+
+            //! fim de cogio de contagem de tempo de execução
+            auto end = chrono::system_clock::now();
+            chrono::duration<double> elapsed_seconds = end - start;
+            time_t end_time = chrono::system_clock::to_time_t(end);
+            cout << "tempo de execução: " << BOLDGREEN << elapsed_seconds.count() << " s" << RESET
+                 << endl;
+            //!=================================================
         }
     }
     else
