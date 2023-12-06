@@ -18,3 +18,5 @@ Nome do teste: gulosoRandomizado1
 Arquivo de entrada: ./A-n34-k5.txt
 Nome do teste: gulosoRandomizado1
 Arquivo de entrada: ./A-n34-k5.txt
+Nome do teste: gulosoRandomizado1
+Arquivo de entrada: ./A-n34-k5.txt

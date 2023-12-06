@@ -6,3 +6,6 @@ A o alfa foi de 0x80 s
 O custo total foi de: 1148.83
 O tempo gasto foi de 4.93435 s
 A o alfa foi de 0x80
+O custo total foi de: 1195.97
+O tempo gasto foi de 4.87099 s
+A o alfa foi de 0x80

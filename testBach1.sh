@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Compile all .cpp files
-g++ *.cpp -o output
+g++ *.cpp -o execGrupo18
 
 # Read the file line by line
 while IFS=$'\n' read -r line
@@ -15,13 +15,13 @@ do
     # Detect the output file type based on the user's operating system
     if [[ "$OSTYPE" == "linux-gnu"* ]]; then
         # Linux
-        ./output "${args[@]}"
+        ./execGrupo18 "${args[@]}"
     elif [[ "$OSTYPE" == "darwin"* ]]; then
         # macOS
-        ./output "${args[@]}"
+        ./execGrupo18 "${args[@]}"
     elif [[ "$OSTYPE" == "cygwin" || "$OSTYPE" == "msys" || "$OSTYPE" == "win32" ]]; then
         # Windows
-        ./output.exe "${args[@]}"
+        ./execGrupo18.exe "${args[@]}"
     else
         echo "Unsupported operating system"
     fi
