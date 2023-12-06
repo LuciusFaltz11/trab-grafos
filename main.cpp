@@ -389,7 +389,7 @@ Rota *mesclarRotasRand2(Rota *rota1, Rota *rota2)
         //* escolhe um dos nos aleatoriamente para adiciona-lo a rota
 
         float randNum = randomRange(0, 1);
-        if (randNum > 0.5 || noSelecionado2 == NULL)
+        if (randNum > 0.8 || noSelecionado2 == NULL)
         {
             novaRota->AddElemento(noSelecionado1->getId(), noSelecionado1->getPeso(), noSelecionado1->getCoordenadaX(), noSelecionado1->getCoordenadaY());
         }
@@ -419,14 +419,14 @@ Rota *mesclarRotas(Rota *rota1, Rota *rota2)
 {
     Rota *melhorRota = NULL;
     float melhorDistancia = 9999999;
-    for (int i = 0; i < 100; i++)
+    for (int i = 0; i < 10; i++)
     {
         Rota *novaRota = mesclarRotasRand2(rota1, rota2);
         if (novaRota->getDistanciaTotal() < melhorDistancia)
         {
             melhorDistancia = novaRota->getDistanciaTotal();
             melhorRota = novaRota;
-            cout << "Melhor distancia = " << melhorDistancia << endl;
+            // cout << "Melhor distancia = " << melhorDistancia << endl;
         }
     }
     return melhorRota;
