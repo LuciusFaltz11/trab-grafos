@@ -1,4 +1,2 @@
+./A-n34-k5.txt ./out 0 1 1 gulosoRandomizado1 0.1
 ./A-n34-k5.txt ./out 0 1 1 gulosoReativo1 -1
-./A-n34-k5.txt ./out 0 1 1 gulosoReativo2 -1
-./A-n34-k5.txt ./out 0 1 1 gulosoReativo3 -1
-./A-n34-k5.txt ./out 0 1 1 gulosoReativo5 -1

@@ -852,6 +852,11 @@ ResultadoClarkeWrightRandomizado ClarkeWrightRandomizado(Grafo *grafo, string no
         float custo = calculateCustoTotal(resultado);
         // cout << BOLDGREEN << "Custo da iteracao " << i << " com alfa: " << alfa << " = " << custo << RESET << endl;
         somaCusto += custo;
+        if (nIteracoes > 1 && i % 100 == 0)
+        {
+            generateGraphvizFile(grafo, melhorResultado, "./out/" + nomeTeste + "/Graphviz" + std::to_string(i) + ".txt");
+            geraLogDasRotas(melhorResultado, "./out/" + nomeTeste + "/LogsRotas" + std::to_string(i) + ".txt");
+        }
         if (custo < melhorCusto)
         {
             if (false) //! mudar para true caso queira gerar os graphviz e os logs de todas as melhores rotas
@@ -867,6 +872,8 @@ ResultadoClarkeWrightRandomizado ClarkeWrightRandomizado(Grafo *grafo, string no
         {
             delete resultado;
         }
+        if (nIteracoes > 1)
+            cout << "Custo da iteracao " << i << " com alfa: " << alfa << " = " << custo << endl;
     }
 
     cout << "Menor custo: " << BOLDGREEN << melhorCusto << RESET << endl;
@@ -1069,8 +1076,8 @@ int main(int argc, char const *argv[])
 
     FileMananger fileMananger;
     Grafo grafo(direcionado == 's', ponderadoAresta, ponderadoNo);
-    ClarkeWrightReativoResultado resultado;
-    // ClarkeWrightReativoResultado melhorResultado;
+    ClarkeWrightReativoResultado resultadoReativo;
+    ResultadoClarkeWrightRandomizado resultadoRandomizado;
 
     auto start = chrono::system_clock::now(); //! inicio de codigo para contagem de tempo de execução
     if (tipoGrafo == 2)
@@ -1081,45 +1088,67 @@ int main(int argc, char const *argv[])
         {
             cout << BOLDGREEN << "Algoritmo Clarke-Wright Randomizado" << RESET << endl;
             int capacideCaminhao = getCapacidadeCaminhao(arquivoEntrada);
-            ResultadoClarkeWrightRandomizado resultado = ClarkeWrightRandomizado(&grafo, nomeTeste, capacideCaminhao, getNoOfTrucks(arquivoEntrada), alfa, 500);
+            ResultadoClarkeWrightRandomizado resultadoRandomizado = ClarkeWrightRandomizado(&grafo, nomeTeste, capacideCaminhao, getNoOfTrucks(arquivoEntrada), alfa, 100); //! MUDAR PARA 500
 
-            generateGraphvizFile(&grafo, resultado.melhorResultado, "./out/" + nomeTeste + "/MelhorGraphviz.txt");
-            geraLogDasRotas(resultado.melhorResultado, "./out/" + nomeTeste + "/MelhorLogsRotas.txt");
+            generateGraphvizFile(&grafo, resultadoRandomizado.melhorResultado, "./out/" + nomeTeste + "/MelhorGraphviz.txt");
+            geraLogDasRotas(resultadoRandomizado.melhorResultado, "./out/" + nomeTeste + "/MelhorLogsRotas.txt");
 
-            cout << "O custo medio foi de: " << resultado.custoMedio << endl;
-            cout << "O alfa foi de: " << resultado.alfa << endl;
+            cout << "O custo medio foi de: " << resultadoRandomizado.custoMedio << endl;
+            cout << "O alfa foi de: " << resultadoRandomizado.alfa << endl;
+            cout << "O melhor custo foi de: " << calculateCustoTotal(resultadoRandomizado.melhorResultado) << endl;
             cout << "O melhor resultado foi: " << endl;
-            resultado.melhorResultado->imprime();
+            resultadoRandomizado.melhorResultado->imprime();
+
+            //! fim de cogio de contagem de tempo de execução
+            auto end = chrono::system_clock::now();
+            chrono::duration<double> elapsed_seconds = end - start;
+            time_t end_time = chrono::system_clock::to_time_t(end);
+            cout << "tempo de execução: " << BOLDGREEN << elapsed_seconds.count() << " s" << RESET
+                 << endl;
+            //!=================================================
+
+            ofstream outdata;
+            outdata.open("./out/" + nomeTeste + "/Resultado.txt", std::ios_base::app);
+            outdata << "O custo total foi de: " << calculateCustoTotal(resultadoRandomizado.melhorResultado) << endl;
+            outdata << "O tempo gasto foi de " << elapsed_seconds.count() << " s" << endl;
+            outdata << "A o alfa foi de " << resultadoReativo.seletorAlfa << endl;
+
+            outdata.close();
         }
         if (nomeTeste.find("Reativo") != string::npos)
         {
             cout << BOLDGREEN << "Algoritmo Clarke-Wright Reativo" << RESET << endl;
             int capacideCaminhao = getCapacidadeCaminhao(arquivoEntrada);
-            resultado = ClarkeWrightReativo(&grafo, nomeTeste, capacideCaminhao, getNoOfTrucks(arquivoEntrada), 2500);
+            resultadoReativo = ClarkeWrightReativo(&grafo, nomeTeste, capacideCaminhao, getNoOfTrucks(arquivoEntrada), 2500);
             cout << "O melhor resultado da iteração foi: " << endl;
-            resultado.melhorResultado->imprime();
+            resultadoReativo.melhorResultado->imprime();
 
-            // algoritmoClarkeWright(&grafo, nomeTeste);
+            //! fim de cogio de contagem de tempo de execução
+            auto end = chrono::system_clock::now();
+            chrono::duration<double> elapsed_seconds = end - start;
+            time_t end_time = chrono::system_clock::to_time_t(end);
+            cout << "tempo de execução: " << BOLDGREEN << elapsed_seconds.count() << " s" << RESET
+                 << endl;
+            //!=================================================
+
+            ofstream outdata;
+            outdata.open("./out/" + nomeTeste + "/Resultado.txt", std::ios_base::app);
+            outdata << "O custo total foi de: " << calculateCustoTotal(resultadoReativo.melhorResultado) << endl;
+            outdata << "O tempo gasto foi de " << elapsed_seconds.count() << " s" << endl;
+            outdata << "Alfa final: " << endl;
+            for (int i = 0; i < resultadoReativo.seletorAlfa->getNAlfas(); i++)
+            {
+                outdata << "[ " << resultadoReativo.seletorAlfa->getAlfa(i) << " ] probabilidade = " << resultadoReativo.seletorAlfa->getProbabilidade(i) << endl;
+            }
+
+            outdata.close();
         }
-        // algoritmoClarkeWright(&grafo, nomeTeste, alfa);
     }
     else
     {
         fileMananger.Read(arquivoEntrada, &constroiGrafo, &grafo, tipoGrafo); //* le o arquivo chamando a função constroiGrafo a cada linha
         grafo.generateDreampufFile("grafo.dat");
     }
-    //! fim de cogio de contagem de tempo de execução
-    auto end = chrono::system_clock::now();
-    chrono::duration<double> elapsed_seconds = end - start;
-    time_t end_time = chrono::system_clock::to_time_t(end);
-    cout << "grafo criado em: " << BOLDGREEN << elapsed_seconds.count() << " s" << RESET
-         << endl;
-    //!=================================================
-    ofstream outdata;
-    outdata.open("./out/" + nomeTeste + "/Resultado.txt", std::ios_base::app);
-    outdata << "O custo total foi de: " << calculateCustoTotal(resultado.melhorResultado) << endl;
-    outdata << "O tempo gasto foi de " << elapsed_seconds.count() << " s" << endl;
-    outdata.close();
 
     // cout << "O grafo é: " << endl;
     // cout << "Ponderado nas arestas " << grafo.getPonderadoAresta() << endl;
