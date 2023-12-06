@@ -896,12 +896,12 @@ ClarkeWrightReativoResultado ClarkeWrightReativo(Grafo *grafo, string nomeTeste,
             melhorResultado = resultado.melhorResultado;
         }
         seletorAlfa->atualizarProbabilidade(alfaSelecionadoIndex, resultado.custoMedio);
-        outdata << " ========================================================= " << endl;
-        outdata << "iteracao: " << iteracao << endl;
-        outdata << "Resultado da iteracao: " << resultado.custoMedio << endl;
-        outdata << "Melhor resultado da iteracao: " << calculateCustoTotal(resultado.melhorResultado) << endl;
         if (iteracao % 100 == 0)
         {
+            outdata << " ========================================================= " << endl;
+            outdata << "iteracao: " << iteracao << endl;
+            outdata << "Resultado da iteracao: " << resultado.custoMedio << endl;
+            outdata << "Melhor resultado da iteracao: " << calculateCustoTotal(resultado.melhorResultado) << endl;
             for (int i = 0; i < seletorAlfa->getNAlfas(); i++)
             {
                 outdata << "[ " << seletorAlfa->getAlfa(i) << " ] probabilidade = " << seletorAlfa->getProbabilidade(i) << endl;
@@ -912,6 +912,10 @@ ClarkeWrightReativoResultado ClarkeWrightReativo(Grafo *grafo, string nomeTeste,
     }
     generateGraphvizFile(grafo, melhorResultado, "./out/" + nomeTeste + "/MelhorGraphviz.txt");
     geraLogDasRotas(melhorResultado, "./out/" + nomeTeste + "/MelhorLogsRotas.txt");
+    ClarkeWrightReativoResultado resultado;
+    resultado.melhorResultado = melhorResultado;
+    resultado.seletorAlfa = seletorAlfa;
+    return resultado;
 }
 
 void menuOpcoes()
@@ -1057,7 +1061,7 @@ int main(int argc, char const *argv[])
     FileMananger fileMananger;
     Grafo grafo(direcionado == 's', ponderadoAresta, ponderadoNo);
     ClarkeWrightReativoResultado resultado;
-    ClarkeWrightReativoResultado melhorResultado;
+    // ClarkeWrightReativoResultado melhorResultado;
 
     auto start = chrono::system_clock::now(); //! inicio de codigo para contagem de tempo de execução
     if (tipoGrafo == 2)
@@ -1085,10 +1089,7 @@ int main(int argc, char const *argv[])
             resultado = ClarkeWrightReativo(&grafo, nomeTeste, capacideCaminhao);
             cout << "O melhor resultado da iteração foi: " << endl;
             resultado.melhorResultado->imprime();
-            if (calculateCustoTotal(resultado.melhorResultado) < calculateCustoTotal(melhorResultado.melhorResultado))
-            {
-                melhorResultado = resultado;
-            }
+
             // algoritmoClarkeWright(&grafo, nomeTeste);
         }
         // algoritmoClarkeWright(&grafo, nomeTeste, alfa);
@@ -1107,7 +1108,7 @@ int main(int argc, char const *argv[])
     //!=================================================
     ofstream outdata;
     outdata.open("./out/" + nomeTeste + "/Resultado.txt", std::ios_base::app);
-    outdata << "O custo total foi de: " << calculateCustoTotal(melhorResultado.melhorResultado) << endl;
+    outdata << "O custo total foi de: " << calculateCustoTotal(resultado.melhorResultado) << endl;
     outdata << "O tempo gasto foi de " << elapsed_seconds.count() << " s" << endl;
     outdata.close();
 
