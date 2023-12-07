@@ -24,6 +24,9 @@
 #include "ListaRotas.h"
 #include "Rota.h"
 #include "SeletorAlfa.h"
+#include "ListaJuncao.h"
+
+const int mesclarRotasIteracoes = 1;
 
 // using namespace std;
 /*
@@ -35,7 +38,8 @@ void constroiGrafo(string linha, Grafo *grafo, int tipoArquivo)
     if (tipoArquivo == 1)
     {
         istringstream iss(linha);
-        int num1, num2, peso;
+        float num1, num2;
+        int peso;
         if (iss >> num1)
         {
             if (iss >> num2)
@@ -191,7 +195,8 @@ void controiGrafoTipo2(string fileLocation, Grafo *grafo)
         while (linha.find("DEMAND_SECTION") != 0)
         {
             istringstream iss(linha);
-            int id, x, y;
+            int id;
+            float x, y;
             iss >> id;
             iss >> x;
             iss >> y;
@@ -415,77 +420,203 @@ Rota *mesclarRotasRand2(Rota *rota1, Rota *rota2)
 
     return novaRota;
 }
-Rota *mesclarRotas(Rota *rota1, Rota *rota2)
+Rota *mesclarRotas(Rota *rota1, Rota *rota2, int numeroIteracoes = mesclarRotasIteracoes)
 {
-    Rota *melhorRota = NULL;
-    float melhorDistancia = 9999999;
-    for (int i = 0; i < 10; i++)
+    if (numeroIteracoes == 1)
     {
-        Rota *novaRota = mesclarRotasRand2(rota1, rota2);
-        if (novaRota->getDistanciaTotal() < melhorDistancia)
+        // cout << "Mesclar rotas simples" << endl;
+        Rota *novaRota = new Rota(rota1->getCapacidade());
+        // novaRota->AddElemento(1, 0, 0, 0);
+        novaRota->AddElemento(
+            rota1->getPrimeiroElemento()->getId(),   //* tem que ser o 1
+            rota1->getPrimeiroElemento()->getPeso(), //* tem que ser 0
+            rota1->getPrimeiroElemento()->getCoordenadaX(),
+            rota1->getPrimeiroElemento()->getCoordenadaY());
+        Rota *rotaReferencia = rota1->somaRota(rota2);
+
+        if (DEBUG)
         {
-            melhorDistancia = novaRota->getDistanciaTotal();
-            melhorRota = novaRota;
-            // cout << "Melhor distancia = " << melhorDistancia << endl;
+            cout << "Somando rotas: " << endl;
+            rotaReferencia->imprime();
+            cout << "Mesclando rotas: " << endl;
         }
+        No *noNav1 = rota1->getPrimeiroElemento();
+        No *noNav2 = rota2->getPrimeiroElemento();
+
+        while (!rotasSaoEquivalentes(novaRota, rotaReferencia))
+        {
+            if (DEBUG)
+                cout << "As rotas não são equivalentes!" << endl;
+            //* adicionar o no da rota mais proximo ao ultimo no da rota
+            float menorDistancia = 9999999;
+            No *noMaisProximo = NULL;
+            noNav1 = rota1->getPrimeiroElemento();
+            noNav2 = rota2->getPrimeiroElemento();
+            while (noNav1 != NULL)
+            {
+                if (novaRota->possuiNo(noNav1->getId()))
+                {
+                    if (DEBUG)
+                        cout << "O no " << noNav1->getId() << " ja esta na rota" << endl;
+                    noNav1 = noNav1->getProxNo();
+                    continue;
+                }
+                float distancia = calcularDistanciaNos(novaRota->getUltimoElemento(), noNav1);
+
+                if (DEBUG)
+                    cout << "Distancia entre = " << distancia << endl;
+                if (distancia < menorDistancia)
+                {
+                    menorDistancia = distancia;
+                    noMaisProximo = noNav1;
+                }
+                noNav1 = noNav1->getProxNo();
+            }
+            while (noNav2 != NULL)
+            {
+                if (novaRota->possuiNo(noNav2->getId()))
+                {
+                    if (DEBUG)
+                        cout << "O no " << noNav2->getId() << " ja esta na rota" << endl;
+                    noNav2 = noNav2->getProxNo();
+                    continue;
+                }
+                float distancia = calcularDistanciaNos(novaRota->getUltimoElemento(), noNav2);
+                if (DEBUG)
+                    cout << "Distancia entre" << distancia << endl;
+                if (distancia < menorDistancia)
+                {
+                    menorDistancia = distancia;
+                    noMaisProximo = noNav2;
+                }
+                noNav2 = noNav2->getProxNo();
+            }
+
+            if (DEBUG)
+            {
+                cout << "Fim de procura pelo no mais proximo" << endl;
+                cout << "nova rota: ";
+                novaRota->imprime();
+                cout << "rota referencia: ";
+                rotaReferencia->imprime();
+                cout << "Menor distancia: " << menorDistancia << endl;
+                cout << "No mais proximo: " << noMaisProximo->getId() << endl;
+            }
+            novaRota->AddElemento(noMaisProximo->getId(), noMaisProximo->getPeso(), noMaisProximo->getCoordenadaX(), noMaisProximo->getCoordenadaY());
+        }
+        // novaRota->AddElemento(1, 0, 0, 0);
+        novaRota->AddElemento(
+            rota1->getPrimeiroElemento()->getId(),   //* tem que ser o 1
+            rota1->getPrimeiroElemento()->getPeso(), //* tem que ser 0
+            rota1->getPrimeiroElemento()->getCoordenadaX(),
+            rota1->getPrimeiroElemento()->getCoordenadaY());
+        if (DEBUG)
+        {
+            cout << "Rota mesclada com distancia " << novaRota->getDistanciaTotal() << endl;
+            novaRota->imprime();
+        }
+        return novaRota;
     }
-    return melhorRota;
+    else
+    {
+
+        Rota *melhorRota = NULL;
+        float melhorDistancia = 9999999;
+        for (int i = 0; i < mesclarRotasIteracoes; i++)
+        {
+            Rota *novaRota = mesclarRotasRand2(rota1, rota2);
+            if (novaRota->getDistanciaTotal() < melhorDistancia)
+            {
+                melhorDistancia = novaRota->getDistanciaTotal();
+                melhorRota = novaRota;
+                // cout << "Melhor distancia = " << melhorDistancia << endl;
+            }
+        }
+        return melhorRota;
+    }
 }
-ListaEconomias *calculaEconomias(ListaRotas *listaRotas)
+float calcularDistanciaRotas(Rota *rota1, Rota *rota2)
 {
+    return sqrt(pow(rota1->getAvgPosX() - rota2->getAvgPosX(), 2) + pow(rota1->getAvgPosY() - rota2->getAvgPosY(), 2));
+}
+ListaJuncao *criaListaJuncao(ListaRotas *listaRotas)
+{
+    ListaJuncao *listaJuncao = new ListaJuncao();
+    Rota *rotaNav = listaRotas->getPrimeiroElemento();
+    int rota1I = 0;
+    int rota2I = 0;
+    while (rotaNav != NULL)
+    {
+        Rota *rotaNav2 = listaRotas->getPrimeiroElemento();
+        rota1I++;
+        rota2I = 0;
+        while (rotaNav2 != NULL)
+        {
+            rota2I++;
+            if (rota1I == rota2I)
+            {
+                rota2I = 0;
+                break;
+            }
+            float distancia = calcularDistanciaRotas(rotaNav, rotaNav2);
+            listaJuncao->AddElemento(rotaNav, rotaNav2, distancia, NULL);
+            rotaNav2 = rotaNav2->getProxElemento();
+        }
+        rotaNav = rotaNav->getProxElemento();
+    }
+    return listaJuncao;
+}
+
+ListaEconomias *calculaEconomias(ListaRotas *listaRotas, float alfa = -1)
+{
+    const int nEconomiasDesejadas = 200;
     if (DEBUG)
         cout << "Calcular economias" << endl;
     ListaEconomias *economias = new ListaEconomias(listaRotas->getCapacidade());
 
-    Rota *rotaNav = listaRotas->getPrimeiroElemento();
-    int noNavI = 0;
-    int noNav2I = 0;
-    while (rotaNav != NULL)
+    ListaJuncao *listaJuncao = criaListaJuncao(listaRotas);
+    int offset = 0;
+    if (alfa == -1 || true)
     {
-        Rota *rotaNav2 = listaRotas->getPrimeiroElemento();
-        noNavI++;
-        noNav2I = 0;
-        while (rotaNav2 != NULL)
+        ListaJuncao *juncoesExcluidas = new ListaJuncao();
+        ListaJuncao *juncoesAdicionadas = new ListaJuncao();
+
+        for (int i = 0; i < nEconomiasDesejadas + offset; i++)
         {
-            noNav2I++;
-            if (noNavI == noNav2I)
+            Juncao *juncaoMaisProxima = listaJuncao->getJuncaoMaisProxima(juncoesExcluidas);
+            if (juncaoMaisProxima == NULL)
             {
-                // rotaNav2 = rotaNav2->getProxElemento();
                 break;
             }
-            if (DEBUG)
+            Rota *rota1 = juncaoMaisProxima->rota1;
+            Rota *rota2 = juncaoMaisProxima->rota2;
+            if (rota1->getCapacidadeAtual()+rota2->getCapacidadeAtual() > rota1->getCapacidade())
             {
-                cout << "Calculando economia entre: " << endl;
-                rotaNav->imprime();
-                rotaNav2->imprime();
-            }
-            // Verificar se a junção das duas rotas excede a capacidade máxima
-
-            Rota *novaRota = mesclarRotas(rotaNav, rotaNav2);
-            if (DEBUG)
-            {
-
-                cout << "resultado: " << endl;
-                novaRota->imprime();
-            }
-
-            if (novaRota->getCapacidadeAtual() > novaRota->getCapacidade())
-            {
-                rotaNav2 = rotaNav2->getProxElemento();
-
+                juncoesExcluidas->AddElemento(
+                    juncaoMaisProxima->rota1,
+                    juncaoMaisProxima->rota2,
+                    juncaoMaisProxima->distancia,
+                    NULL);
+                offset++;
                 continue;
             }
-            float valorEconomizado = rotaNav->getDistanciaTotal() + rotaNav2->getDistanciaTotal() - novaRota->getDistanciaTotal();
-
-            if (DEBUG)
-                cout << "Valor economizado: " << valorEconomizado << endl;
-
-            Economia *novaEconomia = new Economia(novaRota, valorEconomizado);
-            economias->AddElemento(novaEconomia);
-
-            rotaNav2 = rotaNav2->getProxElemento();
+            else
+            {
+                Rota *novaRota = mesclarRotas(rota1, rota2);
+                float valorEconomizado = rota1->getDistanciaTotal() + rota2->getDistanciaTotal() - novaRota->getDistanciaTotal();
+                juncoesAdicionadas->AddElemento(juncaoMaisProxima->rota1,
+                                                juncaoMaisProxima->rota2,
+                                                juncaoMaisProxima->distancia,
+                                                novaRota);
+                juncoesExcluidas->AddElemento(juncaoMaisProxima->rota1,
+                                              juncaoMaisProxima->rota2,
+                                              juncaoMaisProxima->distancia,
+                                              novaRota);
+                economias->AddElemento(new Economia(novaRota, valorEconomizado));
+            }
         }
-        rotaNav = rotaNav->getProxElemento();
+
+        return economias;
     }
 
     return economias;
@@ -651,7 +782,6 @@ void geraLogDasRotas(ListaRotas *rotas, string filePathName = "./out/LogsRotas.t
 
 ListaRotas *algoritmoClarkeWright(Grafo *grafo, int capacidadeCaminhao, int quantidadeRotas, string testeName = "teste", float alfa = -1)
 {
-
     // const int capacidadeCaminhao = 100;
     // const int quantidadeRotas = 5;
 
@@ -770,9 +900,8 @@ ListaRotas *algoritmoClarkeWright(Grafo *grafo, int capacidadeCaminhao, int quan
     // ListaEconomias *economias = NULL;
     while (rotas->getNElementos() >= quantidadeRotas)
     {
-        // if (economias != NULL)
-        //     delete economias;
         ListaEconomias *economias = calculaEconomias(rotas);
+        cout << "quantidade de economias = " << economias->getNElementos() << endl;
         if (economias->getNElementos() == 0)
         {
             if (DEBUG)
@@ -806,6 +935,8 @@ ListaRotas *algoritmoClarkeWright(Grafo *grafo, int capacidadeCaminhao, int quan
         if (alfa != -1)
         {
             int k = randomRange(0, alfa * (economias->getNElementos() - 1));
+        //     economias->imprime();
+        // cout << "k = " << k << endl;
             Rota *rotaToMerge = economias->getElemento(k)->cloneRota();
             incluiMergeNasRotas(rotaToMerge, rotas);
         }
@@ -934,8 +1065,8 @@ ClarkeWrightReativoResultado ClarkeWrightReativo(Grafo *grafo, string nomeTeste,
             geraLogDasRotas(melhorResultado, "./out/" + nomeTeste + "/LogsRotas" + std::to_string(iteracao) + ".txt");
         }
     }
-    generateGraphvizFile(grafo, melhorResultado, "./out/" + nomeTeste + "/MelhorGraphviz.txt");
-    geraLogDasRotas(melhorResultado, "./out/" + nomeTeste + "/MelhorLogsRotas.txt");
+    // generateGraphvizFile(grafo, melhorResultado, "./out/" + nomeTeste + "/MelhorGraphviz.txt");
+    // geraLogDasRotas(melhorResultado, "./out/" + nomeTeste + "/MelhorLogsRotas.txt");
     ClarkeWrightReativoResultado resultado;
     resultado.melhorResultado = melhorResultado;
     resultado.seletorAlfa = seletorAlfa;
@@ -972,6 +1103,19 @@ string selecionarArquivo(bool grafoPonderado)
     cout << "Arquivo selecionado: " << selectedFileName << endl;
     return selectedFileName;
     //! fim do sistema de seleção de arquivo
+}
+
+void optimizeRota(ListaRotas* listaRotas)
+{
+    int i = 0;
+    Rota* rotaNav = listaRotas->getPrimeiroElemento();
+    while (rotaNav != NULL)
+    {
+        cout << "Otimizando rota " << i << endl;
+        rotaNav = mesclarRotas(rotaNav, rotaNav, 1000);
+        rotaNav = rotaNav->getProxElemento();
+        i++;
+    }
 }
 
 int main(int argc, char const *argv[])
@@ -1119,7 +1263,7 @@ int main(int argc, char const *argv[])
             outdata.open("./out/" + nomeTeste + "/Resultado.txt", std::ios_base::app);
             outdata << "O custo total foi de: " << calculateCustoTotal(resultadoRandomizado.melhorResultado) << endl;
             outdata << "O tempo gasto foi de " << elapsed_seconds.count() << " s" << endl;
-            outdata << "A o alfa foi de " << resultadoReativo.seletorAlfa << endl;
+            outdata << "A o alfa foi de " << resultadoRandomizado.alfa << endl;
 
             outdata.close();
         }
@@ -1138,6 +1282,9 @@ int main(int argc, char const *argv[])
             cout << "tempo de execução: " << BOLDGREEN << elapsed_seconds.count() << " s" << RESET
                  << endl;
             //!=================================================
+
+            generateGraphvizFile(&grafo, resultadoReativo.melhorResultado, "./out/" + nomeTeste + "/MelhorGraphviz.txt");
+            geraLogDasRotas(resultadoReativo.melhorResultado, "./out/" + nomeTeste + "/MelhorLogsRotas.txt");
 
             ofstream outdata;
             outdata.open("./out/" + nomeTeste + "/Resultado.txt", std::ios_base::app);
@@ -1161,7 +1308,6 @@ int main(int argc, char const *argv[])
 
             generateGraphvizFile(&grafo, resultado, "./out/" + nomeTeste + "/MelhorGraphviz.txt");
             geraLogDasRotas(resultado, "./out/" + nomeTeste + "/MelhorLogsRotas.txt");
-
 
             //! fim de cogio de contagem de tempo de execução
             auto end = chrono::system_clock::now();

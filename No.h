@@ -16,14 +16,14 @@ private:
     Aresta *primeiraAresta = NULL;
     Aresta *ultimaAresta = NULL;
 
-    int coordenadaX;
-    int coordenadaY;
+    float coordenadaX;
+    float coordenadaY;
 
 public:
     // No(int id);
     No();
-    No(int id, int peso, int coordenadaX, int coordenadaY);
-    No(int id, int coordenadaX, int coordenadaY);
+    No(int id, int peso, float coordenadaX, float coordenadaY);
+    No(int id, float coordenadaX, float coordenadaY);
     No(int id, int peso);
     int getId();
     No *getProxNo();
@@ -36,8 +36,8 @@ public:
     void setId(int id) { this->idNo = id; };
     void setPeso(int peso);
     int getPeso(){return pesoNo;};
-    int getCoordenadaX(){return coordenadaX;};
-    int getCoordenadaY(){return coordenadaY;};
+    float getCoordenadaX(){return coordenadaX;};
+    float getCoordenadaY(){return coordenadaY;};
 };
 
 #endif

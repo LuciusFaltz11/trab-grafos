@@ -48,7 +48,7 @@ void Grafo::AddPesoAoNo(int no, int peso){
         noAdd->setPeso(peso);
     }
 }
-void Grafo::AddNoCoord(int no, int coordenadaX, int coordenadaY)
+void Grafo::AddNoCoord(int no, float coordenadaX, float coordenadaY)
 {
     No *noAdd = procuraId(no);
     if (noAdd == NULL)

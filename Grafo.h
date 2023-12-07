@@ -50,7 +50,7 @@ public:
     No *getRaizGrafo() { return raizGrafo; }
     bool getPonderadoAresta() { return ponderadoAresta; }
     bool getPonderadoVertice() { return ponderadoVertice; }
-    void AddNoCoord(int no, int coordenadaX, int coordenadaY);
+    void AddNoCoord(int no, float coordenadaX, float coordenadaY);
     void AddNoAresta(int no1, int no2);
     void AddNoAresta(int no1, int no2, int peso);
     No *procuraId(int id);

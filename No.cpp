@@ -16,7 +16,7 @@ No::No()
 {
 }
 
-No::No(int id, int peso, int coordenadaX, int coordenadaY)
+No::No(int id, int peso, float coordenadaX, float coordenadaY)
 {
     if (DEBUG)
     {
@@ -35,7 +35,7 @@ No::No(int id, int peso, int coordenadaX, int coordenadaY)
     if(DEBUG)
         cout << "O no foi criado" << endl;
 }
-No::No(int id, int coordenadaX, int coordenadaY)
+No::No(int id, float coordenadaX, float coordenadaY)
 {
     this->grauEntrada = 0;
     this->grauSaida = 0;

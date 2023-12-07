@@ -1,6 +1,8 @@
 #ifndef RotaDefined
 #define RotaDefined
 
+#define DEBUG false
+
 #include "No.h"
 #include <cmath>
 using namespace std;
@@ -15,6 +17,8 @@ private:
     int capacidadeAtual = 0;
     int nElementos = 0;
     double distanciaTotal = 0;
+    float avgPosX = 0;
+    float avgPosY = 0;
 
 public:
     Rota(int capacidade)
@@ -38,6 +42,21 @@ public:
             elementoNav = elementoNav->getProxNo();
             delete elementoAnterior;
         }
+    };
+    void calculateAvgPos(){
+        No *elementoNav = primeiroElemento;
+        while (elementoNav != NULL)
+        {
+            if(elementoNav->getId() == 1){
+                elementoNav = elementoNav->getProxNo();
+                continue;
+            }
+            avgPosX += elementoNav->getCoordenadaX();
+            avgPosY += elementoNav->getCoordenadaY();
+            elementoNav = elementoNav->getProxNo();
+        }
+        avgPosX /= nElementos;
+        avgPosY /= nElementos;
     };
     void AddElemento(int id, int peso, int coordenadaX, int coordenadaY)
     {
@@ -63,7 +82,10 @@ public:
         distanciaTotal += sqrt(pow(novoNo->getCoordenadaX() - ultimoElemento->getCoordenadaX(), 2) + pow(novoNo->getCoordenadaY() - ultimoElemento->getCoordenadaY(), 2));
         ultimoElemento->setProxNo(novoNo);
         ultimoElemento = novoNo;
+        calculateAvgPos();
     };
+    float getAvgPosX(){return avgPosX;};
+    float getAvgPosY(){return avgPosY;};
     float getDistanciaTotal() { return distanciaTotal; };
     No *getPrimeiroElemento() { return primeiroElemento; };
     No *getUltimoElemento() { return ultimoElemento; };

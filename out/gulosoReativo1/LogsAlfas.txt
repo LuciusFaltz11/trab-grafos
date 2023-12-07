@@ -1,9 +1,0 @@
- ========================================================= 
-iteracao: 0
-Resultado da iteracao: 1443.08
-Melhor resultado da iteracao: 1443.08
-[ 0.05 ] probabilidade = 0.310345
-[ 0.1 ] probabilidade = 0.172414
-[ 0.15 ] probabilidade = 0.172414
-[ 0.3 ] probabilidade = 0.172414
-[ 0.5 ] probabilidade = 0.172414
