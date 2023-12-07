@@ -18,7 +18,7 @@ public:
     };
     ~Economia()
     {
-        delete rota;
+        
     };
     float getValor() { return valor; };
     Rota *getRota() { return rota; };

@@ -82,7 +82,7 @@ public:
         distanciaTotal += sqrt(pow(novoNo->getCoordenadaX() - ultimoElemento->getCoordenadaX(), 2) + pow(novoNo->getCoordenadaY() - ultimoElemento->getCoordenadaY(), 2));
         ultimoElemento->setProxNo(novoNo);
         ultimoElemento = novoNo;
-        calculateAvgPos();
+        // calculateAvgPos();
     };
     float getAvgPosX(){return avgPosX;};
     float getAvgPosY(){return avgPosY;};

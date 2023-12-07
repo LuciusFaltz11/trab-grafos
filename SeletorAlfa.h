@@ -2,8 +2,6 @@
 #ifndef SeletorAlfa_defined
 #define SeletorAlfa_defined
 
-
-
 #include <cstdlib>
 #include <iostream>
 using namespace std;
@@ -25,14 +23,15 @@ public:
         alfas[2] = 0.15;
         alfas[3] = 0.3;
         alfas[4] = 0.5;
-        
-        this->probabilidades = new double[nAlfas];
-        for(int i = 0; i < nAlfas; i++){
-            probabilidades[i] = 1.0/nAlfas;
-        }
 
+        this->probabilidades = new double[nAlfas];
+        for (int i = 0; i < nAlfas; i++)
+        {
+            probabilidades[i] = 1.0 / nAlfas;
+        }
     }
-    ~SeletorAlfa(){
+    ~SeletorAlfa()
+    {
         delete[] alfas;
         delete[] probabilidades;
     };
@@ -50,9 +49,34 @@ public:
         }
         return nAlfas - 1;
     };
+    // void atualizarProbabilidade(int alfaIndex, float resultado)
+    // {
+    //     if(resultado < melhorResultado){
+    //         melhorResultado = resultado;
+    //     }
+    //     const float fatorSuavizacao = 0.8;
+    //     double soma = 0;
+    //     for (int i = 0; i < nAlfas; i++)
+    //     {
+    //         soma += probabilidades[i];
+    //     }
+
+    //     probabilidades[alfaIndex] = (fatorSuavizacao * probabilidades[alfaIndex]) + ((1 - fatorSuavizacao) * (melhorResultado / resultado));
+
+    //     soma = 0;
+    //     for (int i = 0; i < nAlfas; i++)
+    //     {
+    //         soma += probabilidades[i];
+    //     }
+    //     for (int i = 0; i < nAlfas; i++)
+    //     {
+    //         probabilidades[i] = probabilidades[i] / soma;
+    //     }
+    // };
     void atualizarProbabilidade(int alfaIndex, float resultado)
     {
-        if(resultado < melhorResultado){
+        if (resultado < melhorResultado)
+        {
             melhorResultado = resultado;
         }
         const float fatorSuavizacao = 0.8;
@@ -61,9 +85,12 @@ public:
         {
             soma += probabilidades[i];
         }
-        
-        probabilidades[alfaIndex] = (fatorSuavizacao * probabilidades[alfaIndex]) + ((1 - fatorSuavizacao) * (melhorResultado / resultado));
-        
+
+        if (resultado <= melhorResultado)
+        {
+            probabilidades[alfaIndex] = (fatorSuavizacao * probabilidades[alfaIndex]) + ((1 - fatorSuavizacao) * (melhorResultado / resultado));
+        }
+
         soma = 0;
         for (int i = 0; i < nAlfas; i++)
         {
@@ -73,34 +100,55 @@ public:
         {
             probabilidades[i] = probabilidades[i] / soma;
         }
+        normalizarProbabilidades();
     };
-    
+    //* normaliza as probabilidades entre 0 e 1 
+    void normalizarProbabilidades()
+    {
+        double soma = 0;
+        for (int i = 0; i < nAlfas; i++)
+        {
+            soma += probabilidades[i];
+        }
+        for (int i = 0; i < nAlfas; i++)
+        {
+            probabilidades[i] = probabilidades[i] / soma;
+        }    
+    };
+
     double getAlfa(int i)
     {
         return alfas[i];
     };
-    double getProbabilidade(int i){
+    double getProbabilidade(int i)
+    {
         return probabilidades[i];
     };
-    int getNAlfas(){
+    int getNAlfas()
+    {
         return nAlfas;
     };
-    void setProbabilidade(int i, double probabilidade){
+    void setProbabilidade(int i, double probabilidade)
+    {
         probabilidades[i] = probabilidade;
     };
-    void setProbabilidades(double *probabilidades){
+    void setProbabilidades(double *probabilidades)
+    {
         this->probabilidades = probabilidades;
     };
-    void setAlfas(double *alfas){
+    void setAlfas(double *alfas)
+    {
         this->alfas = alfas;
     };
-    void setNAlfas(int nAlfas){
+    void setNAlfas(int nAlfas)
+    {
         this->nAlfas = nAlfas;
     };
-    void imprimir(){
+    void imprimir()
+    {
         for (int i = 0; i < nAlfas; i++)
         {
-            cout << "Alfa: " << alfas[i] << " Probabilidade: " << probabilidades[i] << endl;    
+            cout << "Alfa: " << alfas[i] << " Probabilidade: " << probabilidades[i] << endl;
         }
     };
 };

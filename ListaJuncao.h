@@ -32,8 +32,18 @@ private:
 
 public:
     ListaJuncao(){};
-    ~ListaJuncao(){};
-    void AddElemento(Rota* rota1, Rota* rota2, float distancia, Rota* mesclada)
+    ~ListaJuncao()
+    {
+        Juncao *elementoNav = primeiroElemento;
+        Juncao *elementoAnterior = primeiroElemento;
+        while (elementoNav != NULL)
+        {
+            elementoAnterior = elementoNav;
+            elementoNav = elementoNav->proxJuncao;
+            delete elementoAnterior;
+        }
+    };
+    void AddElemento(Rota *rota1, Rota *rota2, float distancia, Rota *mesclada)
     {
         Juncao *elementoCopia = new Juncao(rota1, rota2, distancia, mesclada);
         nElementos++;
@@ -65,6 +75,39 @@ public:
     Juncao *getUltimoElemento()
     {
         return ultimoElemento;
+    };
+    void RemoveElementoBaseadoNaRota(Juncao *elemento)
+    {
+        Juncao *elementoNav = primeiroElemento;
+        Juncao *elementoAnterior = primeiroElemento;
+        while (elementoNav != NULL)
+        {
+            if (
+                elementoNav->rota1 == elemento->rota1 && elementoNav->rota2 == elemento->rota2 ||
+                elementoNav->rota1 == elemento->rota2 && elementoNav->rota2 == elemento->rota1)
+            {
+                if (elementoNav == primeiroElemento)
+                {
+                    primeiroElemento = elementoNav->proxJuncao;
+                    delete elementoNav;
+                    nElementos--;
+                    return;
+                }
+                if (elementoNav == ultimoElemento)
+                {
+                    ultimoElemento = elementoAnterior;
+                    delete elementoNav;
+                    nElementos--;
+                    return;
+                }
+                elementoAnterior->proxJuncao = elementoNav->proxJuncao;
+                delete elementoNav;
+                nElementos--;
+                return;
+            }
+            elementoAnterior = elementoNav;
+            elementoNav = elementoNav->proxJuncao;
+        }
     };
     void RemoveElemento(Juncao *elemento)
     {
@@ -143,6 +186,48 @@ public:
     //     return juncaoMaisProxima;
     // }
 
+    Juncao* getJuncaoDasRotas(Rota* rota1, Rota* rota2){
+        Juncao *elementoNav = primeiroElemento;
+        while (elementoNav != NULL)
+        {
+            if (
+                elementoNav->rota1 == rota1 && elementoNav->rota2 == rota2 ||
+                elementoNav->rota1 == rota2 && elementoNav->rota2 == rota1)
+            {
+                return elementoNav;
+            }
+            elementoNav = elementoNav->proxJuncao;
+        }
+        return NULL;
+    }
+
+    bool contains(Rota* rota1, Rota* rota2)
+    {
+        if (nElementos == 0)
+        {
+            return false;
+        }
+
+        // std::unordered_set<Juncao *> visited;
+        Juncao *elementoNav = primeiroElemento;
+        while (elementoNav != NULL)
+        {
+            // if (visited.count(elementoNav))
+            // {
+            //     break; // We've seen this element before, so we have a cycle
+            // }
+            // visited.insert(elementoNav);
+
+            if (
+                elementoNav->rota1 == rota1 && elementoNav->rota2 == rota2 ||
+                elementoNav->rota1 == rota2 && elementoNav->rota2 == rota1)
+            {
+                return true;
+            }
+            elementoNav = elementoNav->proxJuncao;
+        }
+        return false;
+    }
     bool contains(Juncao *juncao)
     {
         if (nElementos == 0)
@@ -160,7 +245,9 @@ public:
             }
             visited.insert(elementoNav);
 
-            if (elementoNav->rota1 == juncao->rota1 && elementoNav->rota2 == juncao->rota2)
+            if (
+                elementoNav->rota1 == juncao->rota1 && elementoNav->rota2 == juncao->rota2 ||
+                elementoNav->rota1 == juncao->rota2 && elementoNav->rota2 == juncao->rota1)
             {
                 return true;
             }

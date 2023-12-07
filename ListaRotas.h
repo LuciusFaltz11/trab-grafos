@@ -26,6 +26,16 @@ public:
             delete elementoAnterior;
         }
     };
+    bool contains(Rota *rota){
+        Rota *elementoNav = primeiroElemento;
+        while (elementoNav != NULL)
+        {
+            if(elementoNav == rota)
+                return true;
+            elementoNav = elementoNav->getProxElemento();
+        }
+        return false;
+    };
     void AddElemento(Rota *elemento){
         nElementos++;
         if (primeiroElemento == NULL)
