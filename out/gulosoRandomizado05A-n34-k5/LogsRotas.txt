@@ -1,0 +1,4 @@
+Nome do teste: gulosoRandomizado05A-n34-k5
+Arquivo de entrada: ./A-n34-k5.txt
+Nome do teste: gulosoRandomizado05A-n34-k5
+Arquivo de entrada: ./A-n34-k5.txt
