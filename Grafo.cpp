@@ -66,6 +66,7 @@ void Grafo::AddNoCoord(int no, float coordenadaX, float coordenadaY)
             ultimoNo = novoNo;
         }
     }
+    // totalNos++;
 }
 void Grafo::AddNoArestaAux(int no1, int no2, int peso)
 {

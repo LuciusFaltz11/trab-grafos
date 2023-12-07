@@ -1,3 +1,2 @@
-./A-n34-k5.txt ./out 0 1 1 gulosoRandomizado05M1 0.05
-./A-n34-k5.txt ./out 0 1 1 gulosoReativo05M1 0.05
-./A-n34-k5.txt ./out 0 1 1 gulosoM-n101-k10.txt05M1 0.10
+./X-n280-k17.txt  ./out 0 1 1 gulosoM-n151-k12 -1
+./Golden_1.txt ./out 0 1 1 gulosoGolden_1 -1

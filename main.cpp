@@ -28,14 +28,11 @@
 // pode ignorar isso
 const int nEconomiasDesejadas = 200;
 
-
 // using namespace std;
 
 const int mesclarRotasIteracoes = 1;
 const int iteracoesReativo = 1500;
 const int iteracoesRandomizado = 100;
-
-
 
 float **matrizDistancias;
 /*
@@ -182,17 +179,17 @@ void controiGrafoTipo2(string fileLocation, Grafo *grafo)
 
         string linha;
 
-        int totalNos = 0;
-        while (linha.find("CAPACITY") != 0)
-        {
-            getline(file, linha);
-            if (linha.find("CAPACITY") != string::npos)
-            {
-                string dimension = linha.substr(linha.find(":") + 1);
-                totalNos = stoi(dimension);
-            }
-        }
-        grafo->setTotalNos(totalNos);
+        // int totalNos = 0;
+        // while (linha.find("CAPACITY") != 0)
+        // {
+        //     getline(file, linha);
+        //     if (linha.find("CAPACITY") != string::npos)
+        //     {
+        //         string dimension = linha.substr(linha.find(":") + 1);
+        //         totalNos = stoi(dimension);
+        //     }
+        // }
+        // grafo->setTotalNos(totalNos);
 
         std::cout << "Características do arquivo: " << endl;
         while (linha.find("NODE_COORD_SECTION") != 0)
@@ -201,6 +198,7 @@ void controiGrafoTipo2(string fileLocation, Grafo *grafo)
             std::cout << linha << endl;
         }
         getline(file, linha);
+        int lastId = 0;
         while (linha.find("DEMAND_SECTION") != 0)
         {
             istringstream iss(linha);
@@ -209,9 +207,12 @@ void controiGrafoTipo2(string fileLocation, Grafo *grafo)
             iss >> id;
             iss >> x;
             iss >> y;
+            lastId = id;
             grafo->AddNoCoord(id, x, y);
             getline(file, linha);
         }
+        grafo->setTotalNos(lastId+1);
+
         getline(file, linha);
         while (linha.find("DEPOT_SECTION") != 0)
         {
@@ -896,7 +897,7 @@ void geraLogDasRotas(ListaRotas *rotas, string filePathName = "./out/LogsRotas.t
     outdata.close();
 }
 
-ListaRotas *algoritmoClarkeWright(Grafo *grafo, int capacidadeCaminhao, int quantidadeRotas, string testeName = "teste", float alfa = -1)
+ListaRotas *algoritmoClarkeWright(Grafo *grafo, int capacidadeCaminhao, int quantidadeRotas, string testeName = "teste", float alfa = -1, bool ehSimples = false)
 {
     // const int capacidadeCaminhao = 100;
     // const int quantidadeRotas = 5;
@@ -1018,7 +1019,12 @@ ListaRotas *algoritmoClarkeWright(Grafo *grafo, int capacidadeCaminhao, int quan
     while (rotas->getNElementos() >= quantidadeRotas)
     {
         economias = calculaEconomias(rotas, economias);
-        // std::cout << "[" << iteracao << "] quantidade de economias = " << economias->getNElementos() << endl;
+
+        iteracao++;
+        if (ehSimples && iteracao % 10 == 0)
+        {
+            std::cout << "[" << iteracao << "] quantidade de economias = " << economias->getNElementos() << endl;
+        }
         if (economias->getNElementos() == 0)
         {
             if (DEBUG)
@@ -1073,7 +1079,6 @@ ListaRotas *algoritmoClarkeWright(Grafo *grafo, int capacidadeCaminhao, int quan
             }
             outdata << endl;
         }
-        iteracao++;
         if (DEBUG)
         {
 
@@ -1081,6 +1086,14 @@ ListaRotas *algoritmoClarkeWright(Grafo *grafo, int capacidadeCaminhao, int quan
             rotas->imprime();
         }
     }
+
+
+    /*
+    
+    ! estou removendo todos os deletes em desespero 
+    
+    
+    */
 
     // generateGraphvizFile(grafo, rotas, "./out/" + testeName + "/graphviz.txt");
     // geraLogDasRotas(rotas, "./out/" + testeName + "/LogsRotas.txt");
@@ -1108,7 +1121,7 @@ ResultadoClarkeWrightRandomizado ClarkeWrightRandomizado(Grafo *grafo, string no
         // {
         //     std::cout << "iteracaoReativo: " << i << " / " << nIteracoes << endl;
         // }
-        // delete listaJuncaoCarregada;
+        delete listaJuncaoCarregada;
         // listaJuncaoCarregada = new ListaJuncao();
         if (nIteracoes > 1)
         {
@@ -1136,7 +1149,7 @@ ResultadoClarkeWrightRandomizado ClarkeWrightRandomizado(Grafo *grafo, string no
         }
         else
         {
-            delete resultado;
+            // delete resultado;
         }
         if (nIteracoes > 1)
             std::cout << "Custo da iteracao " << i << " com alfa: " << alfa << " = " << custo << endl;
@@ -1540,7 +1553,7 @@ int main(int argc, char const *argv[])
         {
             std::cout << BOLDGREEN << "Algoritmo Clarke-Wright guloso simples" << RESET << endl;
             int capacideCaminhao = getCapacidadeCaminhao(arquivoEntrada);
-            ListaRotas *resultado = algoritmoClarkeWright(&grafo, capacideCaminhao, getNoOfTrucks(arquivoEntrada), nomeTeste);
+            ListaRotas *resultado = algoritmoClarkeWright(&grafo, capacideCaminhao, getNoOfTrucks(arquivoEntrada), nomeTeste, -1, true);
             std::cout << "O melhor resultado da iteração foi: " << endl;
             resultado->imprime();
 
@@ -1607,6 +1620,7 @@ int main(int argc, char const *argv[])
 
             outdata.close();
         }
+        return 0;
     }
     else
     {
@@ -1685,7 +1699,7 @@ int main(int argc, char const *argv[])
                                                  { std::cout << id << ", "; });
                 std::cout << endl;
                 grafoInvertido->generateDreampufFile("grafoInvertido.dat");
-                delete grafoInvertido;
+                // delete grafoInvertido;
             }
             else
             {
