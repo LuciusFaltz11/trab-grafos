@@ -1,0 +1,3 @@
+O custo total foi de:: 1548.78
+O tempo gasto foi de 14.7448 s
+A o alfa foi de 0.15

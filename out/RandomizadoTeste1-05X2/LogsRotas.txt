@@ -1,0 +1,2 @@
+Nome do teste: RandomizadoTeste1-05X2
+Arquivo de entrada: ./X-n280-k17.txt

@@ -1,0 +1,8 @@
+O custo total foi de:: 1398.17
+O tempo gasto foi de 15.7805 s
+Alfa final: 
+[ 0.05 ] probabilidade = 0.2
+[ 0.1 ] probabilidade = 0.2
+[ 0.15 ] probabilidade = 0.2
+[ 0.3 ] probabilidade = 0.2
+[ 0.5 ] probabilidade = 0.2

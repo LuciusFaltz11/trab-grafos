@@ -1,0 +1,2 @@
+Nome do teste: RandomizadoTeste7-05M1
+Arquivo de entrada: ./M-n101-k10.txt

@@ -1,0 +1,4 @@
+Nome do teste: RandomizadoTeste1-05M2
+Arquivo de entrada: ./M-n151-k12.txt
+Nome do teste: RandomizadoTeste1-05M2
+Arquivo de entrada: ./M-n151-k12.txt

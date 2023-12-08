@@ -1,0 +1,2 @@
+Nome do teste: RandomizadoTeste8-50X1
+Arquivo de entrada: ./X-n101-k25.txt

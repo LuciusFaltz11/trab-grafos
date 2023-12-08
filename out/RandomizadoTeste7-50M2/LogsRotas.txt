@@ -1,0 +1,2 @@
+Nome do teste: RandomizadoTeste7-50M2
+Arquivo de entrada: ./M-n151-k12.txt
