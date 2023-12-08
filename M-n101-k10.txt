@@ -1,5 +1,5 @@
 NAME : M-n101-k10
-COMMENT : (Christophides et al, No of trucks: 10, Optimal value: 820)
+COMMENT : (Christophides et al, No of trucks: 1, Optimal value: 820)
 TYPE : CVRP
 DIMENSION : 101
 EDGE_WEIGHT_TYPE : EUC_2D

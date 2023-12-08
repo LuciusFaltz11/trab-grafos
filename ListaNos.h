@@ -55,6 +55,18 @@ public:
             elementoNav = elementoNav->getProxNo();
         }
     };
+    bool possuiElemento(int id){
+        No *elementoNav = primeiroElemento;
+        while (elementoNav != NULL)
+        {
+            if (elementoNav->getId() == id)
+            {
+                return true;
+            }
+            elementoNav = elementoNav->getProxNo();
+        }
+        return false;
+    };
 };
 
 #endif //ListaNosDefined
