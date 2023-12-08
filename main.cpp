@@ -31,7 +31,7 @@ const int nEconomiasDesejadas = 200;
 // using namespace std;
 
 const int mesclarRotasIteracoes = 1;
-const int iteracoesReativo = 1500;
+const int iteracoesReativo = 100;
 const int iteracoesRandomizado = 100;
 
 float **matrizDistancias;
@@ -39,6 +39,23 @@ float **matrizDistancias;
 converte a linha do arquivo para (int, int) e chama a função de construção no grafo
 se a linha so contiver um inteiro, a mesma representa o numero de nos do grafo (de acordo com a descrição do arquivo readme.txt)
 */
+bool estaContido(Rota *rota1, Rota *rota2)
+{
+    if (rota1 == NULL || rota2 == NULL)
+    {
+        return false;
+    }
+    No *noNav = rota1->getPrimeiroElemento();
+    while (noNav != NULL)
+    {
+        if (!rota2->possuiNo(noNav->getId()))
+        {
+            return false;
+        }
+        noNav = noNav->getProxNo();
+    }
+    return true;
+}
 void constroiGrafo(string linha, Grafo *grafo, int tipoArquivo)
 {
     if (tipoArquivo == 1)
@@ -211,7 +228,7 @@ void controiGrafoTipo2(string fileLocation, Grafo *grafo)
             grafo->AddNoCoord(id, x, y);
             getline(file, linha);
         }
-        grafo->setTotalNos(lastId+1);
+        grafo->setTotalNos(lastId + 1);
 
         getline(file, linha);
         while (linha.find("DEPOT_SECTION") != 0)
@@ -426,7 +443,7 @@ Rota *mesclarRotasRand2(Rota *rota1, Rota *rota2)
         std::cout << "Rota mesclada com distancia " << novaRota->getDistanciaTotal() << endl;
         novaRota->imprime();
     }
-    delete rotaReferencia;
+    // delete rotaReferencia;
 
     return novaRota;
 }
@@ -582,10 +599,54 @@ ListaJuncao *criaListaJuncao(ListaRotas *listaRotas)
 }
 
 ListaJuncao *listaJuncaoCarregada = new ListaJuncao();
+void limpaListaJuncaoCarregada()
+{
+    std::vector<Juncao *> elementosParaRemover;
+    Juncao *juncaoNav1 = listaJuncaoCarregada->getPrimeiroElemento();
+    Juncao *juncaoNav2;
 
+    while (juncaoNav1 != NULL)
+    {
+        juncaoNav2 = listaJuncaoCarregada->getPrimeiroElemento();
+        while (juncaoNav2 != NULL)
+        {
+            if (juncaoNav1 != juncaoNav2 && juncaoNav1->mesclada != NULL && estaContido(juncaoNav2->mesclada, juncaoNav1->mesclada))
+            {
+                elementosParaRemover.push_back(juncaoNav2);
+            }
+            juncaoNav2 = juncaoNav2->getProxJuncao();
+        }
+        juncaoNav1 = juncaoNav1->getProxJuncao();
+    }
+
+    for (Juncao *juncao : elementosParaRemover)
+    {
+        listaJuncaoCarregada->RemoveElementoBaseadoNaRota(juncao);
+    }
+}
+
+void esvaziaListaJuncaoCarregada()
+{
+    Juncao *juncaoNav = listaJuncaoCarregada->getPrimeiroElemento();
+    Juncao *proxJuncao;
+
+    while (juncaoNav != NULL)
+    {
+        proxJuncao = juncaoNav->getProxJuncao();
+        listaJuncaoCarregada->RemoveElementoBaseadoNaRota(juncaoNav);
+        juncaoNav = proxJuncao;
+    }
+}
 ListaEconomias *calculaEconomias(ListaRotas *listaRotas, ListaEconomias *economiasAnteriores, float alfa = -1)
 {
+    Rota *rotaNav1 = listaRotas->getPrimeiroElemento();
+    Rota *rotaNav2 = listaRotas->getPrimeiroElemento();
 
+    if (listaJuncaoCarregada->getNElementos() > 5000)
+    {
+        esvaziaListaJuncaoCarregada();
+    }
+    // std::cout << "listaJuncaoCarregada->getNElementos() " << listaJuncaoCarregada->getNElementos() << endl;
     if (DEBUG)
         std::cout << "Calcular economias" << endl;
     ListaEconomias *economias = new ListaEconomias(listaRotas->getCapacidade());
@@ -595,7 +656,13 @@ ListaEconomias *calculaEconomias(ListaRotas *listaRotas, ListaEconomias *economi
     //* para os elementos da lista de rotas que ja estiverem carregados na lista juncao, nao calcular novamente
     if (listaJuncaoCarregada != NULL)
     {
+        std::vector<Juncao *> elementosParaRemover;
         Juncao *juncaoNav = listaJuncaoCarregada->getPrimeiroElemento();
+        // Juncao *juncaoNav = nullptr;
+
+        // std::cout << "listaJuncaoCarregada->getNElementos() " << listaJuncaoCarregada->getNElementos() << endl;
+        // std::cout << "juncaoNav == NULL " << (juncaoNav == NULL) << endl;
+
         while (juncaoNav != NULL)
         {
             Juncao *prevJuncaoNav = juncaoNav;
@@ -605,10 +672,12 @@ ListaEconomias *calculaEconomias(ListaRotas *listaRotas, ListaEconomias *economi
     }
     // std::cout << "Numero de economias a serem carregadas: " << listaJuncao->getNElementos() << endl;
 
-    for (int i = 0; i < listaJuncao->getNElementos(); i++)
+    // for (int i = 0; i < listaJuncao->getNElementos(); i++)
+    Juncao *juncaoNav = listaJuncao->getPrimeiroElemento();
+    // std::cout << "listaJuncao->getNElementos()"<< listaJuncao->getNElementos() << endl;
+    while (juncaoNav != NULL)
     {
-        Juncao *juncaoNav = listaJuncao->getJuncao(i);
-
+        // std::cout << "J" ;
         Rota *rota1 = juncaoNav->rota1;
         Rota *rota2 = juncaoNav->rota2;
 
@@ -619,6 +688,7 @@ ListaEconomias *calculaEconomias(ListaRotas *listaRotas, ListaEconomias *economi
                                               rota2,
                                               0,
                                               NULL);
+            juncaoNav = juncaoNav->getProxJuncao();
             continue;
         }
 
@@ -627,12 +697,14 @@ ListaEconomias *calculaEconomias(ListaRotas *listaRotas, ListaEconomias *economi
                                           rota2,
                                           0,
                                           novaRota);
+        juncaoNav = juncaoNav->getProxJuncao();
     }
+    // std::cout << "Saiu do loop de junções " <<endl;
 
     // std::cout << "Carregando economias " << endl;
 
-    Rota *rotaNav1 = listaRotas->getPrimeiroElemento();
-    Rota *rotaNav2 = listaRotas->getPrimeiroElemento();
+    rotaNav1 = listaRotas->getPrimeiroElemento();
+    rotaNav2 = listaRotas->getPrimeiroElemento();
     int i = 0;
     int rotaNav1I = 0;
     int rotaNav2I = 0;
@@ -643,30 +715,30 @@ ListaEconomias *calculaEconomias(ListaRotas *listaRotas, ListaEconomias *economi
         rotaNav2 = listaRotas->getPrimeiroElemento();
         while (rotaNav2 != NULL)
         {
+
             rotaNav2I++;
+
             if (rotaNav1I == rotaNav2I)
             {
                 rotaNav2I = 0;
                 rotaNav2 = listaRotas->getPrimeiroElemento();
                 break;
             }
-            if (listaJuncaoCarregada->contains(rotaNav1, rotaNav2))
+            Juncao *juncao = listaJuncaoCarregada->getJuncaoDasRotas(rotaNav1, rotaNav2);
+            if (juncao->mesclada != NULL)
             {
-                // std::cout << "tem que ser true sempre" << endl;
-                Juncao *juncao = listaJuncaoCarregada->getJuncaoDasRotas(rotaNav1, rotaNav2);
-                if (juncao->mesclada != NULL)
-                {
-                    float valorEconomizado = rotaNav1->getDistanciaTotal() + rotaNav2->getDistanciaTotal() - juncao->mesclada->getDistanciaTotal();
-                    economias->AddElemento(new Economia(
-                        juncao->mesclada,
-                        valorEconomizado));
-                }
+                float valorEconomizado = rotaNav1->getDistanciaTotal() + rotaNav2->getDistanciaTotal() - juncao->mesclada->getDistanciaTotal();
+                economias->AddElemento(new Economia(
+                    juncao->mesclada,
+                    valorEconomizado));
             }
             i++;
             rotaNav2 = rotaNav2->getProxElemento();
         }
         rotaNav1 = rotaNav1->getProxElemento();
     }
+
+    //* limpar lista de juncao carregada
 
     // std::cout << "listaJuncaoCarregada->getNElementos() depois da limpa: " << listaJuncaoCarregada->getNElementos() << endl;
     //  for (int i = 0; i < listaJuncaoCarregada->getNElementos(); i++)
@@ -689,6 +761,8 @@ ListaEconomias *calculaEconomias(ListaRotas *listaRotas, ListaEconomias *economi
     // std::cout << "Numero de economias: " << economias->getNElementos() << endl;
     // std::cout << "deveria ser: " << i << endl;
     // economias->imprime();
+
+    // limpaListaJuncaoCarregada();
     return economias;
 
     // int offset = 0;
@@ -736,20 +810,6 @@ ListaEconomias *calculaEconomias(ListaRotas *listaRotas, ListaEconomias *economi
     // }
 
     // return economias;
-}
-
-bool estaContido(Rota *rota1, Rota *rota2)
-{
-    No *noNav = rota1->getPrimeiroElemento();
-    while (noNav != NULL)
-    {
-        if (!rota2->possuiNo(noNav->getId()))
-        {
-            return false;
-        }
-        noNav = noNav->getProxNo();
-    }
-    return true;
 }
 
 void incluiMergeNasRotas(Rota *novaRota, ListaRotas *listaRotas)
@@ -904,7 +964,9 @@ ListaRotas *algoritmoClarkeWright(Grafo *grafo, int capacidadeCaminhao, int quan
 
     if (alfa != -1 && alfa < 0 && alfa > 1)
     {
-        alfa = -1;
+        std::cout << "Alfa deve ser um valor entre 0 e 1" << endl;
+        exit(1);
+        return NULL;
     }
 
     // Clarke-Wright
@@ -1018,7 +1080,9 @@ ListaRotas *algoritmoClarkeWright(Grafo *grafo, int capacidadeCaminhao, int quan
     ListaEconomias *economias;
     while (rotas->getNElementos() >= quantidadeRotas)
     {
+
         economias = calculaEconomias(rotas, economias);
+        // std::cout << "nEconomias: " << economias->getNElementos() << endl;
 
         iteracao++;
         if (ehSimples && iteracao % 10 == 0)
@@ -1058,15 +1122,13 @@ ListaRotas *algoritmoClarkeWright(Grafo *grafo, int capacidadeCaminhao, int quan
         if (alfa != -1)
         {
             int k = randomRange(0, alfa * (economias->getNElementos() - 1));
-            //     economias->imprime();
-            // std::cout << "k = " << k << endl;
             Rota *rotaToMerge = economias->getElemento(k)->cloneRota();
             incluiMergeNasRotas(rotaToMerge, rotas);
         }
         else
             incluiMergeNasRotas(economias->getMaiorEconomia()->cloneRota(), rotas);
 
-        delete economias;
+        // delete economias;
         // fim-teste
         if (mostrarLog)
         {
@@ -1087,12 +1149,11 @@ ListaRotas *algoritmoClarkeWright(Grafo *grafo, int capacidadeCaminhao, int quan
         }
     }
 
-
     /*
-    
-    ! estou removendo todos os deletes em desespero 
-    
-    
+
+    ! estou removendo todos os deletes em desespero
+
+
     */
 
     // generateGraphvizFile(grafo, rotas, "./out/" + testeName + "/graphviz.txt");
@@ -1100,6 +1161,7 @@ ListaRotas *algoritmoClarkeWright(Grafo *grafo, int capacidadeCaminhao, int quan
     // outdata.open("./out/" + testeName + "/LogsRotas.txt", std::ios_base::app);
     // std::cout << "O custo total foi de: " << calculateCustoTotal(rotas) << endl;
     // outdata.close();
+
     return rotas;
 }
 struct ResultadoClarkeWrightRandomizado
@@ -1109,41 +1171,39 @@ struct ResultadoClarkeWrightRandomizado
     ListaRotas *melhorResultado;
 };
 
-ResultadoClarkeWrightRandomizado ClarkeWrightRandomizado(Grafo *grafo, string nomeTeste, int capacidade, int nRotas, float alfa, int nIteracoes)
+ResultadoClarkeWrightRandomizado ClarkeWrightRandomizado(Grafo *grafo, string nomeTeste, int capacidade, int nRotas, float alfa, int nIteracoes, ListaRotas *setMelhorResultado = NULL)
 {
-    ListaRotas *melhorResultado = new ListaRotas(capacidade);
+
+    ListaRotas *melhorResultado;
+    if(setMelhorResultado != NULL){
+        melhorResultado = setMelhorResultado;
+    }else{
+        melhorResultado = new ListaRotas(capacidade);
+    }
     float somaCusto = 0;
 
     float melhorCusto = 99999999;
     for (int i = 0; i < nIteracoes; i++)
     {
-        // if (i % 100 == 0)
-        // {
-        //     std::cout << "iteracaoReativo: " << i << " / " << nIteracoes << endl;
-        // }
-        delete listaJuncaoCarregada;
-        // listaJuncaoCarregada = new ListaJuncao();
+        auto start = chrono::system_clock::now(); //! inicio de codigo para contagem de tempo de execução
+
+        // limpaListaJuncaoCarregada();
+
+        // if(nIteracoes > 1)
+        //     esvaziaListaJuncaoCarregada();
+        listaJuncaoCarregada = new ListaJuncao();
         if (nIteracoes > 1)
         {
             std::cout << "iteracaoRandomizado: " << i << " / " << nIteracoes << endl;
+            // std::cout << "listaJuncaoCarregada->getNElementos(): " << listaJuncaoCarregada->getNElementos() << endl;
         }
         ListaRotas *resultado = algoritmoClarkeWright(grafo, capacidade, nRotas, nomeTeste, alfa);
         float custo = calculateCustoTotal(resultado);
-        // std::cout << BOLDGREEN << "Custo da iteracao " << i << " com alfa: " << alfa << " = " << custo << RESET << endl;
+
         somaCusto += custo;
-        // if (nIteracoes > 1 && i % 100 == 0)
-        // {
-        //     generateGraphvizFile(grafo, melhorResultado, "./out/" + nomeTeste + "/Graphviz" + std::to_string(i) + ".txt");
-        //     geraLogDasRotas(melhorResultado, "./out/" + nomeTeste + "/LogsRotas" + std::to_string(i) + ".txt");
-        // }
+
         if (custo < melhorCusto)
         {
-            // if (false) //! mudar para true caso queira gerar os graphviz e os logs de todas as melhores rotas
-            // {
-
-            //     generateGraphvizFile(grafo, melhorResultado, "./out/" + nomeTeste + "/Graphviz" + std::to_string(i) + ".txt");
-            //     geraLogDasRotas(melhorResultado, "./out/" + nomeTeste + "/LogsRotas" + std::to_string(i) + ".txt");
-            // }
             melhorCusto = custo;
             melhorResultado = resultado;
         }
@@ -1151,8 +1211,15 @@ ResultadoClarkeWrightRandomizado ClarkeWrightRandomizado(Grafo *grafo, string no
         {
             // delete resultado;
         }
-        if (nIteracoes > 1)
-            std::cout << "Custo da iteracao " << i << " com alfa: " << alfa << " = " << custo << endl;
+        //! fim de cogio de contagem de tempo de execução
+        auto end = chrono::system_clock::now();
+        chrono::duration<double> elapsed_seconds = end - start;
+        time_t end_time = chrono::system_clock::to_time_t(end);
+        std::cout << "tempo de execução: " << BOLDGREEN << elapsed_seconds.count() << " s" << RESET
+                  << endl;
+        //!=================================================
+        // if (nIteracoes > 1)
+        //     std::cout << "Custo da iteracao " << i << " com alfa: " << alfa << " = " << custo << endl;
     }
     if (nIteracoes > 1)
     {
@@ -1181,6 +1248,7 @@ ClarkeWrightReativoResultado ClarkeWrightReativo(Grafo *grafo, string nomeTeste,
     ListaRotas *melhorResultado = new ListaRotas(capacidade);
     for (int iteracao = 0; iteracao < nIteracoes; iteracao++)
     {
+        esvaziaListaJuncaoCarregada();
         listaJuncaoCarregada = new ListaJuncao();
         if (iteracao % 10 == 0)
         {
@@ -1190,7 +1258,12 @@ ClarkeWrightReativoResultado ClarkeWrightReativo(Grafo *grafo, string nomeTeste,
         float alfaSelecionado = seletorAlfa->getAlfa(alfaSelecionadoIndex);
         //* nessa implementação, selecionamos um alfa e rodamos o algorítimo randomizado com o mesmo alfa 30 vezes
         //* e pegamos a media dos custos para atualizar a probabilidade do alfa
-        ResultadoClarkeWrightRandomizado resultado = ClarkeWrightRandomizado(grafo, nomeTeste, capacidade, nRotas, alfaSelecionado, 1);
+
+        // ResultadoClarkeWrightRandomizado resultado = ClarkeWrightRandomizado(grafo, nomeTeste, capacidade, nRotas, alfaSelecionado, 1, new ListaRotas(capacidade));
+
+        ResultadoClarkeWrightRandomizado resultado = ClarkeWrightRandomizado(grafo, nomeTeste, capacidade, nRotas, alfaSelecionado, 1, new ListaRotas(capacidade));
+        
+
         if (calculateCustoTotal(resultado.melhorResultado) < menorCusto)
         {
             if (false) //! mudar para true caso queira gerar os graphviz e os logs de todas as melhores rotas

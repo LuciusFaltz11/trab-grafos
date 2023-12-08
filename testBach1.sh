@@ -1,7 +1,11 @@
 #!/bin/bash
 
+# Remove the existing execGrupo18 file
+rm -f execGrupo18
+
 # Compile all .cpp files
-g++ *.cpp -o execGrupo18
+
+g++ *.cpp -o execGrupo18 -g
 
 # Read the file line by line
 while IFS=$'\n' read -r line

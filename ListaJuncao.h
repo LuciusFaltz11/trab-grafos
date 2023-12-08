@@ -2,27 +2,32 @@
 #define ListaJuncaoDefined
 #include "Rota.h"
 #include <unordered_set>
-struct Juncao
+using namespace std;
+class Juncao
 {
+public:
     Rota *rota1;
     Rota *rota2;
     Rota *mesclada;
     float distancia;
+    Juncao *proxJuncao = NULL;
+
     Juncao(Rota *rota1, Rota *rota2, float distancia, Rota *mesclada = NULL)
     {
         this->rota1 = rota1;
         this->rota2 = rota2;
         this->distancia = distancia;
         this->mesclada = mesclada;
+        this->proxJuncao = NULL;
     };
+
     ~Juncao(){};
-    Juncao *proxJuncao = NULL;
+
     Juncao *getProxJuncao()
     {
         return proxJuncao;
     };
 };
-
 class ListaJuncao
 {
 private:
@@ -31,7 +36,11 @@ private:
     int nElementos = 0;
 
 public:
-    ListaJuncao(){};
+    ListaJuncao(){
+        this->primeiroElemento = NULL;
+        this->ultimoElemento = NULL;
+        this->nElementos = 0;
+    };
     ~ListaJuncao()
     {
         Juncao *elementoNav = primeiroElemento;
@@ -42,11 +51,12 @@ public:
             elementoNav = elementoNav->proxJuncao;
             delete elementoAnterior;
         }
+        this->nElementos = 0;
     };
     void AddElemento(Rota *rota1, Rota *rota2, float distancia, Rota *mesclada)
     {
         Juncao *elementoCopia = new Juncao(rota1, rota2, distancia, mesclada);
-        nElementos++;
+        this->nElementos++;
         if (primeiroElemento == NULL)
         {
             primeiroElemento = elementoCopia;
@@ -275,28 +285,28 @@ public:
     // };
     void ordenaLista()
     {
-        Juncao *elementoNav = primeiroElemento;
-        Juncao *elementoNav2 = primeiroElemento;
-        Juncao *juncaoMaisProxima = primeiroElemento;
-        Juncao *juncaoMaisProxima2 = primeiroElemento;
-        while (elementoNav != NULL)
-        {
-            elementoNav2 = elementoNav;
-            juncaoMaisProxima = elementoNav;
-            juncaoMaisProxima2 = elementoNav;
-            while (elementoNav2 != NULL)
-            {
-                if (elementoNav2->distancia < juncaoMaisProxima->distancia)
-                {
-                    juncaoMaisProxima = elementoNav2;
-                }
-                elementoNav2 = elementoNav2->proxJuncao;
-            }
-            juncaoMaisProxima2->distancia = elementoNav->distancia;
-            elementoNav->distancia = juncaoMaisProxima->distancia;
-            juncaoMaisProxima->distancia = juncaoMaisProxima2->distancia;
-            elementoNav = elementoNav->proxJuncao;
-        }
+        // Juncao *elementoNav = primeiroElemento;
+        // Juncao *elementoNav2 = primeiroElemento;
+        // Juncao *juncaoMaisProxima = primeiroElemento;
+        // Juncao *juncaoMaisProxima2 = primeiroElemento;
+        // while (elementoNav != NULL)
+        // {
+        //     elementoNav2 = elementoNav;
+        //     juncaoMaisProxima = elementoNav;
+        //     juncaoMaisProxima2 = elementoNav;
+        //     while (elementoNav2 != NULL)
+        //     {
+        //         if (elementoNav2->distancia < juncaoMaisProxima->distancia)
+        //         {
+        //             juncaoMaisProxima = elementoNav2;
+        //         }
+        //         elementoNav2 = elementoNav2->proxJuncao;
+        //     }
+        //     juncaoMaisProxima2->distancia = elementoNav->distancia;
+        //     elementoNav->distancia = juncaoMaisProxima->distancia;
+        //     juncaoMaisProxima->distancia = juncaoMaisProxima2->distancia;
+        //     elementoNav = elementoNav->proxJuncao;
+        // }
     };
 
     Juncao *getJuncao(int index)

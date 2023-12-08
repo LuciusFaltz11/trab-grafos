@@ -1,2 +1,2 @@
-./X-n280-k17.txt  ./out 0 1 1 gulosoM-n151-k12 -1
-./Golden_1.txt ./out 0 1 1 gulosoGolden_1 -1
+./B-n34-k5.txt  ./out 0 1 1 B-n34-k5Reativo 0.1
+./X-n101-k25.txt  ./out 0 1 1 X-n101-k25Randomizado 0.1
