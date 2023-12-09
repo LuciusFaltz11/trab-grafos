@@ -16,12 +16,12 @@ class FileMananger
 private:
     fstream file;
     string path = "";
-    char ponderado;
+    bool ponderado;
 
 public:
     FileMananger();
     ~FileMananger();
-    void ListAvailableFiles(char ponderado); //* lista todos os arquivos dentro da pasta ./files
+    void ListAvailableFiles(bool ponderado); //* lista todos os arquivos dentro da pasta ./files
     string GetFileNameByIndex(int index);
 
     /*

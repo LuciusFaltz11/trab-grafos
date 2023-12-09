@@ -7,14 +7,14 @@ FileMananger::~FileMananger()
 {
 }
 
-void FileMananger::ListAvailableFiles(char grafoPonderado)
+void FileMananger::ListAvailableFiles(bool grafoPonderado)
 {
 	string path;
 	int i = 0;
 
 	this->ponderado = grafoPonderado;
 
-	if(grafoPonderado == 's'){
+	if(grafoPonderado){
 		path = "./files/grafosPonderados/";
 		for (const auto &entry : filesystem::directory_iterator(path))
 		{
@@ -36,7 +36,7 @@ string FileMananger::GetFileNameByIndex(int index)
 	string path;
 	int i = 0;
 
-	if(ponderado == 's'){
+	if(ponderado){
 		path = "./files/grafosPonderados/";
 		for (const auto &entry : filesystem::directory_iterator(path))
 		{

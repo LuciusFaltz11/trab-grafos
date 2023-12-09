@@ -28,16 +28,17 @@
 #include "Rota.h"
 #include "SeletorAlfa.h"
 #include "ListaJuncao.h"
-// pode ignorar isso
-const int nEconomiasDesejadas = 200;
 
-// using namespace std;
-
+//============================================================//
 const int mesclarRotasIteracoes = 1;
 const int iteracoesReativo = 100;
 const int iteracoesRandomizado = 100;
 const int iteracoesParaMelhoraFinalDeRotas = 1000;
 const int repeticoesMediaAdaptativo = 5;
+//============================================================//
+
+
+
 
 float **matrizDistancias = NULL;
 float calcularDistanciaNos(No *no1, No *no2)
@@ -862,15 +863,16 @@ ListaEconomias *calculaEconomias(ListaRotas *listaRotas, ListaEconomias *economi
     //     ListaJuncao *juncoesExcluidas = new ListaJuncao();
     //     ListaJuncao *juncoesAdicionadas = new ListaJuncao();
 
-    //     for (int i = 0; i < nEconomiasDesejadas + offset; i++)
-    //     {
-    //         Juncao *juncaoMaisProxima = listaJuncao->getJuncaoMaisProxima(juncoesExcluidas);
-    //         if (juncaoMaisProxima == NULL)
+//============================================================//    //         if (juncaoMaisProxima == NULL)
     //         {
     //             break;
     //         }
     //         Rota *rota1 = juncaoMaisProxima->rota1;
     //         Rota *rota2 = juncaoMaisProxima->rota2;
+//============================================================//
+
+
+    //         if (juncaoMaisProxima == NULL)
     //         if (rota1->getCapacidadeAtual() + rota2->getCapacidadeAtual() > rota1->getCapacidade())
     //         {
     //             juncoesExcluidas->AddElemento(
@@ -1473,9 +1475,15 @@ int main(int argc, char const *argv[])
         // std::cout << "Nome do teste: " << nomeTeste << endl;
 
         ofstream outdata; // outdata is like cin
-        outdata.open("./out/" + nomeTeste + "/LogsRotas.txt", std::ios_base::app);
+        outdata.open("./out/" + nomeTeste + "/InformacoesGerais.txt");
         outdata << "Nome do teste: " << nomeTeste << endl;
         outdata << "Arquivo de entrada: " << arquivoEntrada << endl;
+        outdata << "Argumentos passados: ";
+        for (int i = 1; i < argc; i++)
+        {
+            outdata << (argv[i]) << " ";
+        }
+        outdata << endl;
         outdata.close();
     }
     else
@@ -1495,9 +1503,9 @@ int main(int argc, char const *argv[])
                 std::cout << "Qual o tipo de ponderacao?" << endl;
                 std::cout << "1: ponderado na aresta" << endl;
                 std::cout << "2: ponderado no vertice" << endl;
-                std::cout << "3: ponderado nos dois" << endl;
+                // std::cout << "3: ponderado nos dois" << endl;
                 cin >> ponderadoId;
-            } while (ponderadoId < 0 || ponderadoId > 3);
+            } while (ponderadoId < 1 || ponderadoId > 2);
         }
         if (ponderadoId == 1)
         {
@@ -1507,18 +1515,19 @@ int main(int argc, char const *argv[])
         {
             ponderadoNo = true;
         }
-        else if (ponderadoId == 3)
-        {
-            std::cout << "Grafos ponderados nos vértices e arestas ainda não são suportados!" << endl;
-            return 1;
-        }
+        // else if (ponderadoId == 3)
+        // {
+        //     std::cout << "Grafos ponderados nos vértices e arestas ainda não são suportados!" << endl;
+        //     return 1;
+        // }
+
         if (ponderadoId != 0)
         {
-            arquivoEntrada = "./files/grafosPonderados/" + selecionarArquivo(grafoPonderado == 's');
+            arquivoEntrada = "./files/grafosPonderados/" + selecionarArquivo(true);
         }
         else
         {
-            arquivoEntrada = "./files/grafosNaoPonderados/" + selecionarArquivo(grafoPonderado == 's');
+            arquivoEntrada = "./files/grafosNaoPonderados/" + selecionarArquivo(false);
         }
 
         char direcionadoChar = ' ';
@@ -1768,7 +1777,7 @@ int main(int argc, char const *argv[])
     else
     {
         fileMananger.Read(arquivoEntrada, &constroiGrafo, &grafo, tipoGrafo); //* le o arquivo chamando a função constroiGrafo a cada linha
-        grafo.generateDreampufFile("grafo.dat");
+        grafo.generateDreampufFile("grafo.txt");
     }
 
     // std::cout << "O grafo é: " << endl;
