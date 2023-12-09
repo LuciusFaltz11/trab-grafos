@@ -1,0 +1,2 @@
+Nome do teste: ReativoTeste6-30M1
+Arquivo de entrada: ./M-n101-k10.txt
