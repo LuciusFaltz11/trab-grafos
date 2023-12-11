@@ -1,0 +1,3 @@
+Nome do teste: gulosoX-n280-k17
+Arquivo de entrada: ./files/X-n280-k17.txt
+Argumentos passados: ./files/X-n280-k17.txt ./out 0 1 1 gulosoX-n280-k17 0.50 

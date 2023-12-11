@@ -1,5 +1,5 @@
 NAME : B-n50-k8
-COMMENT : (Augerat et al, No of trucks: 1, Optimal value: 1312)
+COMMENT : (Augerat et al, Optimal value: 1312)
 TYPE : CVRP
 DIMENSION : 50
 EDGE_WEIGHT_TYPE : EUC_2D 

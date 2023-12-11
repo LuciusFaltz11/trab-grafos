@@ -1,0 +1,2 @@
+O custo total foi de:: 58102.7
+O tempo gasto foi de 142.499 s

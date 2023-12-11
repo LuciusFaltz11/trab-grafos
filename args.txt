@@ -1,1 +1,14 @@
-./files/A-n34-k5.txt ./out 0 1 1 ReativoTeste10-50A2 0.50
+./files/A-n34-k5.txt ./out 0 1 1 Randomizado-A-n34-k5 0.50
+./files/A-n48-k7.txt ./out 0 1 1 Randomizado-A-n48-k7 0.50
+./files/B-n34-k5.txt ./out 0 1 1 Randomizado-B-n34-k5 0.50
+./files/B-n50-k8.txt ./out 0 1 1 Randomizado-B-n50-k8 0.50
+./files/M-n101-k10.txt ./out 0 1 1 Randomizado-M-n101-k10 0.50
+./files/M-n151-k12.txt ./out 0 1 1 Randomizado-M-n151-k12 0.50
+./files/A-n34-k5.txt ./out 0 1 1 Guloso-A-n34-k5 0.50
+./files/A-n48-k7.txt ./out 0 1 1 Guloso-A-n48-k7 0.50
+./files/B-n34-k5.txt ./out 0 1 1 Guloso-B-n34-k5 0.50
+./files/B-n50-k8.txt ./out 0 1 1 Guloso-B-n50-k8 0.50
+./files/M-n101-k10.txt ./out 0 1 1 Guloso-M-n101-k10 0.50
+./files/M-n151-k12.txt ./out 0 1 1 Guloso-M-n151-k12 0.50
+
+

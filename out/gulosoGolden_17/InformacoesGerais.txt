@@ -1,0 +1,3 @@
+Nome do teste: gulosoGolden_17
+Arquivo de entrada: ./files/Golden_17.txt
+Argumentos passados: ./files/Golden_17.txt ./out 0 1 1 gulosoGolden_17 0.50 

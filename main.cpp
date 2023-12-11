@@ -31,8 +31,8 @@
 
 //============================================================//
 const int mesclarRotasIteracoes = 1;
-const int iteracoesReativo = 100;
-const int iteracoesRandomizado = 100;
+const int iteracoesReativo = 2500;
+const int iteracoesRandomizado = 500;
 const int iteracoesParaMelhoraFinalDeRotas = 1000;
 const int repeticoesMediaAdaptativo = 5;
 //============================================================//
@@ -212,16 +212,18 @@ int getNoOfTrucks(string fileLocation)
         while (linha.find("No of trucks") == string::npos)
         {
             getline(file, linha);
+            if (linha.find("EOF") != string::npos)
+            {
+                return 1;
+            }
         }
         if (linha.find("No of trucks: ") != string::npos)
         {
             string noOfTrucksStr = linha.substr(linha.find("No of trucks: ") + 14);
             noOfTrucksStr = noOfTrucksStr.substr(0, noOfTrucksStr.find(","));
-            // std::cout << "noOfTrucksStr = >> " << noOfTrucksStr << endl;
             int noOfTrucks = stoi(noOfTrucksStr);
             return noOfTrucks;
         }
-        // std::cout << "linha => > > " << linha << endl;
     }
     return 0;
 }
@@ -764,9 +766,9 @@ ListaEconomias *calculaEconomias(ListaRotas *listaRotas, ListaEconomias *economi
         iteracao++;
         if (iteracao > maxIteracoes)
         {
-            std::cout << "\033[31m===============================================\033[0m" << std::endl;
-            std::cout << "\033[31mIteracao maior que maxIteracoes\033[0m" << std::endl;
-            std::cout << "\033[31m===============================================\033[0m" << std::endl;
+            // std::cout << "\033[31m===============================================\033[0m" << std::endl;
+            // std::cout << "\033[31mIteracao maior que maxIteracoes\033[0m" << std::endl;
+            // std::cout << "\033[31m===============================================\033[0m" << std::endl;
             break;
         }
         Rota *rota1 = juncaoNav->rota1;
