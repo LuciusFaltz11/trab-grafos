@@ -1,0 +1,2 @@
+Nome do teste: GulosoTesteG1
+Arquivo de entrada: ./Golden_1.txt

@@ -1,4 +1,2 @@
 Nome do teste: RandomizadoTeste7-05A1
 Arquivo de entrada: ./A-n34-k5.txt
-Nome do teste: RandomizadoTeste7-05A1
-Arquivo de entrada: ./A-n34-k5.txt

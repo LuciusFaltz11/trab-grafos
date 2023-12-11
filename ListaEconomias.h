@@ -94,9 +94,9 @@ public:
     {
         Economia *result = nullptr;
 
-        if (left == nullptr)
+        if (left == NULL || left == nullptr)
             return right;
-        if (right == nullptr)
+        if (right == NULL || right == nullptr)
             return left;
 
         if (left->getValor() >= right->getValor())
@@ -169,7 +169,7 @@ public:
     void sort()
     {
 
-        mergeSort(&primeiroElemento);
+        // mergeSort(&primeiroElemento);
 
 
         // Economia *elementoNav = primeiroElemento;

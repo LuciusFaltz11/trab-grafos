@@ -1,1 +1,10 @@
-./A-n34-k5.txt ./out 0 1 1 ReativoTesteNOVO-05A1 0.05
+./M-n101-k10.txt ./out 0 1 1 ReativoTeste1-05M1 0.05
+./M-n101-k10.txt ./out 0 1 1 ReativoTeste1-10M1 0.10
+./M-n101-k10.txt ./out 0 1 1 ReativoTeste1-15M1 0.15
+./M-n101-k10.txt ./out 0 1 1 ReativoTeste1-30M1 0.30
+./M-n101-k10.txt ./out 0 1 1 ReativoTeste1-50M1 0.50
+./M-n151-k12.txt ./out 0 1 1 ReativoTeste1-05M2 0.05
+./M-n151-k12.txt ./out 0 1 1 ReativoTeste1-10M2 0.10
+./M-n151-k12.txt ./out 0 1 1 ReativoTeste1-15M2 0.15
+./M-n151-k12.txt ./out 0 1 1 ReativoTeste1-30M2 0.30
+./M-n151-k12.txt ./out 0 1 1 ReativoTeste1-50M2 0.50

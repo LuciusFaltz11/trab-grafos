@@ -1,2 +1,4 @@
 Nome do teste: RandomizadoTeste1-15A2
 Arquivo de entrada: ./A-n48-k7.txt
+Nome do teste: RandomizadoTeste1-15A2
+Arquivo de entrada: ./A-n48-k7.txt

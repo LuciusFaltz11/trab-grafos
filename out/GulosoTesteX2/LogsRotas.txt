@@ -1,0 +1,2 @@
+Nome do teste: GulosoTesteX2
+Arquivo de entrada: ./X-n280-k17.txt

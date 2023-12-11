@@ -1,0 +1,2 @@
+Nome do teste: ReativoTeste4-05B2
+Arquivo de entrada: ./B-n50-k8.txt

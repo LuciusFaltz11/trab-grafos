@@ -1,0 +1,4 @@
+Nome do teste: GulosoTesteM2
+Arquivo de entrada: ./M-n101-k25.txt
+Nome do teste: GulosoTesteM2
+Arquivo de entrada: ./M-n151-k12.txt

@@ -1,2 +1,0 @@
-Nome do teste: RandomizadoTeste3-50M1
-Arquivo de entrada: ./M-n101-k10.txt

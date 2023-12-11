@@ -1,74 +1,74 @@
 ==============================================
-Rota 0: 1 34 24 11 1 
-Distancia total: 155.674
+Rota 0: 1 9 10 28 1 
+Distancia total: 171.119
 Capacidade total: 100
-Capacidade atual: 75
+Capacidade atual: 87
 ==============================================
 ==============================================
-Rota 1: 1 9 27 3 23 33 21 5 13 1 
-Distancia total: 171.007
+Rota 1: 1 34 3 6 1 
+Distancia total: 193.599
 Capacidade total: 100
-Capacidade atual: 88
+Capacidade atual: 81
 ==============================================
 ==============================================
-Rota 2: 1 19 25 17 15 20 2 1 
-Distancia total: 160.218
+Rota 2: 1 27 24 33 31 1 
+Distancia total: 216.457
 Capacidade total: 100
-Capacidade atual: 71
+Capacidade atual: 34
 ==============================================
 ==============================================
-Rota 3: 1 28 4 10 30 1 
-Distancia total: 153.543
+Rota 3: 1 19 25 13 12 7 2 11 1 
+Distancia total: 411.189
 Capacidade total: 100
-Capacidade atual: 90
+Capacidade atual: 83
 ==============================================
 ==============================================
-Rota 4: 1 18 16 14 29 26 7 32 6 1 
-Distancia total: 124.735
+Rota 4: 1 18 14 8 21 22 23 5 15 1 
+Distancia total: 254.619
 Capacidade total: 100
-Capacidade atual: 86
+Capacidade atual: 100
 ==============================================
 ==============================================
-Rota 5: 1 31 12 8 22 1 
-Distancia total: 210.726
+Rota 5: 1 16 29 26 20 4 32 30 17 1 
+Distancia total: 301.913
 Capacidade total: 100
-Capacidade atual: 47
+Capacidade atual: 72
 ==============================================
-Custo total: 975.902
+Custo total: 1548.9
 ==============================================
-Rota 0: 1 24 11 34 1 
-Distancia total: 155.674
+Rota 0: 1 9 28 10 1 
+Distancia total: 165.574
 Capacidade total: 100
-Capacidade atual: 75
+Capacidade atual: 87
 ==============================================
 ==============================================
-Rota 1: 1 3 23 33 5 21 9 27 13 1 
-Distancia total: 155.763
+Rota 1: 1 6 34 3 1 
+Distancia total: 189.641
 Capacidade total: 100
-Capacidade atual: 88
+Capacidade atual: 81
 ==============================================
 ==============================================
-Rota 2: 1 2 20 19 17 15 25 1 
-Distancia total: 152.552
+Rota 2: 1 27 24 33 31 1 
+Distancia total: 216.457
 Capacidade total: 100
-Capacidade atual: 71
+Capacidade atual: 34
 ==============================================
 ==============================================
-Rota 3: 1 4 28 30 10 1 
-Distancia total: 146.027
+Rota 3: 1 12 13 11 25 19 2 7 1 
+Distancia total: 261.642
 Capacidade total: 100
-Capacidade atual: 90
+Capacidade atual: 83
 ==============================================
 ==============================================
-Rota 4: 1 6 7 26 18 32 29 14 16 1 
-Distancia total: 112.152
+Rota 4: 1 18 14 15 5 21 23 22 8 1 
+Distancia total: 217.239
 Capacidade total: 100
-Capacidade atual: 86
+Capacidade atual: 100
 ==============================================
 ==============================================
-Rota 5: 1 12 31 22 8 1 
-Distancia total: 193.343
+Rota 5: 1 30 4 17 20 26 32 29 16 1 
+Distancia total: 191.141
 Capacidade total: 100
-Capacidade atual: 47
+Capacidade atual: 72
 ==============================================
-Custo total: 915.51
+Custo total: 1241.69

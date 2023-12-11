@@ -1,49 +1,43 @@
 ==============================================
-Rota 0: 1 10 30 31 25 5 43 12 27 21 1 
-Distancia total: 254.646
+Rota 0: 1 18 17 11 34 28 1 
+Distancia total: 190.551
 Capacidade total: 100
-Capacidade atual: 85
+Capacidade atual: 100
 ==============================================
 ==============================================
-Rota 1: 1 7 2 6 1 
-Distancia total: 110.737
+Rota 1: 1 41 39 38 4 46 3 1 
+Distancia total: 245.52
 Capacidade total: 100
-Capacidade atual: 67
+Capacidade atual: 75
 ==============================================
 ==============================================
-Rota 2: 1 33 26 38 4 40 9 28 35 1 
-Distancia total: 232.068
+Rota 2: 1 15 42 10 16 40 32 1 
+Distancia total: 261.917
 Capacidade total: 100
-Capacidade atual: 99
+Capacidade atual: 71
 ==============================================
 ==============================================
-Rota 3: 1 41 8 46 37 20 39 23 1 
-Distancia total: 179.164
+Rota 3: 1 35 29 31 27 9 37 19 1 
+Distancia total: 243.276
 Capacidade total: 100
-Capacidade atual: 81
+Capacidade atual: 100
 ==============================================
 ==============================================
-Rota 4: 1 42 34 22 47 14 16 1 
-Distancia total: 240.477
+Rota 4: 1 45 44 26 20 21 5 25 22 1 
+Distancia total: 285.95
 Capacidade total: 100
-Capacidade atual: 87
+Capacidade atual: 93
 ==============================================
 ==============================================
-Rota 5: 1 17 48 3 11 29 1 
-Distancia total: 151.741
+Rota 5: 1 6 13 8 43 12 47 30 36 1 
+Distancia total: 306.976
 Capacidade total: 100
-Capacidade atual: 89
+Capacidade atual: 97
 ==============================================
 ==============================================
-Rota 6: 1 24 44 32 13 1 
-Distancia total: 81.7333
+Rota 6: 1 24 7 2 23 33 14 48 1 
+Distancia total: 263.26
 Capacidade total: 100
-Capacidade atual: 49
+Capacidade atual: 90
 ==============================================
-==============================================
-Rota 7: 1 19 45 36 18 15 1 
-Distancia total: 62.2385
-Capacidade total: 100
-Capacidade atual: 69
-==============================================
-Custo total: 1312.81
+Custo total: 1797.45

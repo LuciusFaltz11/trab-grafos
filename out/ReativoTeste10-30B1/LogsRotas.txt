@@ -1,0 +1,2 @@
+Nome do teste: ReativoTeste10-30B1
+Arquivo de entrada: ./B-n34-k5.txt

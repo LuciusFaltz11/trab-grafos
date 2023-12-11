@@ -12,6 +12,9 @@
 
 #include <fstream>
 #include <filesystem>
+
+#include <vector>
+#include <algorithm>
 // #include <cstdlib>
 
 #include "Grafo.h"
@@ -33,8 +36,57 @@ const int nEconomiasDesejadas = 200;
 const int mesclarRotasIteracoes = 1;
 const int iteracoesReativo = 100;
 const int iteracoesRandomizado = 100;
+const int iteracoesParaMelhoraFinalDeRotas = 1000;
+const int repeticoesMediaAdaptativo = 5;
 
-float **matrizDistancias;
+float **matrizDistancias = NULL;
+float calcularDistanciaNos(No *no1, No *no2)
+{
+    if (DEBUG)
+    {
+
+        std::cout << "Calculando distancia entre " << no1->getId() << " e " << no2->getId() << endl;
+        std::cout << "No1 X = " << no1->getCoordenadaX() << " Y = " << no1->getCoordenadaY() << endl;
+        std::cout << "No2 X = " << no2->getCoordenadaX() << " Y = " << no2->getCoordenadaY() << endl;
+    }
+    float distancia = sqrt(pow(no1->getCoordenadaX() - no2->getCoordenadaX(), 2) + pow(no1->getCoordenadaY() - no2->getCoordenadaY(), 2));
+
+    if (DEBUG)
+        std::cout << "Distancia entre " << no1->getId() << " e " << no2->getId() << " = " << distancia << endl;
+    return distancia;
+}
+float **criaMatrizDistancias(Grafo *grafo)
+{
+    float **matriz = new float *[grafo->getTotalNos()];
+    for (int i = 0; i < grafo->getTotalNos(); i++)
+    {
+        matriz[i] = new float[grafo->getTotalNos()];
+    }
+
+    for (int i = 0; i < grafo->getTotalNos(); i++)
+    {
+        for (int j = 0; j < grafo->getTotalNos(); j++)
+        {
+            matriz[i][j] = 0;
+        }
+    }
+
+    No *noNav = grafo->getRaizGrafo();
+    while (noNav != NULL)
+    {
+        No *noNav2 = grafo->getRaizGrafo();
+        while (noNav2 != NULL)
+        {
+            if (noNav->getId() != noNav2->getId())
+            {
+                matriz[noNav->getId() - 1][noNav2->getId() - 1] = calcularDistanciaNos(noNav, noNav2);
+            }
+            noNav2 = noNav2->getProxNo();
+        }
+        noNav = noNav->getProxNo();
+    }
+    return matriz;
+}
 /*
 converte a linha do arquivo para (int, int) e chama a função de construção no grafo
 se a linha so contiver um inteiro, a mesma representa o numero de nos do grafo (de acordo com a descrição do arquivo readme.txt)
@@ -45,6 +97,7 @@ bool estaContido(Rota *rota1, Rota *rota2)
     {
         return false;
     }
+
     No *noNav = rota1->getPrimeiroElemento();
     while (noNav != NULL)
     {
@@ -326,22 +379,6 @@ int randomRange(int min, int max)
     return dis(gen);
 }
 
-float calcularDistanciaNos(No *no1, No *no2)
-{
-    if (DEBUG)
-    {
-
-        std::cout << "Calculando distancia entre " << no1->getId() << " e " << no2->getId() << endl;
-        std::cout << "No1 X = " << no1->getCoordenadaX() << " Y = " << no1->getCoordenadaY() << endl;
-        std::cout << "No2 X = " << no2->getCoordenadaX() << " Y = " << no2->getCoordenadaY() << endl;
-    }
-    float distancia = sqrt(pow(no1->getCoordenadaX() - no2->getCoordenadaX(), 2) + pow(no1->getCoordenadaY() - no2->getCoordenadaY(), 2));
-
-    if (DEBUG)
-        std::cout << "Distancia entre " << no1->getId() << " e " << no2->getId() << " = " << distancia << endl;
-    return distancia;
-}
-
 bool avaliarCapacidadeMaximaRota(Rota *rota, Rota *novaRota)
 {
     int capMax = rota->getCapacidade();
@@ -350,7 +387,40 @@ bool avaliarCapacidadeMaximaRota(Rota *rota, Rota *novaRota)
     return (capacidadeAtual <= capMax);
 }
 
-No *selecionaNoMenorDistancia(Rota *rotaOrigem, Rota *rotaReferencia, No *excluido = NULL)
+bool compararDistancias(const std::pair<float, No *> &a, const std::pair<float, No *> &b)
+{
+    return a.first < b.first;
+}
+
+No *selecionaNoAleatorioEntreTopN(No *novoNo, Rota *rotaReferencia, float percentual, Rota *rotaOrigem)
+{
+    std::vector<std::pair<float, No *>> distancias;
+
+    // Calcula as distâncias de novoNo para todos os nós em rotaReferencia
+    for (No *no = rotaReferencia->getPrimeiroElemento(); no != nullptr; no = no->getProxNo())
+    {
+        if (!rotaOrigem->possuiNo(no->getId()) && novoNo != no)
+        {
+            float distancia = calcularDistanciaNos(novoNo, no);
+            distancias.push_back(std::make_pair(distancia, no));
+        }
+    }
+
+    // Ordena os nós com base na distância
+    std::sort(distancias.begin(), distancias.end(), compararDistancias);
+
+    //* imprime distancias
+    // std::cout << "Distancias: " << endl;
+    // for (int i = 0; i < distancias.size(); i++)
+    // {
+    //     std::cout << distancias[i].first << endl;
+    // }
+
+    No *noSelecionado = distancias[percentual * (distancias.size() - 1)].second;
+
+    return noSelecionado;
+}
+No *selecionaNoMenorDistancia(Rota *rotaOrigem, Rota *rotaReferencia, ListaNos *excluidos = NULL)
 {
     float menorDistancia = 9999999;
     No *noMaisProximo = NULL;
@@ -364,7 +434,7 @@ No *selecionaNoMenorDistancia(Rota *rotaOrigem, Rota *rotaReferencia, No *exclui
             noNav = noNav->getProxNo();
             continue;
         }
-        if (excluido != NULL && excluido->getId() == noNav->getId())
+        if (excluidos != NULL && excluidos->possuiElemento(noNav->getId()))
         {
             noNav = noNav->getProxNo();
             continue;
@@ -415,20 +485,26 @@ Rota *mesclarRotasRand2(Rota *rota1, Rota *rota2)
 
     while (!rotasSaoEquivalentes(novaRota, rotaReferencia))
     {
+        ListaNos *selecionados = new ListaNos();
         No *noSelecionado1 = selecionaNoMenorDistancia(novaRota, rotaReferencia);
-        No *noSelecionado2 = selecionaNoMenorDistancia(novaRota, rotaReferencia, noSelecionado1);
+
+        // std::cout << "parou aqui 2" << endl;
+        for (int i = 0; i < 20; i++)
+        {
+            No *noSelecionado2 = selecionaNoMenorDistancia(novaRota, rotaReferencia, selecionados);
+            if (noSelecionado2 != NULL)
+            {
+                selecionados->AddElemento(noSelecionado2->getId(), noSelecionado2->getPeso(), noSelecionado2->getCoordenadaX(), noSelecionado2->getCoordenadaY());
+            }
+        }
+        // selecionados->AddElemento(noSelecionado1->getId(), noSelecionado1->getPeso(), noSelecionado1->getCoordenadaX(), noSelecionado1->getCoordenadaY());
+
+        // noSelecionado1 = selecionaNoMenorDistancia(novaRota, rotaReferencia, selecionados);
 
         //* escolhe um dos nos aleatoriamente para adiciona-lo a rota
-
-        float randNum = randomRange(0, 1);
-        if (randNum > 0.8 || noSelecionado2 == NULL)
-        {
-            novaRota->AddElemento(noSelecionado1->getId(), noSelecionado1->getPeso(), noSelecionado1->getCoordenadaX(), noSelecionado1->getCoordenadaY());
-        }
-        else
-        {
-            novaRota->AddElemento(noSelecionado2->getId(), noSelecionado2->getPeso(), noSelecionado2->getCoordenadaX(), noSelecionado2->getCoordenadaY());
-        }
+        // std::cout << "parou aqui 1" << endl;
+        int randNum = randomRange(0, selecionados->getNElementos() - 1);
+        novaRota->AddElemento(selecionados->getElemento(randNum)->getId(), selecionados->getElemento(randNum)->getPeso(), selecionados->getElemento(randNum)->getCoordenadaX(), selecionados->getElemento(randNum)->getCoordenadaY());
 
         // novaRota->AddElemento(noMaisProximo->getId(), noMaisProximo->getPeso(), noMaisProximo->getCoordenadaX(), noMaisProximo->getCoordenadaY());
     }
@@ -552,10 +628,11 @@ Rota *mesclarRotas(Rota *rota1, Rota *rota2, int numeroIteracoes = mesclarRotasI
     {
 
         Rota *melhorRota = NULL;
-        float melhorDistancia = 9999999;
+        float melhorDistancia = 9999999999;
         for (int i = 0; i < mesclarRotasIteracoes; i++)
         {
             Rota *novaRota = mesclarRotasRand2(rota1, rota2);
+            std::cout << "retornou a nova rota = " << (novaRota == NULL) << endl;
             if (novaRota->getDistanciaTotal() < melhorDistancia)
             {
                 melhorDistancia = novaRota->getDistanciaTotal();
@@ -563,6 +640,7 @@ Rota *mesclarRotas(Rota *rota1, Rota *rota2, int numeroIteracoes = mesclarRotasI
                 // std::cout << "Melhor distancia = " << melhorDistancia << endl;
             }
         }
+        melhorRota->imprime();
         return melhorRota;
     }
 }
@@ -646,7 +724,6 @@ ListaEconomias *calculaEconomias(ListaRotas *listaRotas, ListaEconomias *economi
     {
         esvaziaListaJuncaoCarregada();
     }
-    // std::cout << "listaJuncaoCarregada->getNElementos() " << listaJuncaoCarregada->getNElementos() << endl;
     if (DEBUG)
         std::cout << "Calcular economias" << endl;
     ListaEconomias *economias = new ListaEconomias(listaRotas->getCapacidade());
@@ -661,6 +738,7 @@ ListaEconomias *calculaEconomias(ListaRotas *listaRotas, ListaEconomias *economi
         // Juncao *juncaoNav = nullptr;
 
         // std::cout << "listaJuncaoCarregada->getNElementos() " << listaJuncaoCarregada->getNElementos() << endl;
+        //! nao é aqui que ta travando
         // std::cout << "juncaoNav == NULL " << (juncaoNav == NULL) << endl;
 
         while (juncaoNav != NULL)
@@ -675,9 +753,21 @@ ListaEconomias *calculaEconomias(ListaRotas *listaRotas, ListaEconomias *economi
     // for (int i = 0; i < listaJuncao->getNElementos(); i++)
     Juncao *juncaoNav = listaJuncao->getPrimeiroElemento();
     // std::cout << "listaJuncao->getNElementos()"<< listaJuncao->getNElementos() << endl;
+
+    //! ta travando aqui
+    // std::cout << "parou aqui 1" << endl;
+    int iteracao = 0;
+    const int maxIteracoes = listaJuncao->getNElementos();
     while (juncaoNav != NULL)
     {
-        // std::cout << "J" ;
+        iteracao++;
+        if (iteracao > maxIteracoes)
+        {
+            std::cout << "\033[31m===============================================\033[0m" << std::endl;
+            std::cout << "\033[31mIteracao maior que maxIteracoes\033[0m" << std::endl;
+            std::cout << "\033[31m===============================================\033[0m" << std::endl;
+            break;
+        }
         Rota *rota1 = juncaoNav->rota1;
         Rota *rota2 = juncaoNav->rota2;
 
@@ -688,15 +778,16 @@ ListaEconomias *calculaEconomias(ListaRotas *listaRotas, ListaEconomias *economi
                                               rota2,
                                               0,
                                               NULL);
-            juncaoNav = juncaoNav->getProxJuncao();
-            continue;
+            // juncaoNav = juncaoNav->getProxJuncao();
         }
-
-        Rota *novaRota = mesclarRotas(rota1, rota2);
-        listaJuncaoCarregada->AddElemento(rota1,
-                                          rota2,
-                                          0,
-                                          novaRota);
+        else
+        {
+            Rota *novaRota = mesclarRotas(rota1, rota2);
+            listaJuncaoCarregada->AddElemento(rota1,
+                                              rota2,
+                                              0,
+                                              novaRota);
+        }
         juncaoNav = juncaoNav->getProxJuncao();
     }
     // std::cout << "Saiu do loop de junções " <<endl;
@@ -715,7 +806,6 @@ ListaEconomias *calculaEconomias(ListaRotas *listaRotas, ListaEconomias *economi
         rotaNav2 = listaRotas->getPrimeiroElemento();
         while (rotaNav2 != NULL)
         {
-
             rotaNav2I++;
 
             if (rotaNav1I == rotaNav2I)
@@ -737,6 +827,7 @@ ListaEconomias *calculaEconomias(ListaRotas *listaRotas, ListaEconomias *economi
         }
         rotaNav1 = rotaNav1->getProxElemento();
     }
+    // std::cout << "parou aqui 4" << endl;
 
     //* limpar lista de juncao carregada
 
@@ -869,51 +960,38 @@ void generateGraphvizFile(Grafo *grafo, ListaRotas *rotas, string filePathName =
     outdata.close();
 }
 
-float **criaMatrizDistancias(Grafo *grafo)
-{
-    float **matriz = new float *[grafo->getTotalNos()];
-    for (int i = 0; i < grafo->getTotalNos(); i++)
-    {
-        matriz[i] = new float[grafo->getTotalNos()];
-    }
+// float **criaMatrizDistancias(Grafo *grafo)
+// {
+//     float **matriz = new float *[grafo->getTotalNos()];
+//     for (int i = 0; i < grafo->getTotalNos(); i++)
+//     {
+//         matriz[i] = new float[grafo->getTotalNos()];
+//     }
 
-    for (int i = 0; i < grafo->getTotalNos(); i++)
-    {
-        for (int j = 0; j < grafo->getTotalNos(); j++)
-        {
-            matriz[i][j] = 0;
-        }
-    }
+//     for (int i = 0; i < grafo->getTotalNos(); i++)
+//     {
+//         for (int j = 0; j < grafo->getTotalNos(); j++)
+//         {
+//             matriz[i][j] = 0;
+//         }
+//     }
 
-    No *noNav = grafo->getRaizGrafo();
-    while (noNav != NULL)
-    {
-        No *noNav2 = grafo->getRaizGrafo();
-        while (noNav2 != NULL)
-        {
-            if (noNav->getId() != noNav2->getId())
-            {
-                matriz[noNav->getId() - 1][noNav2->getId() - 1] = calcularDistanciaNos(noNav, noNav2);
-            }
-            noNav2 = noNav2->getProxNo();
-        }
-        noNav = noNav->getProxNo();
-    }
-
-    // // teste
-    // std::cout << "Matriz de distancias: " << endl;
-    // for (int i = 0; i < grafo->getTotalNos(); i++)
-    // {
-    //     for (int j = 0; j < grafo->getTotalNos(); j++)
-    //     {
-    //         std::cout << matriz[i][j] << " ";
-    //     }
-    //     std::cout << endl;
-    // }
-    // // fim-teste
-
-    return matriz;
-}
+//     No *noNav = grafo->getRaizGrafo();
+//     while (noNav != NULL)
+//     {
+//         No *noNav2 = grafo->getRaizGrafo();
+//         while (noNav2 != NULL)
+//         {
+//             if (noNav->getId() != noNav2->getId())
+//             {
+//                 matriz[noNav->getId() - 1][noNav2->getId() - 1] = calcularDistanciaNos(noNav, noNav2);
+//             }
+//             noNav2 = noNav2->getProxNo();
+//         }
+//         noNav = noNav->getProxNo();
+//     }
+//     return matriz;
+// }
 float calculateCustoTotal(ListaRotas *listaRotas)
 {
     float custoTotal = 0;
@@ -959,8 +1037,6 @@ void geraLogDasRotas(ListaRotas *rotas, string filePathName = "./out/LogsRotas.t
 
 ListaRotas *algoritmoClarkeWright(Grafo *grafo, int capacidadeCaminhao, int quantidadeRotas, string testeName = "teste", float alfa = -1, bool ehSimples = false)
 {
-    // const int capacidadeCaminhao = 100;
-    // const int quantidadeRotas = 5;
 
     if (alfa != -1 && alfa < 0 && alfa > 1)
     {
@@ -968,17 +1044,6 @@ ListaRotas *algoritmoClarkeWright(Grafo *grafo, int capacidadeCaminhao, int quan
         exit(1);
         return NULL;
     }
-
-    // Clarke-Wright
-    // 1. Crie uma lista de rotas vazia.
-    // 2. Para cada par de nós, calcule a economia de mesclagem.
-    // 3. Classifique as economias de mesclagem em ordem decrescente.
-    // 4. Para cada economia de mesclagem, verifique se os nós podem ser mesclados.
-    // 5. Se os nós puderem ser mesclados, mesclar os nós e adicionar a rota à lista de rotas.
-    // 6. Se os nós não puderem ser mesclados, verifique se os nós podem ser adicionados a uma rota existente.
-    // 7. Se os nós puderem ser adicionados a uma rota existente, adicione os nós à rota.
-    // 8. Se os nós não puderem ser adicionados a uma rota existente, crie uma nova rota com os nós.
-    // 9. Retorne a lista de rotas.
 
     ListaRotas *rotas = new ListaRotas(capacidadeCaminhao);
 
@@ -1081,8 +1146,8 @@ ListaRotas *algoritmoClarkeWright(Grafo *grafo, int capacidadeCaminhao, int quan
     while (rotas->getNElementos() >= quantidadeRotas)
     {
 
+        //! o loop infinito ta no calcula economias
         economias = calculaEconomias(rotas, economias);
-        // std::cout << "nEconomias: " << economias->getNElementos() << endl;
 
         iteracao++;
         if (ehSimples && iteracao % 10 == 0)
@@ -1121,7 +1186,7 @@ ListaRotas *algoritmoClarkeWright(Grafo *grafo, int capacidadeCaminhao, int quan
         // std::cout << "Eu to certo" << endl;
         if (alfa != -1)
         {
-            int k = randomRange(0, alfa * (economias->getNElementos() - 1));
+            int k = randomRange(0, alfa * (economias->getNElementos() - 2));
             Rota *rotaToMerge = economias->getElemento(k)->cloneRota();
             incluiMergeNasRotas(rotaToMerge, rotas);
         }
@@ -1175,9 +1240,12 @@ ResultadoClarkeWrightRandomizado ClarkeWrightRandomizado(Grafo *grafo, string no
 {
 
     ListaRotas *melhorResultado;
-    if(setMelhorResultado != NULL){
+    if (setMelhorResultado != NULL)
+    {
         melhorResultado = setMelhorResultado;
-    }else{
+    }
+    else
+    {
         melhorResultado = new ListaRotas(capacidade);
     }
     float somaCusto = 0;
@@ -1185,16 +1253,17 @@ ResultadoClarkeWrightRandomizado ClarkeWrightRandomizado(Grafo *grafo, string no
     float melhorCusto = 99999999;
     for (int i = 0; i < nIteracoes; i++)
     {
-        auto start = chrono::system_clock::now(); //! inicio de codigo para contagem de tempo de execução
+        // auto start = chrono::system_clock::now(); //! inicio de codigo para contagem de tempo de execução
 
         // limpaListaJuncaoCarregada();
 
         // if(nIteracoes > 1)
         //     esvaziaListaJuncaoCarregada();
-        listaJuncaoCarregada = new ListaJuncao();
+        // listaJuncaoCarregada = new ListaJuncao();
         if (nIteracoes > 1)
         {
             std::cout << "iteracaoRandomizado: " << i << " / " << nIteracoes << endl;
+
             // std::cout << "listaJuncaoCarregada->getNElementos(): " << listaJuncaoCarregada->getNElementos() << endl;
         }
         ListaRotas *resultado = algoritmoClarkeWright(grafo, capacidade, nRotas, nomeTeste, alfa);
@@ -1211,13 +1280,14 @@ ResultadoClarkeWrightRandomizado ClarkeWrightRandomizado(Grafo *grafo, string no
         {
             // delete resultado;
         }
-        //! fim de cogio de contagem de tempo de execução
-        auto end = chrono::system_clock::now();
-        chrono::duration<double> elapsed_seconds = end - start;
-        time_t end_time = chrono::system_clock::to_time_t(end);
-        std::cout << "tempo de execução: " << BOLDGREEN << elapsed_seconds.count() << " s" << RESET
-                  << endl;
-        //!=================================================
+        // //! fim de cogio de contagem de tempo de execução
+        // auto end = chrono::system_clock::now();
+        // chrono::duration<double> elapsed_seconds = end - start;
+        // time_t end_time = chrono::system_clock::to_time_t(end);
+        // std::cout << "tempo de execução: " << BOLDGREEN << elapsed_seconds.count() << " s" << RESET
+        //           << endl;
+        // //!=================================================
+
         // if (nIteracoes > 1)
         //     std::cout << "Custo da iteracao " << i << " com alfa: " << alfa << " = " << custo << endl;
     }
@@ -1249,7 +1319,7 @@ ClarkeWrightReativoResultado ClarkeWrightReativo(Grafo *grafo, string nomeTeste,
     for (int iteracao = 0; iteracao < nIteracoes; iteracao++)
     {
         esvaziaListaJuncaoCarregada();
-        listaJuncaoCarregada = new ListaJuncao();
+        // listaJuncaoCarregada = new ListaJuncao();
         if (iteracao % 10 == 0)
         {
             std::cout << "iteracao reativo: " << iteracao << " / " << nIteracoes << endl;
@@ -1261,8 +1331,7 @@ ClarkeWrightReativoResultado ClarkeWrightReativo(Grafo *grafo, string nomeTeste,
 
         // ResultadoClarkeWrightRandomizado resultado = ClarkeWrightRandomizado(grafo, nomeTeste, capacidade, nRotas, alfaSelecionado, 1, new ListaRotas(capacidade));
 
-        ResultadoClarkeWrightRandomizado resultado = ClarkeWrightRandomizado(grafo, nomeTeste, capacidade, nRotas, alfaSelecionado, 1, new ListaRotas(capacidade));
-        
+        ResultadoClarkeWrightRandomizado resultado = ClarkeWrightRandomizado(grafo, nomeTeste, capacidade, nRotas, alfaSelecionado, repeticoesMediaAdaptativo, new ListaRotas(capacidade));
 
         if (calculateCustoTotal(resultado.melhorResultado) < menorCusto)
         {
@@ -1285,7 +1354,13 @@ ClarkeWrightReativoResultado ClarkeWrightReativo(Grafo *grafo, string nomeTeste,
             menorCusto = calculateCustoTotal(resultado.melhorResultado);
             melhorResultado = resultado.melhorResultado;
         }
-        seletorAlfa->atualizarProbabilidade(alfaSelecionadoIndex, resultado.custoMedio);
+        seletorAlfa->salvarResultado(alfaSelecionadoIndex, resultado.custoMedio);
+        if (iteracao % 10 == 0)
+        {
+            seletorAlfa->atualizarProbabilidade();
+            seletorAlfa->imprimir();
+        }
+        // seletorAlfa->atualizarProbabilidade(alfaSelecionadoIndex, resultado.custoMedio);
         if (iteracao % 500 == 0 && false)
         {
             ofstream outdata;                                      // outdata is like cin
@@ -1499,7 +1574,7 @@ int main(int argc, char const *argv[])
             {
                 float melhorDistancia = 9999999;
                 Rota *melhorRota = rotaNav;
-                for (int i = 0; i < 1000; i++)
+                for (int i = 0; i < iteracoesParaMelhoraFinalDeRotas; i++)
                 {
                     Rota *novaRota = mesclarRotasRand2(rotaNav, rotaNav);
                     if (novaRota->getDistanciaTotal() < melhorDistancia)
@@ -1537,7 +1612,7 @@ int main(int argc, char const *argv[])
             //!=================================================
 
             ofstream outdata;
-            outdata.open("./out/" + nomeTeste + "/Resultado.txt", std::ios_base::app);
+            outdata.open("./out/" + nomeTeste + "/Resultado.txt");
             // outdata << "O custo total foi de: " << calculateCustoTotal(resultadoRandomizado.melhorResultado) << endl;
             if (custoFinal < custoAnterior)
                 outdata << "O custo total foi de:: " << custoFinal << endl;
@@ -1573,7 +1648,7 @@ int main(int argc, char const *argv[])
             {
                 float melhorDistancia = 9999999;
                 Rota *melhorRota = rotaNav;
-                for (int i = 0; i < 1000; i++)
+                for (int i = 0; i < iteracoesParaMelhoraFinalDeRotas; i++)
                 {
                     Rota *novaRota = mesclarRotasRand2(rotaNav, rotaNav);
                     if (novaRota->getDistanciaTotal() < melhorDistancia)
@@ -1606,7 +1681,7 @@ int main(int argc, char const *argv[])
             // geraLogDasRotas(resultadoReativo.melhorResultado, "./out/" + nomeTeste + "/MelhorLogsRotas.txt");
 
             ofstream outdata;
-            outdata.open("./out/" + nomeTeste + "/Resultado.txt", std::ios_base::app);
+            outdata.open("./out/" + nomeTeste + "/Resultado.txt");
             // outdata << "O custo total foi de: " << custoAnterior << endl;
             // outdata << "O otimizado foi de: " << custoFinal << endl;
             if (custoFinal < custoAnterior)
@@ -1639,7 +1714,7 @@ int main(int argc, char const *argv[])
             {
                 float melhorDistancia = 9999999;
                 Rota *melhorRota = rotaNav;
-                for (int i = 0; i < 1000; i++)
+                for (int i = 0; i < iteracoesParaMelhoraFinalDeRotas; i++)
                 {
                     Rota *novaRota = mesclarRotasRand2(rotaNav, rotaNav);
                     if (novaRota->getDistanciaTotal() < melhorDistancia)
@@ -1656,6 +1731,7 @@ int main(int argc, char const *argv[])
             std::cout << "fim de otimizacao de rota final" << endl;
             float custoFinal = calculateCustoTotal(rotasOtimizadas);
             std::cout << "A melhora foi de: " << BOLDGREEN << custoAnterior - custoFinal << RESET << endl;
+
 
             if (custoFinal < custoAnterior)
             {
@@ -1677,19 +1753,13 @@ int main(int argc, char const *argv[])
             //!=================================================
 
             ofstream outdata;
-            outdata.open("./out/" + nomeTeste + "/Resultado.txt", std::ios_base::app);
-            // outdata << "O custo total foi de: " << custoAnterior << endl;
-            // outdata << "O otimizado foi de: " << custoFinal << endl;
+            outdata.open("./out/" + nomeTeste + "/Resultado.txt");
             if (custoFinal < custoAnterior)
                 outdata << "O custo total foi de:: " << custoFinal << endl;
             else
                 outdata << "O custo total foi de:: " << custoAnterior << endl;
             outdata << "O tempo gasto foi de " << elapsed_seconds.count() << " s" << endl;
-            outdata << "Alfa final: " << endl;
-            for (int i = 0; i < resultadoReativo.seletorAlfa->getNAlfas(); i++)
-            {
-                outdata << "[ " << resultadoReativo.seletorAlfa->getAlfa(i) << " ] probabilidade = " << resultadoReativo.seletorAlfa->getProbabilidade(i) << endl;
-            }
+
 
             outdata.close();
         }

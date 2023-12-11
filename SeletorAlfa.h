@@ -10,6 +10,8 @@ class SeletorAlfa
 private:
     int nAlfas;
     double *alfas;
+    double *resultados;
+    double *nExecucoes;
     double *probabilidades;
     float melhorResultado;
 
@@ -18,6 +20,9 @@ public:
     {
         this->nAlfas = 5;
         this->alfas = new double[5];
+        this->resultados = new double[5];
+        this->nExecucoes = new double[5];
+        zerarNExecucoes();
         alfas[0] = 0.05;
         alfas[1] = 0.1;
         alfas[2] = 0.15;
@@ -49,9 +54,56 @@ public:
         }
         return nAlfas - 1;
     };
+    void zerarNExecucoes()
+    {
+        for (int i = 0; i < nAlfas; i++)
+        {
+            nExecucoes[i] = 0;
+        }
+    };
+    void salvarResultado(int alfaIndex, float resultado)
+    {
+        nExecucoes[alfaIndex] += 1;
+        resultados[alfaIndex] += resultado;
+    };
+    void normalizarResultados()
+    {
+        double soma = 0;
+        for (int i = 0; i < nAlfas; i++)
+        {
+            soma += resultados[i];
+        }
+        for (int i = 0; i < nAlfas; i++)
+        {
+            resultados[i] = resultados[i] / soma;
+        }
+    };
+    void zerarResultados()
+    {
+        for (int i = 0; i < nAlfas; i++)
+        {
+            resultados[i] = 0;
+        }
+    };
+    void atualizarProbabilidade()
+    {
+        normalizarResultados();
+        
+        for(int i = 0; i < 5; i++){
+            if(nExecucoes[i] > 0)
+                // probabilidades[i] = probabilidades[i] + resultados[i]/nExecucoes[i];
+                probabilidades[i] = resultados[i]/nExecucoes[i];
+        }
+        
+
+        normalizarProbabilidades();
+        zerarResultados();
+        zerarNExecucoes();
+    };
     // void atualizarProbabilidade(int alfaIndex, float resultado)
     // {
-    //     if(resultado < melhorResultado){
+    //     if (resultado < melhorResultado)
+    //     {
     //         melhorResultado = resultado;
     //     }
     //     const float fatorSuavizacao = 0.8;
@@ -61,7 +113,10 @@ public:
     //         soma += probabilidades[i];
     //     }
 
-    //     probabilidades[alfaIndex] = (fatorSuavizacao * probabilidades[alfaIndex]) + ((1 - fatorSuavizacao) * (melhorResultado / resultado));
+    //     if (resultado <= melhorResultado)
+    //     {
+    //         probabilidades[alfaIndex] = (fatorSuavizacao * probabilidades[alfaIndex]) + ((1 - fatorSuavizacao) * (melhorResultado / resultado));
+    //     }
 
     //     soma = 0;
     //     for (int i = 0; i < nAlfas; i++)
@@ -72,36 +127,8 @@ public:
     //     {
     //         probabilidades[i] = probabilidades[i] / soma;
     //     }
+    //     normalizarProbabilidades();
     // };
-    void atualizarProbabilidade(int alfaIndex, float resultado)
-    {
-        if (resultado < melhorResultado)
-        {
-            melhorResultado = resultado;
-        }
-        const float fatorSuavizacao = 0.8;
-        double soma = 0;
-        for (int i = 0; i < nAlfas; i++)
-        {
-            soma += probabilidades[i];
-        }
-
-        if (resultado <= melhorResultado)
-        {
-            probabilidades[alfaIndex] = (fatorSuavizacao * probabilidades[alfaIndex]) + ((1 - fatorSuavizacao) * (melhorResultado / resultado));
-        }
-
-        soma = 0;
-        for (int i = 0; i < nAlfas; i++)
-        {
-            soma += probabilidades[i];
-        }
-        for (int i = 0; i < nAlfas; i++)
-        {
-            probabilidades[i] = probabilidades[i] / soma;
-        }
-        normalizarProbabilidades();
-    };
     //* normaliza as probabilidades entre 0 e 1 
     void normalizarProbabilidades()
     {

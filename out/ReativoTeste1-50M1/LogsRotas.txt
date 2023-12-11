@@ -1,2 +1,4 @@
 Nome do teste: ReativoTeste1-50M1
 Arquivo de entrada: ./M-n101-k10.txt
+Nome do teste: ReativoTeste1-50M1
+Arquivo de entrada: ./M-n101-k10.txt
